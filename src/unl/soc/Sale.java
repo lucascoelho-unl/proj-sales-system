@@ -1,18 +1,22 @@
 package unl.soc;
 
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Random;
 
 public class Sale {
 
-
     private String uniqueCode = generateSaleUniqueCode();
     private Store store;
     private Item item;
     private Person salesman;
-    private LocalDateTime dateTime;
+    private LocalDateTime dateTime = LocalDateTime.now();
+
+    public Sale(Store store, Item item, Person salesman) {
+        this.store = store;
+        this.item = item;
+        this.salesman = salesman;
+    }
 
     private String generateSaleUniqueCode() {
 
