@@ -1,34 +1,26 @@
 package unl.soc;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Random;
+import java.util.UUID;
 
 public class Sale {
 
-    private String uniqueCode = generateSaleUniqueCode();
+    private final UUID uniqueCode;
     private Store store;
     private Item item;
-    private Person salesman;
-    private LocalDateTime dateTime = LocalDateTime.now();
+    private Customer salesman;
+    private LocalDateTime dateTime;
 
-    public Sale(Store store, Item item, Person salesman) {
+    public Sale(Store store, Item item, Customer salesman) {
+        this.uniqueCode = UUID.randomUUID();
         this.store = store;
         this.item = item;
         this.salesman = salesman;
+        this.dateTime = LocalDateTime.now();
     }
-
-    private String generateSaleUniqueCode() {
-
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-        Random random = new Random();
-        StringBuilder stringBuilder = new StringBuilder(20);
-        for (int i = 0; i < 20; i++) {
-            int randomIndex = random.nextInt(characters.length());
-            stringBuilder.append(characters.charAt(randomIndex));
-        }
-        return stringBuilder.toString();
+    public Sale(Store store, Item item, Customer salesman, LocalDateTime purchaseTime) {
+        this(store, item, salesman);
+        this.dateTime = purchaseTime;
     }
 }
 

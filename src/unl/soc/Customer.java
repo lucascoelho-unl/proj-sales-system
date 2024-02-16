@@ -3,14 +3,14 @@ package unl.soc;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Person {
+public class Customer {
     private String uuid;
     private String firstName;
     private String lastName;
     private Address address;
-    private List<String> emailList = new ArrayList<>();
+    private List<String> emailList;
 
-    public Person(String uuid, String firstName, String lastName, Address address, List<String> emailList) {
+    public Customer(String uuid, String firstName, String lastName, Address address, List<String> emailList) {
         this.uuid = uuid;
         this.firstName = firstName;
         this.lastName = lastName;
