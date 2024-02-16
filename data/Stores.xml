@@ -1,0 +1,155 @@
+<?xml version="1.0"?>
+<stores>
+    <store>
+        <storeCode>178615</storeCode>
+        <manager>
+            <uuid>ry0-70yv-53rs-0o7641f4odi8</uuid>
+            <firstName>Phaedra</firstName>
+            <lastName>Braksper</lastName>
+            <address>
+                <city>New Haven</city>
+                <state>Connecticut</state>
+                <street>947 Sauthoff Road</street>
+                <zip>58103</zip>
+            </address>
+            <emails>
+                <element>xf2zu8@gmail.com</element>
+                <element>ti0qwdi@unl.edu</element>
+                <element>pbraksper4@github.io</element>
+            </emails>
+        </manager>
+        <address>
+            <city>Kansas City</city>
+            <state>Missouri</state>
+            <street>284 Nobel Lane</street>
+            <zip>60524</zip>
+        </address>
+        <sales />
+    </store>
+    <store>
+        <storeCode>961865</storeCode>
+        <manager>
+            <uuid>fx3-91pg-94fw-9f0663a3qom1</uuid>
+            <firstName>Alix</firstName>
+            <lastName>Desporte</lastName>
+            <address>
+                <city>South Bend</city>
+                <state>Indiana</state>
+                <street>6543 Bunting Street</street>
+                <zip>74457</zip>
+            </address>
+            <emails>
+                <element>wa3su8@gmail.com</element>
+                <element>adesporte5@liveinternet.ru</element>
+            </emails>
+        </manager>
+        <address>
+            <city>New York City</city>
+            <state>New York</state>
+            <street>306 Scott Circle</street>
+            <zip>63433</zip>
+        </address>
+        <sales />
+    </store>
+    <store>
+        <storeCode>o768t8</storeCode>
+        <manager>
+            <uuid>ku4-03wn-26fs-3m4408r8hjz2</uuid>
+            <firstName>Emanuel</firstName>
+            <lastName>Gouch</lastName>
+            <address>
+                <city>Austin</city>
+                <state>Texas</state>
+                <street>324 Sachs Street</street>
+                <zip>40447</zip>
+            </address>
+            <emails>
+                <element>gssoan@gmail.com</element>
+                <element>uc.yix1@unl.edu</element>
+                <element>egouch3@tmall.com</element>
+            </emails>
+        </manager>
+        <address>
+            <city>Myrtle Beach</city>
+            <state>South Carolina</state>
+            <street>511 Longview Junction</street>
+            <zip>83459</zip>
+        </address>
+        <sales />
+    </store>
+    <store>
+        <storeCode>613774</storeCode>
+        <manager>
+            <uuid>by5-49wz-04oa-9k3877z9blf4</uuid>
+            <firstName>Hedwiga</firstName>
+            <lastName>Liversley</lastName>
+            <address>
+                <city>Charlotte</city>
+                <state>North Carolina</state>
+                <street>321 Talmadge Street</street>
+                <zip>23409</zip>
+            </address>
+            <emails>
+                <element>eo6tz9@gmail.com</element>
+                <element>qv.smz1@unl.edu</element>
+            </emails>
+        </manager>
+        <address>
+            <city>San Jose</city>
+            <state>California</state>
+            <street>4212 Pierstorff Lane</street>
+            <zip>78681</zip>
+        </address>
+        <sales />
+    </store>
+    <store>
+        <storeCode>f03532</storeCode>
+        <manager>
+            <uuid>fx3-91pg-94fw-9f0663a3qom1</uuid>
+            <firstName>Alix</firstName>
+            <lastName>Desporte</lastName>
+            <address>
+                <city>South Bend</city>
+                <state>Indiana</state>
+                <street>6543 Bunting Street</street>
+                <zip>74457</zip>
+            </address>
+            <emails>
+                <element>wa3su8@gmail.com</element>
+                <element>adesporte5@liveinternet.ru</element>
+            </emails>
+        </manager>
+        <address>
+            <city>New York City</city>
+            <state>New York</state>
+            <street>174 Bartillon Center</street>
+            <zip>64811</zip>
+        </address>
+        <sales />
+    </store>
+    <store>
+        <storeCode>0489g2</storeCode>
+        <manager>
+            <uuid>by5-49wz-04oa-9k3877z9blf4</uuid>
+            <firstName>Hedwiga</firstName>
+            <lastName>Liversley</lastName>
+            <address>
+                <city>Charlotte</city>
+                <state>North Carolina</state>
+                <street>321 Talmadge Street</street>
+                <zip>23409</zip>
+            </address>
+            <emails>
+                <element>eo6tz9@gmail.com</element>
+                <element>qv.smz1@unl.edu</element>
+            </emails>
+        </manager>
+        <address>
+            <city>San Francisco</city>
+            <state>California</state>
+            <street>4401 Armistice Center</street>
+            <zip>62881</zip>
+        </address>
+        <sales />
+    </store>
+</stores>

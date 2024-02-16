@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<items>
+    <product>
+        <code>x006</code>
+        <name>Samsung s21</name>
+        <price>1329.99</price>
+    </product>
+    <service>
+        <code>a006</code>
+        <costPerHour>29.99</costPerHour>
+        <name>Screen Repair</name>
+    </service>
+    <product>
+        <code>h000</code>
+        <name>MacBook Pro</name>
+        <price>2500.0</price>
+    </product>
+    <voicePlan>
+        <code>g007</code>
+        <name>Unlimited Calls &amp; Text</name>
+        <periodCost>39.99</periodCost>
+    </voicePlan>
+    <voicePlan>
+        <code>p001</code>
+        <name>300 Calls &amp; Text</name>
+        <periodCost>20.0</periodCost>
+    </voicePlan>
+    <dataPlan>
+        <code>c000</code>
+        <costPerGB>0.59</costPerGB>
+        <name>5g Basic</name>
+    </dataPlan>
+    <product>
+        <code>x008</code>
+        <name>Iphone 15 ProMax</name>
+        <price>1199.99</price>
+    </product>
+    <service>
+        <code>z008</code>
+        <costPerHour>50.0</costPerHour>
+        <name>Laptop Charger Repair</name>
+    </service>
+    <product>
+        <code>f004</code>
+        <name>Samsung SmartWatch</name>
+        <price>199.99</price>
+    </product>
+    <dataPlan>
+        <code>g009</code>
+        <costPerGB>0.49</costPerGB>
+        <name>4g Deluxe</name>
+    </dataPlan>
+    <product>
+        <code>a008</code>
+        <name>Iphone 15 HardCase</name>
+        <price>49.99</price>
+    </product>
+    <product>
+        <code>q008</code>
+        <name>Samsung Television</name>
+        <price>1299.99</price>
+    </product>
+    <dataPlan>
+        <code>e002</code>
+        <costPerGB>1.0</costPerGB>
+        <name>5g Deluxe</name>
+    </dataPlan>
+    <voicePlan>
+        <code>y000</code>
+        <name>500 Calls &amp; Text</name>
+        <periodCost>29.99</periodCost>
+    </voicePlan>
+    <service>
+        <code>s004</code>
+        <costPerHour>20.0</costPerHour>
+        <name>Iphone Screen Repair</name>
+    </service>
+</items>

@@ -1,0 +1,223 @@
+{
+  "persons": [
+    {
+      "uuid": "by5-49wz-04oa-9k3877z9blf4",
+      "firstName": "Hedwiga",
+      "lastName": "Liversley",
+      "address": {
+        "street": "321 Talmadge Street",
+        "city": "Charlotte",
+        "state": "North Carolina",
+        "zip": 23409
+      },
+      "emails": [
+        "eo6tz9@gmail.com",
+        "qv.smz1@unl.edu"
+      ]
+    },
+    {
+      "uuid": "wm0-95nz-32sq-9o1163m5ldv2",
+      "firstName": "Hertha",
+      "lastName": "Reddlesden",
+      "address": {
+        "street": "10 Kipling Hill",
+        "city": "Ocala",
+        "state": "Florida",
+        "zip": 39891
+      },
+      "emails": [
+        "yv0lq6@gmail.com",
+        "pt.hggk@unl.edu"
+      ]
+    },
+    {
+      "uuid": "fm5-70yy-08cn-4u7830y2ksq0",
+      "firstName": "Cordelie",
+      "lastName": "Slainey",
+      "address": {
+        "street": "3213 Laurel Road",
+        "city": "Miami",
+        "state": "Florida",
+        "zip": 27322
+      },
+      "emails": [
+        "jn5bg4@gmail.com"
+      ]
+    },
+    {
+      "uuid": "ku4-03wn-26fs-3m4408r8hjz2",
+      "firstName": "Emanuel",
+      "lastName": "Gouch",
+      "address": {
+        "street": "324 Sachs Street",
+        "city": "Austin",
+        "state": "Texas",
+        "zip": 40447
+      },
+      "emails": [
+        "gssoan@gmail.com",
+        "uc.yix1@unl.edu",
+        "egouch3@tmall.com"
+      ]
+    },
+    {
+      "uuid": "ry0-70yv-53rs-0o7641f4odi8",
+      "firstName": "Phaedra",
+      "lastName": "Braksper",
+      "address": {
+        "street": "947 Sauthoff Road",
+        "city": "New Haven",
+        "state": "Connecticut",
+        "zip": 58103
+      },
+      "emails": [
+        "xf2zu8@gmail.com",
+        "ti0qwdi@unl.edu",
+        "pbraksper4@github.io"
+      ]
+    },
+    {
+      "uuid": "fx3-91pg-94fw-9f0663a3qom1",
+      "firstName": "Alix",
+      "lastName": "Desporte",
+      "address": {
+        "street": "6543 Bunting Street",
+        "city": "South Bend",
+        "state": "Indiana",
+        "zip": 74457
+      },
+      "emails": [
+        "wa3su8@gmail.com",
+        "adesporte5@liveinternet.ru"
+      ]
+    },
+    {
+      "uuid": "so4-67cq-97ic-6i5209g2kzb0",
+      "firstName": "Delmor",
+      "lastName": "Heaviside",
+      "address": {
+        "street": "888 Holmberg Hill",
+        "city": "Levittown",
+        "state": "Pennsylvania",
+        "zip": 26708
+      },
+      "emails": [
+        "nbozk2@gmail.com"
+      ]
+    },
+    {
+      "uuid": "vo8-71m9-55oi-2g4246y4wou9",
+      "firstName": "Jerrilyn",
+      "lastName": "Tomczykiewicz",
+      "address": {
+        "street": "992 Tennessee Road",
+        "city": "New Orleans",
+        "state": "Louisiana",
+        "zip": 12955
+      },
+      "emails": [
+        "dj4mos@gmail.com",
+        "cbfb9rr@unl.edu"
+      ]
+    },
+    {
+      "uuid": "lz6-31gn-62rh-4p2470p5bqs4",
+      "firstName": "Warden",
+      "lastName": "Bleier",
+      "address": {
+        "street": "7420 School Street",
+        "city": "Santa Barbara",
+        "state": "California",
+        "zip": 22768
+      },
+      "emails": [
+        "yylzxr@gmail.com",
+        "fxqn8y0@unl.edu"
+      ]
+    },
+    {
+      "uuid": "xb9-31cf-34hh-4t7099q1qdr2",
+      "firstName": "Reggy",
+      "lastName": "Tulk",
+      "address": {
+        "street": "5210 Raven Baltimore",
+        "city": "Kansas City",
+        "state": "Kansas",
+        "zip": 34836
+      },
+      "emails": [
+        "hiqut2@gmail.com"
+      ]
+    },
+    {
+      "uuid": "gh3-19i6-90id-0f1419r5ukt5",
+      "firstName": "Wally",
+      "lastName": "Diemer",
+      "address": {
+        "street": "11 Sunbrook Hill",
+        "city": "Saint Louis",
+        "state": "Missouri",
+        "zip": 95520
+      },
+      "emails": [
+        "ghkmj0@gmail.com"
+      ]
+    },
+    {
+      "uuid": "du3-05fy-70vj-3t8875f8csm7",
+      "firstName": "Charin",
+      "lastName": "Asee",
+      "address": {
+        "street": "2401 Johnson Road",
+        "city": "Tampa",
+        "state": "Florida",
+        "zip": 85448
+      },
+      "emails": [
+        "ot8tvg@gmail.com"
+      ]
+    },
+    {
+      "uuid": "tw7-68j7-40ep-0a9363c7cgi5",
+      "firstName": "Ritchie",
+      "lastName": "Westmorland",
+      "address": {
+        "street": "4190 Nova Nevada Hill",
+        "city": "Spokane",
+        "state": "Washington",
+        "zip": 28856
+      },
+      "emails": [
+        "jz2eeb@gmail.com"
+      ]
+    },
+    {
+      "uuid": "il7-08hb-03ir-5q5145r7xdk0",
+      "firstName": "Isa",
+      "lastName": "Fordyce",
+      "address": {
+        "street": "4100 Blaine Blond Street",
+        "city": "Trenton",
+        "state": "New Jersey",
+        "zip": 30362
+      },
+      "emails": [
+        "cn3mea@gmail.com"
+      ]
+    },
+    {
+      "uuid": "oc9-70gt-75qu-6l7757a4xix4",
+      "firstName": "Caritta",
+      "lastName": "Winslade",
+      "address": {
+        "street": "1020 Morrow Road",
+        "city": "Fort Worth",
+        "state": "Texas",
+        "zip": 17792
+      },
+      "emails": [
+        "cg3dyu@gmail.com"
+      ]
+    }
+  ]
+}

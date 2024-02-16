@@ -1,0 +1,156 @@
+{
+  "stores": [
+    {
+      "storeCode": "178615",
+      "manager": {
+        "uuid": "ry0-70yv-53rs-0o7641f4odi8",
+        "firstName": "Phaedra",
+        "lastName": "Braksper",
+        "address": {
+          "street": "947 Sauthoff Road",
+          "city": "New Haven",
+          "state": "Connecticut",
+          "zip": 58103
+        },
+        "emails": [
+          "xf2zu8@gmail.com",
+          "ti0qwdi@unl.edu",
+          "pbraksper4@github.io"
+        ]
+      },
+      "address": {
+        "street": "284 Nobel Lane",
+        "city": "Kansas City",
+        "state": "Missouri",
+        "zip": 60524
+      },
+      "sales": []
+    },
+    {
+      "storeCode": "961865",
+      "manager": {
+        "uuid": "fx3-91pg-94fw-9f0663a3qom1",
+        "firstName": "Alix",
+        "lastName": "Desporte",
+        "address": {
+          "street": "6543 Bunting Street",
+          "city": "South Bend",
+          "state": "Indiana",
+          "zip": 74457
+        },
+        "emails": [
+          "wa3su8@gmail.com",
+          "adesporte5@liveinternet.ru"
+        ]
+      },
+      "address": {
+        "street": "306 Scott Circle",
+        "city": "New York City",
+        "state": "New York",
+        "zip": 63433
+      },
+      "sales": []
+    },
+    {
+      "storeCode": "o768t8",
+      "manager": {
+        "uuid": "ku4-03wn-26fs-3m4408r8hjz2",
+        "firstName": "Emanuel",
+        "lastName": "Gouch",
+        "address": {
+          "street": "324 Sachs Street",
+          "city": "Austin",
+          "state": "Texas",
+          "zip": 40447
+        },
+        "emails": [
+          "gssoan@gmail.com",
+          "uc.yix1@unl.edu",
+          "egouch3@tmall.com"
+        ]
+      },
+      "address": {
+        "street": "511 Longview Junction",
+        "city": "Myrtle Beach",
+        "state": "South Carolina",
+        "zip": 83459
+      },
+      "sales": []
+    },
+    {
+      "storeCode": "613774",
+      "manager": {
+        "uuid": "by5-49wz-04oa-9k3877z9blf4",
+        "firstName": "Hedwiga",
+        "lastName": "Liversley",
+        "address": {
+          "street": "321 Talmadge Street",
+          "city": "Charlotte",
+          "state": "North Carolina",
+          "zip": 23409
+        },
+        "emails": [
+          "eo6tz9@gmail.com",
+          "qv.smz1@unl.edu"
+        ]
+      },
+      "address": {
+        "street": "4212 Pierstorff Lane",
+        "city": "San Jose",
+        "state": "California",
+        "zip": 78681
+      },
+      "sales": []
+    },
+    {
+      "storeCode": "f03532",
+      "manager": {
+        "uuid": "fx3-91pg-94fw-9f0663a3qom1",
+        "firstName": "Alix",
+        "lastName": "Desporte",
+        "address": {
+          "street": "6543 Bunting Street",
+          "city": "South Bend",
+          "state": "Indiana",
+          "zip": 74457
+        },
+        "emails": [
+          "wa3su8@gmail.com",
+          "adesporte5@liveinternet.ru"
+        ]
+      },
+      "address": {
+        "street": "174 Bartillon Center",
+        "city": "New York City",
+        "state": "New York",
+        "zip": 64811
+      },
+      "sales": []
+    },
+    {
+      "storeCode": "0489g2",
+      "manager": {
+        "uuid": "by5-49wz-04oa-9k3877z9blf4",
+        "firstName": "Hedwiga",
+        "lastName": "Liversley",
+        "address": {
+          "street": "321 Talmadge Street",
+          "city": "Charlotte",
+          "state": "North Carolina",
+          "zip": 23409
+        },
+        "emails": [
+          "eo6tz9@gmail.com",
+          "qv.smz1@unl.edu"
+        ]
+      },
+      "address": {
+        "street": "4401 Armistice Center",
+        "city": "San Francisco",
+        "state": "California",
+        "zip": 62881
+      },
+      "sales": []
+    }
+  ]
+}

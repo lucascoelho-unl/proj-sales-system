@@ -1,0 +1,79 @@
+{
+  "items": [
+    {
+      "code": "x006",
+      "name": "Samsung s21",
+      "price": 1329.99
+    },
+    {
+      "code": "a006",
+      "name": "Screen Repair",
+      "costPerHour": 29.99
+    },
+    {
+      "code": "h000",
+      "name": "MacBook Pro",
+      "price": 2500.00
+    },
+    {
+      "code": "g007",
+      "name": "Unlimited Calls & Text",
+      "periodCost": 39.99
+    },
+    {
+      "code": "p001",
+      "name": "300 Calls & Text",
+      "periodCost": 20.00
+    },
+    {
+      "code": "c000",
+      "name": "5g Basic",
+      "costPerGB": 0.59
+    },
+    {
+      "code": "x008",
+      "name": "Iphone 15 ProMax",
+      "price": 1199.99
+    },
+    {
+      "code": "z008",
+      "name": "Laptop Charger Repair",
+      "costPerHour": 50.00
+    },
+    {
+      "code": "f004",
+      "name": "Samsung SmartWatch",
+      "price": 199.99
+    },
+    {
+      "code": "g009",
+      "name": "4g Deluxe",
+      "costPerGB": 0.49
+    },
+    {
+      "code": "a008",
+      "name": "Iphone 15 HardCase",
+      "price": 49.99
+    },
+    {
+      "code": "q008",
+      "name": "Samsung Television",
+      "price": 1299.99
+    },
+    {
+      "code": "e002",
+      "name": "5g Deluxe",
+      "costPerGB": 1.00
+    },
+    {
+      "code": "y000",
+      "name": "500 Calls & Text",
+      "periodCost": 29.99
+    },
+    {
+      "code": "s004",
+      "name": "Iphone Screen Repair",
+      "costPerHour": 20.00
+    }
+  ]
+}
