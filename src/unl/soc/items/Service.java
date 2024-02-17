@@ -10,4 +10,8 @@ public class Service extends Item{
     private double hourlyRate;
     private Employee employee;
     private LocalDateTime totalTime; //Target Time - Purchased time
+
+    public Service(String uniqueCode, String type, String name, double basePrice) {
+        super(uniqueCode, type, name, basePrice);
+    }
 }

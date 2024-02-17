@@ -6,4 +6,7 @@ public class DataPlan extends Item{
     private double consumedGB;
     private double priceBeforeTax;
 
+    public DataPlan(String uniqueCode, String type, String name, double basePrice) {
+        super(uniqueCode, type, name, basePrice);
+    }
 }

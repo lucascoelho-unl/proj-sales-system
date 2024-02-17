@@ -9,4 +9,7 @@ public class VoicePlan extends Item {
     private double priceBeforeTax;
 
 
+    public VoicePlan(String uniqueCode, String type, String name, double basePrice) {
+        super(uniqueCode, type, name, basePrice);
+    }
 }

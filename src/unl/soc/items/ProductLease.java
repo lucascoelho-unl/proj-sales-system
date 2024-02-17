@@ -7,4 +7,8 @@ public class ProductLease extends Item{
     private LocalDateTime totalTime;
     private double firstMonthPrice;
     private double markupPrice;
+
+    public ProductLease(String uniqueCode, String type, String name, double basePrice) {
+        super(uniqueCode, type, name, basePrice);
+    }
 }
