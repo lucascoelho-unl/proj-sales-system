@@ -1,5 +1,8 @@
 package unl.soc;
 
+import unl.soc.items.Item;
+import unl.soc.person.Manager;
+
 public class Store {
     private String storeCode;
     private Manager manager;

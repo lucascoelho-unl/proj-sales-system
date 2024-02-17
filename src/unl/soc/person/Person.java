@@ -1,16 +1,16 @@
-package unl.soc;
+package unl.soc.person;
 
-import java.util.ArrayList;
+import unl.soc.Address;
+
 import java.util.List;
-
-public class Customer {
+public class Person {
     private String uuid;
     private String firstName;
     private String lastName;
     private Address address;
     private List<String> emailList;
 
-    public Customer(String uuid, String firstName, String lastName, Address address, List<String> emailList) {
+    public Person(String uuid, String firstName, String lastName, Address address, List<String> emailList) {
         this.uuid = uuid;
         this.firstName = firstName;
         this.lastName = lastName;
