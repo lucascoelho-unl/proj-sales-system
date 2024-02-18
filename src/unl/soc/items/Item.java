@@ -1,9 +1,11 @@
 package unl.soc.items;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 import unl.soc.Store;
 
 import java.util.List;
 
+@XStreamAlias("Item")
 public class Item {
     private String uniqueCode;
     private String name;

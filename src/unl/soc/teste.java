@@ -27,5 +27,8 @@ public class teste {
 
         var personList = Utils.readCSVPerson("data/Persons.csv");
         System.out.println(personList);
+
+
+        DataConverter.createXMLFile(teste, "data/test.xml");
     }
 }

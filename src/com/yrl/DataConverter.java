@@ -8,12 +8,13 @@ import unl.soc.items.Item;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 public class DataConverter {
-    public static void createJsonFile(Object object, String filePath) {
+    public static void createJsonFile(List<?> listOfObject, String filePath) {
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String json = gson.toJson(object);
+        String json = gson.toJson(listOfObject);
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
             writer.write(json);
@@ -22,10 +23,11 @@ public class DataConverter {
             e.printStackTrace();
         }
     }
-    public static void  createXMLFile(Object object, String filePath) {
+    public static void  createXMLFile(List<?> listOfObject, String filePath) {
         XStream xStream = new XStream();
-        xStream.alias("Item", Item.class);
-        String xmlConversion = xStream.toXML(object);
+        xStream.processAnnotations(listOfObject.get(0).getClass());
+
+        String xmlConversion = xStream.toXML(listOfObject);
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
             writer.write(xmlConversion);
