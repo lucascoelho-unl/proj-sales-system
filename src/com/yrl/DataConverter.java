@@ -13,7 +13,7 @@ import java.util.List;
 public class DataConverter {
     public static void createJsonFile(List<?> listOfObject, String filePath) {
 
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
         String json = gson.toJson(listOfObject);
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
