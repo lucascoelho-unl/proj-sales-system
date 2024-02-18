@@ -115,5 +115,4 @@ fabric.properties
 .idea/**/azureSettings.xml
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij
-.Teste.java
-.teste.java
+.src/unl/soc/Teste.java

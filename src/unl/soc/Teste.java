@@ -30,6 +30,5 @@ public class Teste {
 
 
         DataConverter.createXMLFile(teste, "data/test.xml");
-
     }
 }
