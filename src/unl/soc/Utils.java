@@ -28,12 +28,22 @@ public class Utils {
             while (s.hasNext()) {
                 String line = s.nextLine();
                 List<String> itemsInfo = Arrays.asList(line.split(","));
-                Item item = new Item(itemsInfo.get(0), itemsInfo.get(1), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
+
+                Item item;
+
+                if (itemsInfo.get(1).compareTo("P") == 0) {
+                    item = new ProductPurchase(itemsInfo.get(0), itemsInfo.get(1), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
+                } else if (itemsInfo.get(1).compareTo("S") == 0) {
+                    item = new Service(itemsInfo.get(0), itemsInfo.get(1), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
+                } else if (itemsInfo.get(1).compareTo("D") == 0) {
+                    item = new DataPlan(itemsInfo.get(0), itemsInfo.get(1), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
+                } else {
+                    item = new VoicePlan(itemsInfo.get(0), itemsInfo.get(1), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
+                }
                 codeItemMap.put(itemsInfo.get(0), item);
             }
             s.close();
             return codeItemMap;
-
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -68,7 +78,7 @@ public class Utils {
      * @param itemsList The list of Item objects to be parsed.
      * @return A map containing categorized lists of ProductPurchase, ProductLease, VoicePlan, DataPlan, and Service objects.
      */
-    public static Map<String, Object> itemsDictParse(List<Item> itemsList) {
+    public static Map<String, Object> itemsDictParse(Map<String, Item> itemsList) {
         List<ProductPurchase> productPurchaseList = new ArrayList<>();
         List<VoicePlan> voicePlanList = new ArrayList<>();
         List<DataPlan> dataPlanList = new ArrayList<>();
@@ -82,25 +92,22 @@ public class Utils {
                 "dataPlan", dataPlanList,
                 "service", serviceList));
 
-        for (Item item : itemsList) {
-            if (item.getType().compareTo("P") == 0) {
-                ProductPurchase purchase = new ProductPurchase(item.getUniqueCode(), item.getType(), item.getName(), item.getBasePrice());
-                productPurchaseList.add(purchase);
-                result.put("purchase", productPurchaseList);
-            } else if (item.getType().compareTo("S") == 0) {
-                Service service = new Service(item.getUniqueCode(), item.getType(), item.getName(), item.getBasePrice());
-                serviceList.add(service);
-                result.put("service", serviceList);
-            } else if (item.getType().compareTo("V") == 0) {
-                VoicePlan voicePlan = new VoicePlan(item.getUniqueCode(), item.getType(), item.getName(), item.getBasePrice());
-                voicePlanList.add(voicePlan);
-                result.put("voicePlan", voicePlanList);
-            } else if (item.getType().compareTo("D") == 0) {
-                DataPlan dataPlan = new DataPlan(item.getUniqueCode(), item.getType(), item.getName(), item.getBasePrice());
-                dataPlanList.add(dataPlan);
-                result.put("dataPlan", dataPlanList);
+        for (Item item : itemsList.values()) {
+            if (item instanceof ProductPurchase) {
+                productPurchaseList.add((ProductPurchase) item);
+            } else if (item instanceof Service) {
+                serviceList.add((Service) item);
+            } else if (item instanceof VoicePlan) {
+                voicePlanList.add((VoicePlan) item);
+            } else if (item instanceof DataPlan) {
+                dataPlanList.add((DataPlan) item);
             }
         }
+        result.put("purchase", productPurchaseList);
+        result.put("service", serviceList);
+        result.put("voicePlan", voicePlanList);
+        result.put("dataPlan", dataPlanList);
+
         return result;
     }
 

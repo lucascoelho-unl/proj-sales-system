@@ -1,5 +1,6 @@
 package unl.soc.items;
 
+import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import unl.soc.Store;
 
@@ -7,19 +8,19 @@ import java.util.List;
 
 @XStreamAlias("item")
 public class Item {
+    @Expose
     private String uniqueCode;
+    @Expose
     private String name;
     private String type;
-    private double basePrice;
     private double tax;
     private double totalPrice;
     private List<Store> storesAvailable;
 
-    public Item(String uniqueCode, String type, String name, double basePrice) {
+    public Item(String uniqueCode, String type, String name) {
         this.uniqueCode = uniqueCode;
         this.type = type;
         this.name = name;
-        this.basePrice = basePrice;
     }
 
     public String getUniqueCode() {
@@ -28,10 +29,6 @@ public class Item {
 
     public String getName() {
         return name;
-    }
-
-    public double getBasePrice() {
-        return basePrice;
     }
 
     public List<Store> getStoresAvailable() {
