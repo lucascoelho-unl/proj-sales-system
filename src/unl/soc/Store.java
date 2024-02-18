@@ -4,7 +4,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import unl.soc.items.Item;
 import unl.soc.person.Manager;
 
-@XStreamAlias("Store")
+@XStreamAlias("store")
 public class Store {
     private String storeCode;
     private Manager manager;
@@ -16,4 +16,5 @@ public class Store {
         this.manager = manager;
         this.address = address;
     }
+
 }

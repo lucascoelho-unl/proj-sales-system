@@ -27,6 +27,7 @@ public class DataConverter {
         XStream xStream = new XStream();
         xStream.processAnnotations(listOfObject.get(0).getClass());
 
+        xStream.alias(String.format(listOfObject.get(0).getClass().getSimpleName() + "s").toLowerCase(), List.class);
         String xmlConversion = xStream.toXML(listOfObject);
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));

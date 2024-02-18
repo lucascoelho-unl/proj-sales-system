@@ -5,7 +5,7 @@ import unl.soc.Store;
 
 import java.util.List;
 
-@XStreamAlias("Item")
+@XStreamAlias("item")
 public class Item {
     private String uniqueCode;
     private String name;
