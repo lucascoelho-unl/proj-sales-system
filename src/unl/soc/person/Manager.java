@@ -1,7 +1,14 @@
 package unl.soc.person;
 
-public class Manager{
+import unl.soc.Address;
 
-    private Person manager;
+import java.util.List;
 
+public class Manager extends Person{
+    public Manager(String uuid, String firstName, String lastName, Address address, List<String> emailList) {
+        super(uuid, firstName, lastName, address, emailList);
+    }
+    public Manager(Person p){
+        super(p.getUuid(), p.getFirstName(), p.getLastName(), p.getAddress(),p.getEmailList());
+    }
 }

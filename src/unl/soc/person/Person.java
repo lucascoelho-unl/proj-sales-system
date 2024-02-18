@@ -20,4 +20,24 @@ public class Person {
         this.address = address;
         this.emailList = emailList;
     }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public List<String> getEmailList() {
+        return emailList;
+    }
 }

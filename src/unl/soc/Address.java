@@ -1,5 +1,7 @@
 package unl.soc;
 
+import unl.soc.person.Person;
+
 public class Address {
     private String street;
     private String city;

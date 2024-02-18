@@ -29,7 +29,14 @@ public class Purchase {
         this.totalTax = calculateTotal(TAX);
         this.totalPrice = calculateTotal(TOTAL_PRICE);
     }
-
+    /**
+     * Calculates the total price or total tax of the purchase..
+     *
+     * @param variableToCalculate A short variable indicating the type of calculation:
+     *                            - If variableToCalculate is TOTAL_PRICE, calculates the total price of all items.
+     *                            - Otherwise, calculates the total tax of all items.
+     * @return The calculated total value based on the specified variable.
+     */
     private double calculateTotal(short variableToCalculate){
         double total = 0;
 
