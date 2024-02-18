@@ -2,15 +2,16 @@ package unl.soc;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import jdk.jshell.execution.Util;
+
+import com.yrl.DataConverter;
 import unl.soc.items.*;
 
-import javax.naming.spi.StateFactory;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 public class teste {
-    public static void main(String[] args) {
+    public static void main(String[] args){
         List<Item> teste = Utils.readCSVItems("data/Items.csv");
         Map teste2 = Utils.itemsDictParse(teste);
         System.out.println(teste);
@@ -18,5 +19,6 @@ public class teste {
         var json = gson.toJson(teste);
         System.out.println(json);
 
+        DataConverter.createJsonFile(teste, "data/testFile.json");
     }
 }
