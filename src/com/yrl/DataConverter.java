@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.thoughtworks.xstream.XStream;
 import unl.soc.items.Item;
+import unl.soc.person.Person;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -24,10 +25,19 @@ public class DataConverter {
         }
     }
     public static void  createXMLFile(List<?> listOfObject, String filePath) {
-        XStream xStream = new XStream();
-        xStream.processAnnotations(listOfObject.get(0).getClass());
+        if (listOfObject.isEmpty()){
+            throw new RuntimeException();
+        }
 
-        xStream.alias(String.format(listOfObject.get(0).getClass().getSimpleName() + "s").toLowerCase(), List.class);
+        XStream xStream = new XStream();
+
+        var listType = listOfObject.get(0).getClass();
+        xStream.processAnnotations(listType);
+        xStream.alias(String.format(listType.getSimpleName() + "s").toLowerCase(), List.class);
+        if (listType.getSimpleName().equals("Person")){
+            xStream.alias("email", String.class);
+        }
+
         String xmlConversion = xStream.toXML(listOfObject);
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));

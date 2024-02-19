@@ -13,6 +13,7 @@ public class Person {
     private String lastName;
     private Address address;
 
+    @XStreamAlias("emails")
     private List<String> emailList;
 
     public Person(String uuid, String firstName, String lastName, Address address, List<String> emailList) {
@@ -42,4 +43,5 @@ public class Person {
     public List<String> getEmailList() {
         return emailList;
     }
+
 }
