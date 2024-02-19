@@ -72,41 +72,43 @@ public class Utils {
     }
 
     /**
-     * Parses a list of Item objects into separate lists based on their types and constructs a map
-     * containing these lists categorized as product purchases, product leases, voice plans, data plans, and services.
+     * Parses a Map of items, where keys are item codes and values are Item objects, into categorized maps
+     * based on their types and constructs a map containing these categorized maps for product purchases,
+     * product leases, voice plans, data plans, and services.
      *
-     * @param itemsList The list of Item objects to be parsed.
-     * @return A map containing categorized lists of ProductPurchase, ProductLease, VoicePlan, DataPlan, and Service objects.
+     * @param itemsMap A Map<String, Item> where keys are item codes and values are Item objects.
+     * @return A Map<String, Object> where keys are item types and values are categorized maps (e.g., product purchases, services).
      */
-    public static Map<String, Object> itemsDictParse(Map<String, Item> itemsList) {
-        List<ProductPurchase> productPurchaseList = new ArrayList<>();
-        List<VoicePlan> voicePlanList = new ArrayList<>();
-        List<DataPlan> dataPlanList = new ArrayList<>();
-        List<ProductLease> productLeaseList = new ArrayList<>();
-        List<Service> serviceList = new ArrayList<>();
+    public static Map<String, Object> itemsMapParse(Map<String, Item> itemsMap) {
+        Map<String, ProductPurchase> productPurchaseList = new HashMap<>();
+        Map<String, VoicePlan> voicePlanMap = new HashMap<>();
+        Map<String, DataPlan> dataPlanMap = new HashMap<>();
+        Map<String, ProductLease> productLeaseMap = new HashMap<>();
+        Map<String, Service> serviceMap = new HashMap<>();
 
         Map<String, Object> result = new HashMap<>(Map.of(
                 "purchase", productPurchaseList,
-                "lease", productLeaseList,
-                "voicePlan", voicePlanList,
-                "dataPlan", dataPlanList,
-                "service", serviceList));
+                "lease", productLeaseMap,
+                "voicePlan", voicePlanMap,
+                "dataPlan", dataPlanMap,
+                "service", serviceMap));
 
-        for (Item item : itemsList.values()) {
+        for (Item item : itemsMap.values()) {
             if (item instanceof ProductPurchase) {
-                productPurchaseList.add((ProductPurchase) item);
+                productPurchaseList.put(item.getUniqueCode(), (ProductPurchase) item);
             } else if (item instanceof Service) {
-                serviceList.add((Service) item);
+                serviceMap.put(item.getUniqueCode(), (Service) item);
             } else if (item instanceof VoicePlan) {
-                voicePlanList.add((VoicePlan) item);
+                voicePlanMap.put(item.getUniqueCode(), (VoicePlan) item);
             } else if (item instanceof DataPlan) {
-                dataPlanList.add((DataPlan) item);
+                dataPlanMap.put(item.getUniqueCode(), (DataPlan) item);
             }
         }
+
         result.put("purchase", productPurchaseList);
-        result.put("service", serviceList);
-        result.put("voicePlan", voicePlanList);
-        result.put("dataPlan", dataPlanList);
+        result.put("service", serviceMap);
+        result.put("voicePlan", voicePlanMap);
+        result.put("dataPlan", dataPlanMap);
 
         return result;
     }
