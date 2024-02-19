@@ -1,5 +1,6 @@
 package unl.soc.person;
 
+import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import unl.soc.Address;
@@ -8,9 +9,13 @@ import java.util.List;
 
 @XStreamAlias("person")
 public class Person {
+    @Expose
     private String uuid;
+    @Expose
     private String firstName;
+    @Expose
     private String lastName;
+    @Expose
     private Address address;
 
     @XStreamAlias("emails")
