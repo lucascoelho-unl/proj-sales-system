@@ -285,11 +285,12 @@ public class Utils {
      * @param filePath The file path where the XML file will be created.
      */
     public static void createXMLFile(List<?> listOfObject, String filePath) {
-        XStream xStream = new XStream();
+        XStream xstream = new XStream();
+        xstream.setMode(XStream.NO_REFERENCES);
 
         if (listOfObject.isEmpty()){
             try {
-                xStream.toXML(listOfObject, new FileWriter(filePath));
+                xstream.toXML(listOfObject, new FileWriter(filePath));
                 return;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -300,27 +301,27 @@ public class Utils {
 
         if (listType.getSuperclass().isInstance(listOfObject.get(0)) && listType.getSuperclass() != Object.class){
             // Process annotations from item classes, change label in XML file
-            xStream.processAnnotations(ProductPurchase.class);
-            xStream.processAnnotations(ProductLease.class);
-            xStream.processAnnotations(Service.class);
-            xStream.processAnnotations(VoicePlan.class);
-            xStream.processAnnotations(DataPlan.class);
+            xstream.processAnnotations(ProductPurchase.class);
+            xstream.processAnnotations(ProductLease.class);
+            xstream.processAnnotations(Service.class);
+            xstream.processAnnotations(VoicePlan.class);
+            xstream.processAnnotations(DataPlan.class);
 
             //Changes the root of the list to the plural of the superclass name
-            xStream.alias(String.format(listType.getSuperclass().getSimpleName() + "s").toLowerCase(), List.class);
+            xstream.alias(String.format(listType.getSuperclass().getSimpleName() + "s").toLowerCase(), List.class);
         }
         else {
-            xStream.processAnnotations(listType);
+            xstream.processAnnotations(listType);
             //Changes the root of the list to the plural of the class name
-            xStream.alias(String.format(listType.getSimpleName() + "s").toLowerCase(), List.class);
+            xstream.alias(String.format(listType.getSimpleName() + "s").toLowerCase(), List.class);
         }
 
         if (listType.getSimpleName().equals("Person")){
-            xStream.alias("email", String.class);
+            xstream.alias("email", String.class);
         }
 
         try {
-            xStream.toXML(listOfObject, new FileWriter(filePath));
+            xstream.toXML(listOfObject, new FileWriter(filePath));
 
         } catch (IOException e) {
             e.printStackTrace();
