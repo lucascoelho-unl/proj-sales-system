@@ -6,6 +6,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import unl.soc.Address;
 
 import java.util.List;
+import java.util.Objects;
 
 @XStreamAlias("person")
 public class Person {
@@ -49,4 +50,21 @@ public class Person {
         return emailList;
     }
 
+    @Override
+    public String toString() {
+        return lastName + ", " + firstName + " / " + uuid;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Person person = (Person) o;
+        return Objects.equals(uuid, person.uuid) && Objects.equals(firstName, person.firstName) && Objects.equals(lastName, person.lastName) && Objects.equals(address, person.address) && Objects.equals(emailList, person.emailList);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid, firstName, lastName, address, emailList);
+    }
 }

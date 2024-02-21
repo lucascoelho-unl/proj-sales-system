@@ -1,8 +1,7 @@
 package unl.soc;
 
 import unl.soc.items.*;
-import unl.soc.person.Manager;
-import unl.soc.person.Person;
+import unl.soc.person.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,13 +31,13 @@ public class Utils {
                 Item item;
 
                 if (itemsInfo.get(1).compareTo("P") == 0) {
-                    item = new ProductPurchase(itemsInfo.get(0), itemsInfo.get(1), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
+                    item = new ProductPurchase(itemsInfo.get(0), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
                 } else if (itemsInfo.get(1).compareTo("S") == 0) {
-                    item = new Service(itemsInfo.get(0), itemsInfo.get(1), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
+                    item = new Service(itemsInfo.get(0), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
                 } else if (itemsInfo.get(1).compareTo("D") == 0) {
-                    item = new DataPlan(itemsInfo.get(0), itemsInfo.get(1), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
+                    item = new DataPlan(itemsInfo.get(0), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
                 } else {
-                    item = new VoicePlan(itemsInfo.get(0), itemsInfo.get(1), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
+                    item = new VoicePlan(itemsInfo.get(0), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
                 }
                 codeItemMap.put(itemsInfo.get(0), item);
             }
@@ -56,7 +55,7 @@ public class Utils {
      * @return A List of Item objects created from the data in the CSV file.
      * @throws RuntimeException if there is an issue reading the file or parsing the data.
      */
-    public static List<Item> readItemsCSVtoList(String path){
+    public static List<Item> readItemsCSVtoList(String path) {
         return new ArrayList<>(readItemsCSVtoMap(path).values());
     }
 
@@ -67,7 +66,7 @@ public class Utils {
      * @param itemMap A Map<String, Item> where keys are item codes and values are Item objects.
      * @return A List of Item objects created from the values in the provided itemMap.
      */
-    public static List<Item> readItemsCSVtoList(Map<String, Item> itemMap){
+    public static List<Item> readItemsCSVtoList(Map<String, Item> itemMap) {
         return new ArrayList<>(itemMap.values());
     }
 
@@ -121,10 +120,10 @@ public class Utils {
      * @return A Map<String, Person> where keys are UUIDs and values are Person objects created from the data in the CSV file.
      * @throws RuntimeException if there is an issue reading the file or parsing the data.
      */
-    public static Map<String,Person> readPersonCSVtoMap(String path) {
+    public static Map<String, Person> readPersonCSVtoMap(String path) {
         try {
             Scanner s = new Scanner(new File(path));
-            Map<String,Person> uuidPersonMap = new HashMap<>();
+            Map<String, Person> uuidPersonMap = new HashMap<>();
 
             s.nextLine();
             while (s.hasNext()) {
@@ -215,7 +214,7 @@ public class Utils {
      * @return A List of Store objects created from the data in the CSV file.
      * @throws RuntimeException if there is an issue reading the file or parsing the data.
      */
-    public static List<Store> readStoreCSVtoList(String path){
+    public static List<Store> readStoreCSVtoList(String path) {
         return new ArrayList<>(readStoreCSVtoMap(path).values());
     }
 
@@ -226,9 +225,7 @@ public class Utils {
      * @param storeMap A Map<String, Store> where keys are store codes and values are Store objects.
      * @return A List of Store objects created from the values in the provided storeMap.
      */
-    public static List<Store> readStoreCSVtoList(Map<String, Store> storeMap){
+    public static List<Store> readStoreCSVtoList(Map<String, Store> storeMap) {
         return new ArrayList<>(storeMap.values());
     }
-
-
 }
