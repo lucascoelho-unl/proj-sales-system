@@ -45,6 +45,8 @@ public class Utils {
             return codeItemMap;
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
+        } catch (NoSuchElementException nse){
+            return new HashMap<>();
         }
     }
 
@@ -147,6 +149,8 @@ public class Utils {
 
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
+        } catch (NoSuchElementException nse){
+            return new HashMap<>();
         }
     }
 
@@ -204,6 +208,8 @@ public class Utils {
 
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
+        } catch (NoSuchElementException nse){
+            return new HashMap<>();
         }
     }
 
