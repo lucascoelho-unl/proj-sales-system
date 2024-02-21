@@ -1,7 +1,6 @@
 package unl.soc;
 
 import com.google.gson.annotations.Expose;
-import unl.soc.person.Person;
 
 import java.util.Objects;
 

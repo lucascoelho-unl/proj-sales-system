@@ -2,8 +2,6 @@ package unl.soc;
 
 import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import unl.soc.items.Item;
-import unl.soc.person.Manager;
 
 import java.util.List;
 import java.util.Objects;

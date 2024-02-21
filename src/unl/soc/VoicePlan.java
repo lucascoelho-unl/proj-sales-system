@@ -1,4 +1,4 @@
-package unl.soc.items;
+package unl.soc;
 
 import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamAlias;

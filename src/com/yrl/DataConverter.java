@@ -3,7 +3,7 @@ package com.yrl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.thoughtworks.xstream.XStream;
-import unl.soc.items.*;
+import unl.soc.*;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -12,73 +12,25 @@ import java.util.List;
 import java.util.Map;
 
 public class DataConverter {
-    public static void createJsonFile(List<?> listOfObject, String filePath) {
+    public static void main(String[] args) {
+        //Testing Items
+        var itemMap = Utils.readItemsCSVtoMap("data/Items.csv");
+        var itemList = Utils.readItemsCSVtoList("data/Items.csv");
 
-        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
+        Utils.createXMLFile(itemList, "data/itemTest.xml");
+        Utils.createJsonFile(itemList, "outputTest/ItemTestList.json");
 
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-            String json = gson.toJson(listOfObject);
-            writer.write(json);
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+        //Testing Person
+        var personMap = Utils.readPersonCSVtoMap("data/Persons.csv");
+        var personList = Utils.readPersonCSVtoList("data/Persons.csv");
 
-    public static void createJsonFile(Map<String,?> listOfObject, String filePath) {
+        Utils.createXMLFile(personList, "outputTest/PersonTest.xml");
+        Utils.createJsonFile(personList, "outputTest/PersonTestList.json");
 
-        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
-
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-            String json = gson.toJson(listOfObject);
-            writer.write(json);
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public static void createXMLFile(List<?> listOfObject, String filePath) {
-        XStream xStream = new XStream();
-
-        if (listOfObject.isEmpty()){
-            try {
-                xStream.toXML(listOfObject, new FileWriter(filePath));
-                return;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        Class<?> listType = listOfObject.get(0).getClass();
-
-        if (listType.getSuperclass().isInstance(listOfObject.get(0)) && listType.getSuperclass() != Object.class){
-            // Process annotations from item classes, change label in XML file
-            xStream.processAnnotations(ProductPurchase.class);
-            xStream.processAnnotations(ProductLease.class);
-            xStream.processAnnotations(Service.class);
-            xStream.processAnnotations(VoicePlan.class);
-            xStream.processAnnotations(DataPlan.class);
-
-            //Changes the root of the list to the plural of the superclass name
-            xStream.alias(String.format(listType.getSuperclass().getSimpleName() + "s").toLowerCase(), List.class);
-        }
-        else {
-            xStream.processAnnotations(listType);
-            //Changes the root of the list to the plural of the class name
-            xStream.alias(String.format(listType.getSimpleName() + "s").toLowerCase(), List.class);
-        }
-
-        if (listType.getSimpleName().equals("Person")){
-            xStream.alias("email", String.class);
-        }
-
-        try {
-            xStream.toXML(listOfObject, new FileWriter(filePath));
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        //Testing Store
+        var storeMap = Utils.readStoreCSVtoMap("data/Stores.csv");
+        var storeList = Utils.readStoreCSVtoList("data/Stores.csv");
+        Utils.createXMLFile(storeList, "outputTest/StoreTest.xml");
+        Utils.createJsonFile(storeList, "outputTest/StoreTestList.json");
     }
 }

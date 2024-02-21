@@ -1,6 +1,4 @@
-package unl.soc.person;
-
-import unl.soc.Purchase;
+package unl.soc;
 
 import java.util.List;
 import java.util.Objects;

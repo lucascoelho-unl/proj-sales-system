@@ -1,10 +1,10 @@
 package unl.soc;
 
-import unl.soc.items.*;
-import unl.soc.person.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.thoughtworks.xstream.XStream;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.*;
 
 public class Utils {
@@ -233,5 +233,97 @@ public class Utils {
      */
     public static List<Store> readStoreCSVtoList(Map<String, Store> storeMap) {
         return new ArrayList<>(storeMap.values());
+    }
+
+    /**
+     * This method creates a JSON file from a list of objects using the Gson library.
+     * The JSON file is written with pretty formatting.
+     *
+     * @param listOfObject The list of objects to be converted to JSON format.
+     * @param filePath The file path where the JSON file will be created.
+     */
+    public static void createJsonFile(List<?> listOfObject, String filePath) {
+
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
+
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+            String json = gson.toJson(listOfObject);
+            writer.write(json);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * This method creates a JSON file from a map of objects using the Gson library.
+     * The JSON file is written with pretty formatting.
+     *
+     * @param mapOfObject The map of objects to be converted to JSON format.
+     * @param filePath The file path where the JSON file will be created.
+     */
+    public static void createJsonFile(Map<String,?> mapOfObject, String filePath) {
+
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
+
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+            String json = gson.toJson(mapOfObject);
+            writer.write(json);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * This method creates an XML file from a list of objects using the XStream library.
+     * It processes annotations for specific classes and handles special cases such as empty lists and specific class names.
+     *
+     * @param listOfObject The list of objects to be converted to XML format.
+     * @param filePath The file path where the XML file will be created.
+     */
+    public static void createXMLFile(List<?> listOfObject, String filePath) {
+        XStream xStream = new XStream();
+
+        if (listOfObject.isEmpty()){
+            try {
+                xStream.toXML(listOfObject, new FileWriter(filePath));
+                return;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        Class<?> listType = listOfObject.get(0).getClass();
+
+        if (listType.getSuperclass().isInstance(listOfObject.get(0)) && listType.getSuperclass() != Object.class){
+            // Process annotations from item classes, change label in XML file
+            xStream.processAnnotations(ProductPurchase.class);
+            xStream.processAnnotations(ProductLease.class);
+            xStream.processAnnotations(Service.class);
+            xStream.processAnnotations(VoicePlan.class);
+            xStream.processAnnotations(DataPlan.class);
+
+            //Changes the root of the list to the plural of the superclass name
+            xStream.alias(String.format(listType.getSuperclass().getSimpleName() + "s").toLowerCase(), List.class);
+        }
+        else {
+            xStream.processAnnotations(listType);
+            //Changes the root of the list to the plural of the class name
+            xStream.alias(String.format(listType.getSimpleName() + "s").toLowerCase(), List.class);
+        }
+
+        if (listType.getSimpleName().equals("Person")){
+            xStream.alias("email", String.class);
+        }
+
+        try {
+            xStream.toXML(listOfObject, new FileWriter(filePath));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

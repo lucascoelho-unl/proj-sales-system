@@ -1,4 +1,4 @@
-package unl.soc.person;
+package unl.soc;
 
 import com.google.gson.annotations.Expose;
 

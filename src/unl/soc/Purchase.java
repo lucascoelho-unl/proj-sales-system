@@ -1,9 +1,5 @@
 package unl.soc;
 
-import unl.soc.items.Item;
-import unl.soc.person.Employee;
-import unl.soc.person.Person;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
