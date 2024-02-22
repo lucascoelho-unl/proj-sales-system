@@ -5,6 +5,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * The Purchase class represents a purchase made at a store.
+ * It includes information about the store, items purchased, sales representative,
+ * date and time of purchase, total tax, and total price.
+ * It includes Getters, ToString, HashCode and Equals methods
+ */
 public class Purchase {
     private static final byte TOTAL_PRICE = 0;
     private static final byte TAX = 1;

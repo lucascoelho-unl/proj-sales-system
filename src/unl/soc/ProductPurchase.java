@@ -6,6 +6,11 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 import java.util.Objects;
 
+/**
+ * The ProductPurchase class represents a purchased product.
+ * It extends the Item class and includes a field for the price of the product.
+ * It includes Getters, ToString, HashCode and Equals methods
+ */
 @XStreamAlias("productPurchase")
 public class ProductPurchase extends Item {
     @XStreamOmitField

@@ -7,6 +7,11 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * The VoicePlan class represents a voice plan item in the system.
+ * It extends the Item class and includes attributes specific to voice plans.
+ * It includes Getters, ToString, HashCode and Equals methods
+ */
 @XStreamAlias("voicePlan")
 public class VoicePlan extends Item {
     @XStreamOmitField

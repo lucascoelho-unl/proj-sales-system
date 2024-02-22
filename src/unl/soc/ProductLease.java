@@ -6,6 +6,12 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * The ProductLease class represents a leased product.
+ * It extends the Item class and includes fields for total lease time,
+ * price, first month price, and markup price.
+ * It includes Getters, ToString, HashCode and Equals methods
+ */
 @XStreamAlias("productLease")
 public class ProductLease extends Item{
     @XStreamOmitField

@@ -6,6 +6,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * The Store class represents a store where items are sold.
+ * It includes information such as the store code, manager,
+ * address, and list of items available in the store.
+ * It includes Getters, ToString, HashCode and Equals methods
+ */
 @XStreamAlias("store")
 public class Store {
     @Expose

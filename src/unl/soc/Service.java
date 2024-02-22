@@ -7,6 +7,12 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * The Service class represents a service offered by the store.
+ * It extends the Item class and includes information about the hourly rate,
+ * employee providing the service, and the total time of service.
+ * It includes Getters, ToString, HashCode and Equals methods
+ */
 @XStreamAlias("service")
 public class Service extends Item {
     @XStreamOmitField

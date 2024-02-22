@@ -3,6 +3,11 @@ package unl.soc;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * The Customer class represents a customer who has purchased items.
+ * It contains information about the customer and the list of items they have purchased.
+ * It includes Getters, ToString, HashCode and Equals methods
+ */
 public class Customer {
     private Person customer;
     private List<Purchase> purchasedItems;
