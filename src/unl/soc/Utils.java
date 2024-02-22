@@ -1,11 +1,10 @@
 package unl.soc;
 
-import unl.soc.items.*;
-import unl.soc.person.Manager;
-import unl.soc.person.Person;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.thoughtworks.xstream.XStream;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.*;
 
 public class Utils {
@@ -32,13 +31,13 @@ public class Utils {
                 Item item;
 
                 if (itemsInfo.get(1).compareTo("P") == 0) {
-                    item = new ProductPurchase(itemsInfo.get(0), itemsInfo.get(1), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
+                    item = new ProductPurchase(itemsInfo.get(0), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
                 } else if (itemsInfo.get(1).compareTo("S") == 0) {
-                    item = new Service(itemsInfo.get(0), itemsInfo.get(1), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
+                    item = new Service(itemsInfo.get(0), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
                 } else if (itemsInfo.get(1).compareTo("D") == 0) {
-                    item = new DataPlan(itemsInfo.get(0), itemsInfo.get(1), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
+                    item = new DataPlan(itemsInfo.get(0), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
                 } else {
-                    item = new VoicePlan(itemsInfo.get(0), itemsInfo.get(1), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
+                    item = new VoicePlan(itemsInfo.get(0), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
                 }
                 codeItemMap.put(itemsInfo.get(0), item);
             }
@@ -46,6 +45,8 @@ public class Utils {
             return codeItemMap;
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
+        } catch (NoSuchElementException nse){
+            return new HashMap<>();
         }
     }
 
@@ -56,7 +57,7 @@ public class Utils {
      * @return A List of Item objects created from the data in the CSV file.
      * @throws RuntimeException if there is an issue reading the file or parsing the data.
      */
-    public static List<Item> readItemsCSVtoList(String path){
+    public static List<Item> readItemsCSVtoList(String path) {
         return new ArrayList<>(readItemsCSVtoMap(path).values());
     }
 
@@ -67,46 +68,48 @@ public class Utils {
      * @param itemMap A Map<String, Item> where keys are item codes and values are Item objects.
      * @return A List of Item objects created from the values in the provided itemMap.
      */
-    public static List<Item> readItemsCSVtoList(Map<String, Item> itemMap){
+    public static List<Item> readItemsCSVtoList(Map<String, Item> itemMap) {
         return new ArrayList<>(itemMap.values());
     }
 
     /**
-     * Parses a list of Item objects into separate lists based on their types and constructs a map
-     * containing these lists categorized as product purchases, product leases, voice plans, data plans, and services.
+     * Parses a Map of items, where keys are item codes and values are Item objects, into categorized maps
+     * based on their types and constructs a map containing these categorized maps for product purchases,
+     * product leases, voice plans, data plans, and services.
      *
-     * @param itemsList The list of Item objects to be parsed.
-     * @return A map containing categorized lists of ProductPurchase, ProductLease, VoicePlan, DataPlan, and Service objects.
+     * @param itemsMap A Map<String, Item> where keys are item codes and values are Item objects.
+     * @return A Map<String, Object> where keys are item types and values are categorized maps (e.g., product purchases, services).
      */
-    public static Map<String, Object> itemsDictParse(Map<String, Item> itemsList) {
-        List<ProductPurchase> productPurchaseList = new ArrayList<>();
-        List<VoicePlan> voicePlanList = new ArrayList<>();
-        List<DataPlan> dataPlanList = new ArrayList<>();
-        List<ProductLease> productLeaseList = new ArrayList<>();
-        List<Service> serviceList = new ArrayList<>();
+    public static Map<String, Object> itemsMapParse(Map<String, Item> itemsMap) {
+        Map<String, ProductPurchase> productPurchaseList = new HashMap<>();
+        Map<String, VoicePlan> voicePlanMap = new HashMap<>();
+        Map<String, DataPlan> dataPlanMap = new HashMap<>();
+        Map<String, ProductLease> productLeaseMap = new HashMap<>();
+        Map<String, Service> serviceMap = new HashMap<>();
 
         Map<String, Object> result = new HashMap<>(Map.of(
                 "purchase", productPurchaseList,
-                "lease", productLeaseList,
-                "voicePlan", voicePlanList,
-                "dataPlan", dataPlanList,
-                "service", serviceList));
+                "lease", productLeaseMap,
+                "voicePlan", voicePlanMap,
+                "dataPlan", dataPlanMap,
+                "service", serviceMap));
 
-        for (Item item : itemsList.values()) {
+        for (Item item : itemsMap.values()) {
             if (item instanceof ProductPurchase) {
-                productPurchaseList.add((ProductPurchase) item);
+                productPurchaseList.put(item.getUniqueCode(), (ProductPurchase) item);
             } else if (item instanceof Service) {
-                serviceList.add((Service) item);
+                serviceMap.put(item.getUniqueCode(), (Service) item);
             } else if (item instanceof VoicePlan) {
-                voicePlanList.add((VoicePlan) item);
+                voicePlanMap.put(item.getUniqueCode(), (VoicePlan) item);
             } else if (item instanceof DataPlan) {
-                dataPlanList.add((DataPlan) item);
+                dataPlanMap.put(item.getUniqueCode(), (DataPlan) item);
             }
         }
+
         result.put("purchase", productPurchaseList);
-        result.put("service", serviceList);
-        result.put("voicePlan", voicePlanList);
-        result.put("dataPlan", dataPlanList);
+        result.put("service", serviceMap);
+        result.put("voicePlan", voicePlanMap);
+        result.put("dataPlan", dataPlanMap);
 
         return result;
     }
@@ -119,10 +122,10 @@ public class Utils {
      * @return A Map<String, Person> where keys are UUIDs and values are Person objects created from the data in the CSV file.
      * @throws RuntimeException if there is an issue reading the file or parsing the data.
      */
-    public static Map<String,Person> readPersonCSVtoMap(String path) {
+    public static Map<String, Person> readPersonCSVtoMap(String path) {
         try {
             Scanner s = new Scanner(new File(path));
-            Map<String,Person> uuidPersonMap = new HashMap<>();
+            Map<String, Person> uuidPersonMap = new HashMap<>();
 
             s.nextLine();
             while (s.hasNext()) {
@@ -146,6 +149,8 @@ public class Utils {
 
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
+        } catch (NoSuchElementException nse){
+            return new HashMap<>();
         }
     }
 
@@ -203,6 +208,8 @@ public class Utils {
 
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
+        } catch (NoSuchElementException nse){
+            return new HashMap<>();
         }
     }
 
@@ -213,7 +220,7 @@ public class Utils {
      * @return A List of Store objects created from the data in the CSV file.
      * @throws RuntimeException if there is an issue reading the file or parsing the data.
      */
-    public static List<Store> readStoreCSVtoList(String path){
+    public static List<Store> readStoreCSVtoList(String path) {
         return new ArrayList<>(readStoreCSVtoMap(path).values());
     }
 
@@ -224,9 +231,100 @@ public class Utils {
      * @param storeMap A Map<String, Store> where keys are store codes and values are Store objects.
      * @return A List of Store objects created from the values in the provided storeMap.
      */
-    public static List<Store> readStoreCSVtoList(Map<String, Store> storeMap){
+    public static List<Store> readStoreCSVtoList(Map<String, Store> storeMap) {
         return new ArrayList<>(storeMap.values());
     }
 
+    /**
+     * This method creates a JSON file from a list of objects using the Gson library.
+     * The JSON file is written with pretty formatting.
+     *
+     * @param listOfObject The list of objects to be converted to JSON format.
+     * @param filePath The file path where the JSON file will be created.
+     */
+    public static void createJsonFile(List<?> listOfObject, String filePath) {
 
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
+
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+            String json = gson.toJson(listOfObject);
+            writer.write(json);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * This method creates a JSON file from a map of objects using the Gson library.
+     * The JSON file is written with pretty formatting.
+     *
+     * @param mapOfObject The map of objects to be converted to JSON format.
+     * @param filePath The file path where the JSON file will be created.
+     */
+    public static void createJsonFile(Map<String,?> mapOfObject, String filePath) {
+
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
+
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+            String json = gson.toJson(mapOfObject);
+            writer.write(json);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * This method creates an XML file from a list of objects using the XStream library.
+     * It processes annotations for specific classes and handles special cases such as empty lists and specific class names.
+     *
+     * @param listOfObject The list of objects to be converted to XML format.
+     * @param filePath The file path where the XML file will be created.
+     */
+    public static void createXMLFile(List<?> listOfObject, String filePath) {
+        XStream xstream = new XStream();
+        xstream.setMode(XStream.NO_REFERENCES);
+
+        if (listOfObject.isEmpty()){
+            try {
+                xstream.toXML(listOfObject, new FileWriter(filePath));
+                return;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        Class<?> listType = listOfObject.get(0).getClass();
+
+        if (listType.getSuperclass().isInstance(listOfObject.get(0)) && listType.getSuperclass() != Object.class){
+            // Process annotations from item classes, change label in XML file
+            xstream.processAnnotations(ProductPurchase.class);
+            xstream.processAnnotations(ProductLease.class);
+            xstream.processAnnotations(Service.class);
+            xstream.processAnnotations(VoicePlan.class);
+            xstream.processAnnotations(DataPlan.class);
+
+            //Changes the root of the list to the plural of the superclass name
+            xstream.alias(String.format(listType.getSuperclass().getSimpleName() + "s").toLowerCase(), List.class);
+        }
+        else {
+            xstream.processAnnotations(listType);
+            //Changes the root of the list to the plural of the class name
+            xstream.alias(String.format(listType.getSimpleName() + "s").toLowerCase(), List.class);
+        }
+
+        if (listType.getSimpleName().equals("Person")){
+            xstream.alias("email", String.class);
+        }
+
+        try {
+            xstream.toXML(listOfObject, new FileWriter(filePath));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

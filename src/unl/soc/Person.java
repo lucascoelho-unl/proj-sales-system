@@ -1,18 +1,23 @@
-package unl.soc.person;
+package unl.soc;
 
+import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-import unl.soc.Address;
-
 import java.util.List;
+import java.util.Objects;
 
 @XStreamAlias("person")
 public class Person {
+    @Expose
     private String uuid;
+    @Expose
     private String firstName;
+    @Expose
     private String lastName;
+    @Expose
     private Address address;
 
+    @XStreamAlias("emails")
     private List<String> emailList;
 
     public Person(String uuid, String firstName, String lastName, Address address, List<String> emailList) {
@@ -41,5 +46,23 @@ public class Person {
 
     public List<String> getEmailList() {
         return emailList;
+    }
+
+    @Override
+    public String toString() {
+        return lastName + ", " + firstName + " / " + uuid;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Person person = (Person) o;
+        return Objects.equals(uuid, person.uuid) && Objects.equals(firstName, person.firstName) && Objects.equals(lastName, person.lastName) && Objects.equals(address, person.address) && Objects.equals(emailList, person.emailList);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid, firstName, lastName, address, emailList);
     }
 }
