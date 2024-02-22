@@ -2,6 +2,11 @@ package unl.soc;
 
 import java.util.Objects;
 
+/**
+ * The Employee class represents an employee.
+ * It contains information about the employee as a Person object.
+ * It includes Getters, ToString, HashCode and Equals methods
+ */
 public class Employee {
     private Person employee;
 

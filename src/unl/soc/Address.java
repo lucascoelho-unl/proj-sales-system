@@ -4,6 +4,11 @@ import com.google.gson.annotations.Expose;
 
 import java.util.Objects;
 
+/**
+ * The Address class represents a physical address.
+ * It includes fields for street, city, state, and zip code.
+ * It includes Getters, ToString, HashCode and Equals methods
+ */
 public class Address {
     @Expose
     private String street;

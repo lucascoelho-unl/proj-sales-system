@@ -6,6 +6,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * The Person class represents a person.
+ * It contains information about the person including UUID, first name,
+ * last name, address, and email list.
+ * It includes Getters, ToString, HashCode and Equals methods
+ */
 @XStreamAlias("person")
 public class Person {
     @Expose

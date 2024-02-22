@@ -4,6 +4,11 @@ import com.google.gson.annotations.Expose;
 
 import java.util.Objects;
 
+/**
+ * The Manager class represents a manager.
+ * It contains information about the manager as a Person object.
+ * It includes Getters, ToString, HashCode and Equals methods
+ */
 public class Manager {
     @Expose
     Person manager;

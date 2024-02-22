@@ -6,6 +6,11 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 import java.util.Objects;
 
+/**
+ * The DataPlan class represents a data plan item.
+ * It extends the Item class and includes additional fields specific to data plans.
+ * It includes Getters, ToString, HashCode and Equals methods
+ */
 @XStreamAlias("dataPlan")
 public class DataPlan extends Item{
     @XStreamOmitField

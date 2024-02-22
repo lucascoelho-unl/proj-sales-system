@@ -6,7 +6,12 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import java.util.List;
 import java.util.Objects;
 
-public class Item {
+/**
+ * The Item class is an abstract class representing an item.
+ * It includes fields for unique code, name, tax, total price, and stores available.
+ * It includes Getters, ToString, HashCode and Equals methods
+ */
+public abstract class Item {
     @Expose
     private String uniqueCode;
     @Expose
