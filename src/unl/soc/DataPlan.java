@@ -18,36 +18,39 @@ public class DataPlan extends Item{
     @Expose
     private double pricePerGB;
     @XStreamOmitField
-    private double consumedGB;
-    @XStreamOmitField
-    private double priceBeforeTax;
+    private double totalGigabyte;
 
-    public DataPlan(String uniqueCode, String name, double basePrice) {
+    public DataPlan(String uniqueCode, String name, double pricePerGB) {
         super(uniqueCode, name);
-        this.pricePerGB = basePrice;
+        this.pricePerGB = pricePerGB;
     }
 
     public double getPricePerGB() {
         return pricePerGB;
     }
 
-    public double getConsumedGB() {
-        return consumedGB;
+    public double getTotalGigabyte() {
+        return totalGigabyte;
     }
 
-    public double getPriceBeforeTax() {
-        return priceBeforeTax;
-    }
+    @Override
+    public double getGrossPrice() { return pricePerGB * totalGigabyte; }
+
+    @Override
+    public double getTotalTax() { return getGrossPrice() * TAX_PERCENTAGE; }
+
+    @Override
+    public double getNetPrice() { return getGrossPrice() + getTotalTax(); }
 
     @Override
     public String toString() {
         return "Data Plan{" +
-                "\n  Unique identifier: " + super.getUniqueCode() +
-                "\n  Plan name: " + super.getName() +
+                "\n  Unique identifier: " + getUniqueCode() +
+                "\n  Plan name: " + getName() +
                 "\n  Price per GB: " + pricePerGB +
-                "\n  Consumed GB: " + consumedGB +
-                "\n  Total tax: $" + super.getTax() +
-                "\n  Total price: " + super.getTotalPrice() +
+                "\n  Total Bought GB: " + totalGigabyte +
+                "\n  Total tax: $" + getTotalTax() +
+                "\n  Total price: " + getGrossPrice() +
                 "\n}";
     }
 
@@ -56,11 +59,11 @@ public class DataPlan extends Item{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DataPlan dataPlan = (DataPlan) o;
-        return Double.compare(pricePerGB, dataPlan.pricePerGB) == 0 && Double.compare(consumedGB, dataPlan.consumedGB) == 0 && Double.compare(priceBeforeTax, dataPlan.priceBeforeTax) == 0;
+        return Double.compare(pricePerGB, dataPlan.pricePerGB) == 0 && Double.compare(totalGigabyte, dataPlan.totalGigabyte) == 0 && Double.compare(getGrossPrice(), dataPlan.getGrossPrice()) == 0;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pricePerGB, consumedGB, priceBeforeTax);
+        return Objects.hash(pricePerGB, totalGigabyte, getGrossPrice());
     }
 }

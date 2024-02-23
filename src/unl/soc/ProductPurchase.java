@@ -23,8 +23,19 @@ public class ProductPurchase extends Item {
         this.price = basePrice;
     }
 
-    public double getPrice() {
+    @Override
+    public double getGrossPrice() {
         return price;
+    }
+
+    @Override
+    public double getTotalTax() {
+        return price * TAX_PERCENTAGE;
+    }
+
+    @Override
+    public double getNetPrice() {
+        return getGrossPrice() + getTotalTax();
     }
 
     @Override

@@ -22,11 +22,11 @@ public class Service extends Item {
     @XStreamOmitField
     private Employee employee;
     @XStreamOmitField
-    private LocalDateTime totalTime; //Target Time - Purchased time
+    private double totalHours; //Target Time - Purchased time
 
-    public Service(String uniqueCode, String name, double basePrice) {
+    public Service(String uniqueCode, String name, double hourlyRate) {
         super(uniqueCode, name);
-        this.hourlyRate = basePrice;
+        this.hourlyRate = hourlyRate;
     }
 
     public double getHourlyRate() {
@@ -37,9 +37,25 @@ public class Service extends Item {
         return employee;
     }
 
-    public LocalDateTime getTotalTime() {
-        return totalTime;
+    public double getTotalHours() {
+        return totalHours;
     }
+
+    @Override
+    public double getNetPrice() {
+        return getGrossPrice() + getTotalTax();
+    }
+
+    @Override
+    public double getTotalTax() {
+        return getGrossPrice() * TAX_PERCENTAGE;
+    }
+
+    @Override
+    public double getGrossPrice() {
+        return hourlyRate * totalHours;
+    }
+
 
     @Override
     public String toString() {
@@ -48,9 +64,9 @@ public class Service extends Item {
                 "\n  Plan name: " + super.getName() +
                 "\n  Employee: " + employee +
                 "\n  Hourly rate: $" + hourlyRate +
-                "\n  TotalTime: " + totalTime +
-                "\n  Total tax: $" + super.getTax() +
-                "\n  Total price: $" + super.getTotalPrice() +
+                "\n  TotalTime: " + totalHours +
+                "\n  Total tax: $" + getTotalTax() +
+                "\n  Total price: $" + getNetPrice() +
                 "\n}";
     }
 
@@ -60,11 +76,11 @@ public class Service extends Item {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Service service = (Service) o;
-        return Double.compare(hourlyRate, service.hourlyRate) == 0 && Objects.equals(employee, service.employee) && Objects.equals(totalTime, service.totalTime);
+        return Double.compare(hourlyRate, service.hourlyRate) == 0 && Objects.equals(employee, service.employee) && Objects.equals(totalHours, service.totalHours);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), hourlyRate, employee, totalTime);
+        return Objects.hash(super.hashCode(), hourlyRate, employee, totalHours);
     }
 }

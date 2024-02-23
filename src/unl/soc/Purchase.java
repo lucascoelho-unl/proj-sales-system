@@ -12,7 +12,7 @@ import java.util.UUID;
  * It includes Getters, ToString, HashCode and Equals methods
  */
 public class Purchase {
-    private static final byte TOTAL_PRICE = 0;
+    private static final byte GROSS_PRICE = 0;
     private static final byte TAX = 1;
     private final UUID uniqueCode;
     private Store store;
@@ -20,7 +20,8 @@ public class Purchase {
     private Employee salesman;
     private LocalDateTime dateTime;
     private double totalTax;
-    private double totalPrice;
+    private double netPrice;
+    private double grossPrice;
 
     public Purchase(Store store, List<Item> itemsList, Employee salesman) {
         this.uniqueCode = UUID.randomUUID();
@@ -29,7 +30,8 @@ public class Purchase {
         this.salesman = salesman;
         this.dateTime = LocalDateTime.now();
         this.totalTax = calculateTotal(TAX);
-        this.totalPrice = calculateTotal(TOTAL_PRICE);
+        this.grossPrice = calculateTotal(GROSS_PRICE);
+        this.netPrice = this.totalTax + this.grossPrice;
     }
 
     /**
@@ -43,13 +45,13 @@ public class Purchase {
     private double calculateTotal(short variableToCalculate) {
         double total = 0;
 
-        if (variableToCalculate == TOTAL_PRICE) {
+        if (variableToCalculate == GROSS_PRICE) {
             for (Item item : this.itemsList) {
-                total += item.getTotalPrice();
+                total += item.getGrossPrice();
             }
         } else {
             for (Item item : this.itemsList) {
-                total += item.getTax();
+                total += item.getTotalTax();
             }
         }
 
@@ -80,9 +82,9 @@ public class Purchase {
         return totalTax;
     }
 
-    public double getTotalPrice() {
-        return totalPrice;
-    }
+    public double getNetPrice() { return netPrice; }
+
+    public double getGrossPrice() { return grossPrice; }
 
     @Override
     public String toString() {
@@ -90,7 +92,7 @@ public class Purchase {
         for (Item item : itemsList) {
             items.append(", " + item);
         }
-        return "Purchase number " + uniqueCode + ". Employee " + salesman + " sold " + items + " at a price $" + totalPrice + "with $" + totalTax + " of tax, on " + dateTime + " at " + store;
+        return "Purchase number " + uniqueCode + "\nEmployee " + salesman + "\nSold " + items + "\nSub Total Price $" + grossPrice + "\nTaxes $" + totalTax + "\nTime " + dateTime + "\nStore " + store;
     }
 
     @Override
@@ -98,11 +100,11 @@ public class Purchase {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Purchase purchase = (Purchase) o;
-        return Double.compare(totalTax, purchase.totalTax) == 0 && Double.compare(totalPrice, purchase.totalPrice) == 0 && Objects.equals(uniqueCode, purchase.uniqueCode) && Objects.equals(store, purchase.store) && Objects.equals(itemsList, purchase.itemsList) && Objects.equals(salesman, purchase.salesman) && Objects.equals(dateTime, purchase.dateTime);
+        return Double.compare(totalTax, purchase.totalTax) == 0 && Double.compare(getNetPrice(), purchase.getGrossPrice()) == 0 && Objects.equals(uniqueCode, purchase.uniqueCode) && Objects.equals(store, purchase.store) && Objects.equals(itemsList, purchase.itemsList) && Objects.equals(salesman, purchase.salesman) && Objects.equals(dateTime, purchase.dateTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uniqueCode, store, itemsList, salesman, dateTime, totalTax, totalPrice);
+        return Objects.hash(uniqueCode, store, itemsList, salesman, dateTime, totalTax, getNetPrice());
     }
 }
