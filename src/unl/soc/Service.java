@@ -59,15 +59,15 @@ public class Service extends Item {
 
     @Override
     public String toString() {
-        return "Service{" +
-                "\n  Unique identifier: " + super.getUniqueCode() +
-                "\n  Plan name: " + super.getName() +
+        return String.format("Service{" +
+                "\n  Unique identifier: " + getUniqueCode() +
+                "\n  Plan name: " + getName() +
                 "\n  Employee: " + employee +
-                "\n  Hourly rate: $" + hourlyRate +
-                "\n  TotalTime: " + totalHours +
-                "\n  Total tax: $" + getTotalTax() +
-                "\n  Total price: $" + getNetPrice() +
-                "\n}";
+                "\n  Hourly rate: $%.2f" +
+                "\n  Total time: " + totalHours +
+                "\n  Total tax: $%.2f" +
+                "\n  Total price: $%.2f" +
+                "\n}", Math.round(hourlyRate * 100) / 100.0, Math.round(getTotalTax() * 100) /100.00, Math.round(getNetPrice() * 100) / 100.00);
     }
 
     @Override

@@ -44,14 +44,14 @@ public class DataPlan extends Item{
 
     @Override
     public String toString() {
-        return "Data Plan{" +
+        return String.format("Data Plan{" +
                 "\n  Unique identifier: " + getUniqueCode() +
                 "\n  Plan name: " + getName() +
-                "\n  Price per GB: " + pricePerGB +
+                "\n  Price per GB: $%.2f" +
                 "\n  Total Bought GB: " + totalGigabyte +
-                "\n  Total tax: $" + getTotalTax() +
-                "\n  Total price: " + getGrossPrice() +
-                "\n}";
+                "\n  Total tax: $%.2f" +
+                "\n  Total price: $%.2f" +
+                "\n}", Math.round(pricePerGB * 100) / 100.00, Math.round(getTotalTax() * 100) / 100.00,  Math.round(getGrossPrice() * 100) / 100.00);
     }
 
     @Override

@@ -28,17 +28,20 @@ public class ProductLease extends Item{
         return totalMonths;
     }
 
-    public double getPrice() {
+    public double getBasePrice() {
         return price;
     }
 
     public double getMarkupPrice(){
-        return price / 2;
+        return getBasePrice() / 2;
     }
 
+    public double getFirstMonthPrice(){
+        return getMarkupPrice() / getTotalTime();
+    }
     @Override
     public double getGrossPrice() {
-        return (price / 2) * totalMonths;
+        return getBasePrice() + getMarkupPrice();
     }
 
     @Override
@@ -48,20 +51,20 @@ public class ProductLease extends Item{
 
     @Override
     public double getNetPrice() {
-        return (price / 2) * totalMonths + getTotalTax();
+        return getGrossPrice();
     }
 
     @Override
     public String toString() {
-        return "Product Lease{" +
+        return String.format("Product Lease{" +
                 "\n  Unique identifier: " + getUniqueCode() +
                 "\n  Name: " + getName() +
                 "\n  Total lease time: " + getTotalTime() +
-                "\n  First month price: $" + Math.round(getGrossPrice() * 100) / 100 +
-                "\n  Markup price: $" + Math.round((price / 2) * 100)/100 +
-                "\n  Total tax: $" + Math.round(getTotalTax() * 100) / 100 +
-                "\n  Total upfront price: $" + Math.round(getNetPrice() * 100) / 100 +
-                "\n}";
+                "\n  First month price: $%.2f" +
+                "\n  Markup price: $%.2f" +
+                "\n  Total tax: $%.2f" +
+                "\n  Total upfront price: $%.2f" +
+                "\n}", Math.round(getFirstMonthPrice() * 100) / 100, Math.round(getMarkupPrice() * 100)/100, Math.round(getTotalTax() * 100) / 100, Math.round(getNetPrice() * 100) / 100);
     }
 
     @Override

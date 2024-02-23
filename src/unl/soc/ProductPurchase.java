@@ -40,9 +40,10 @@ public class ProductPurchase extends Item {
 
     @Override
     public String toString() {
-        return "Product Purchase{" +
-                "\n  Total price: $" + price +
-                "\n}";
+        return String.format("""
+                Product Purchase{
+                Total price: $%.2f
+                }""", getGrossPrice());
     }
 
     @Override

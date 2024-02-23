@@ -19,9 +19,6 @@ public class Purchase {
     private List<Item> itemsList;
     private Employee salesman;
     private LocalDateTime dateTime;
-    private double totalTax;
-    private double netPrice;
-    private double grossPrice;
 
     public Purchase(Store store, List<Item> itemsList, Employee salesman) {
         this.uniqueCode = UUID.randomUUID();
@@ -29,9 +26,6 @@ public class Purchase {
         this.itemsList = itemsList;
         this.salesman = salesman;
         this.dateTime = LocalDateTime.now();
-        this.totalTax = calculateTotal(TAX);
-        this.grossPrice = calculateTotal(GROSS_PRICE);
-        this.netPrice = this.totalTax + this.grossPrice;
     }
 
     /**
@@ -49,7 +43,7 @@ public class Purchase {
             for (Item item : this.itemsList) {
                 total += item.getGrossPrice();
             }
-        } else {
+        } else if(variableToCalculate == TAX) {
             for (Item item : this.itemsList) {
                 total += item.getTotalTax();
             }
@@ -78,21 +72,26 @@ public class Purchase {
         return dateTime;
     }
 
-    public double getTotalTax() {
-        return totalTax;
-    }
+    public double getGrossPrice() { return calculateTotal(GROSS_PRICE); }
 
-    public double getNetPrice() { return netPrice; }
+    public double getTotalTax() { return calculateTotal(TAX); }
 
-    public double getGrossPrice() { return grossPrice; }
+    public double getNetPrice() { return getGrossPrice() + getTotalTax(); }
 
     @Override
     public String toString() {
         StringBuilder items = new StringBuilder();
         for (Item item : itemsList) {
-            items.append(", " + item);
+            items.append(item).append("\n");
         }
-        return "Purchase number " + uniqueCode + "\nEmployee " + salesman + "\nSold " + items + "\nSub Total Price $" + grossPrice + "\nTaxes $" + totalTax + "\nTime " + dateTime + "\nStore " + store;
+        return "\nStore " + store +
+                "\nTime " + dateTime +
+                "\nEmployee: " + salesman +
+                "Purchase number: " + uniqueCode +
+                "\nSold: " + items +
+                "Subtotal: $" + Math.round(getGrossPrice() * 100) / 100 +
+                "\nTaxes: $" + Math.round(getTotalTax() * 100) / 100 +
+                "\nTotal: $" + Math.round(getNetPrice() * 100) / 100;
     }
 
     @Override
@@ -100,11 +99,11 @@ public class Purchase {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Purchase purchase = (Purchase) o;
-        return Double.compare(totalTax, purchase.totalTax) == 0 && Double.compare(getNetPrice(), purchase.getGrossPrice()) == 0 && Objects.equals(uniqueCode, purchase.uniqueCode) && Objects.equals(store, purchase.store) && Objects.equals(itemsList, purchase.itemsList) && Objects.equals(salesman, purchase.salesman) && Objects.equals(dateTime, purchase.dateTime);
+        return Double.compare(getTotalTax(), purchase.getTotalTax()) == 0 && Double.compare(getGrossPrice(), purchase.getGrossPrice()) == 0 && Objects.equals(uniqueCode, purchase.uniqueCode) && Objects.equals(store, purchase.store) && Objects.equals(itemsList, purchase.itemsList) && Objects.equals(salesman, purchase.salesman) && Objects.equals(dateTime, purchase.dateTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uniqueCode, store, itemsList, salesman, dateTime, totalTax, getNetPrice());
+        return Objects.hash(uniqueCode, store, itemsList, salesman, dateTime, getTotalTax(), getGrossPrice());
     }
 }
