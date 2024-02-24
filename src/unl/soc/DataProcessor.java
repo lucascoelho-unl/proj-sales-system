@@ -135,6 +135,34 @@ public class DataProcessor {
         }
     }
 
+    public static Map<String, Store> readStoreCSVtoMap(String path) {
+        try {
+            Scanner s = new Scanner(new File(path));
+            Map<String, Store> codeStoreMap = new HashMap<>();
+            Map<String, Person> personMap = readPersonCSVtoMap("data/Persons.csv");
+
+            s.nextLine();
+            while (s.hasNext()) {
+                String line = s.nextLine();
+                List<String> storeData = Arrays.asList(line.split(","));
+                Person personManager = personMap.get(storeData.get(1));
+
+                Store store = new Store(storeData.get(0),
+                        new Address(storeData.get(2), storeData.get(3), storeData.get(4), Integer.parseInt(storeData.get(5))),
+                        new Manager(personManager));
+
+                codeStoreMap.put(storeData.get(0), store);
+            }
+            s.close();
+            return codeStoreMap;
+
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchElementException nse) {
+            return new HashMap<>();
+        }
+    }
+
     /**
      * Reads data from a CSV file containing information about items and converts it into a List of Item objects.
      *
@@ -188,33 +216,6 @@ public class DataProcessor {
      * @return A Map<String, Store> where keys are store codes and values are Store objects created from the data in the CSV file.
      * @throws RuntimeException if there is an issue reading the file or parsing the data.
      */
-    public static Map<String, Store> readStoreCSVtoMap(String path) {
-        try {
-            Scanner s = new Scanner(new File(path));
-            Map<String, Store> codeStoreMap = new HashMap<>();
-            Map<String, Person> personMap = readPersonCSVtoMap("data/Persons.csv");
-
-            s.nextLine();
-            while (s.hasNext()) {
-                String line = s.nextLine();
-                List<String> storeData = Arrays.asList(line.split(","));
-                Person personManager = personMap.get(storeData.get(1));
-
-                Store store = new Store(storeData.get(0),
-                        new Address(storeData.get(2), storeData.get(3), storeData.get(4), Integer.parseInt(storeData.get(5))),
-                        new Manager(personManager));
-
-                codeStoreMap.put(storeData.get(0), store);
-            }
-            s.close();
-            return codeStoreMap;
-
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchElementException nse) {
-            return new HashMap<>();
-        }
-    }
 
     /**
      * Reads data from a CSV file containing information about stores and converts it into a List of Store objects.
