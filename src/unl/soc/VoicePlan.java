@@ -35,13 +35,10 @@ public class VoicePlan extends Item {
         return periodPrice;
     }
     @Override
-    public double getGrossPrice() { return (periodPrice / 30) * totalPeriod; }
+    public double getGrossPrice() { return periodPrice * (totalPeriod / 30); }
 
     @Override
     public double getTotalTax() { return getGrossPrice() * TAX_PERCENTAGE; }
-
-    @Override
-    public double getNetPrice() { return getGrossPrice() + getTotalTax(); }
 
     @Override
     public String toString() {

@@ -43,8 +43,9 @@ public abstract class Item {
 
     public abstract double getTotalTax();
 
-
-    public abstract double getNetPrice();
+    public final double getNetPrice() {
+        return getGrossPrice() + getTotalTax();
+    }
 
     public String toString() {
         StringBuilder item = new StringBuilder(String.format("Item{" +

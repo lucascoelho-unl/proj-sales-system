@@ -50,11 +50,6 @@ public class ProductLease extends Item{
     }
 
     @Override
-    public double getNetPrice() {
-        return getGrossPrice();
-    }
-
-    @Override
     public String toString() {
         return String.format("Product Lease{" +
                 "\n  Unique identifier: " + getUniqueCode() +
@@ -64,7 +59,7 @@ public class ProductLease extends Item{
                 "\n  Markup price: $%.2f" +
                 "\n  Total tax: $%.2f" +
                 "\n  Total upfront price: $%.2f" +
-                "\n}", Math.round(getFirstMonthPrice() * 100) / 100, Math.round(getMarkupPrice() * 100)/100, Math.round(getTotalTax() * 100) / 100, Math.round(getNetPrice() * 100) / 100);
+                "\n}", Math.round(getFirstMonthPrice() * 100) / 100.0, Math.round(getMarkupPrice() * 100)/100.0, Math.round(getTotalTax() * 100) / 100.0, Math.round(getNetPrice() * 100) / 100.0);
     }
 
     @Override

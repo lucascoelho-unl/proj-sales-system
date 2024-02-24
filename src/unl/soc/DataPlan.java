@@ -40,9 +40,6 @@ public class DataPlan extends Item{
     public double getTotalTax() { return getGrossPrice() * TAX_PERCENTAGE; }
 
     @Override
-    public double getNetPrice() { return getGrossPrice() + getTotalTax(); }
-
-    @Override
     public String toString() {
         return String.format("Data Plan{" +
                 "\n  Unique identifier: " + getUniqueCode() +

@@ -34,16 +34,14 @@ public class ProductPurchase extends Item {
     }
 
     @Override
-    public double getNetPrice() {
-        return getGrossPrice() + getTotalTax();
-    }
-
-    @Override
     public String toString() {
-        return String.format("""
-                Product Purchase{
-                Total price: $%.2f
-                }""", getGrossPrice());
+        return String.format("Product Purchase{" +
+                "\n  Unique identifier: " + getUniqueCode() +
+                "\n  Name: " + getName() +
+                "\n  Subtotal: $%.2f" +
+                "\n  Total tax: $%.2f" +
+                "\n  Total price: $%.2f" +
+                "\n}", Math.round(getGrossPrice() * 100) / 100.0, Math.round(getTotalTax() * 100) / 100.0, Math.round(getNetPrice() * 100) / 100.0);
     }
 
     @Override
