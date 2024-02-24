@@ -8,6 +8,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public class DataWriter {
     /**
@@ -24,6 +25,27 @@ public class DataWriter {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
             String json = gson.toJson(listOfObject);
+            writer.write(json);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * This method creates a JSON file from a map of objects using the Gson library.
+     * The JSON file is written with pretty formatting.
+     *
+     * @param mapOfObject The map of objects to be converted to JSON format.
+     * @param filePath The file path where the JSON file will be created.
+     */
+    public static void createJsonFile(Map<String, ?> mapOfObject, String filePath) {
+
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
+
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+            String json = gson.toJson(mapOfObject);
             writer.write(json);
             writer.close();
         } catch (IOException e) {
