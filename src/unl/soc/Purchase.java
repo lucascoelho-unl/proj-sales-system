@@ -28,30 +28,6 @@ public class Purchase {
         this.dateTime = LocalDateTime.now();
     }
 
-    /**
-     * Calculates the total price or total tax of the purchase..
-     *
-     * @param variableToCalculate A short variable indicating the type of calculation:
-     *                            - If variableToCalculate is TOTAL_PRICE, calculates the total price of all items.
-     *                            - Otherwise, calculates the total tax of all items.
-     * @return The calculated total value based on the specified variable.
-     */
-    private double calculateTotal(short variableToCalculate) {
-        double total = 0;
-
-        if (variableToCalculate == GROSS_PRICE) {
-            for (Item item : this.itemsList) {
-                total += item.getGrossPrice();
-            }
-        } else if (variableToCalculate == TAX) {
-            for (Item item : this.itemsList) {
-                total += item.getTotalTax();
-            }
-        }
-
-        return total;
-    }
-
     public UUID getUniqueCode() {
         return uniqueCode;
     }
@@ -82,6 +58,30 @@ public class Purchase {
 
     public double getNetPrice() {
         return getGrossPrice() + getTotalTax();
+    }
+
+    /**
+     * Calculates the total price or total tax of the purchase..
+     *
+     * @param variableToCalculate A short variable indicating the type of calculation:
+     *                            - If variableToCalculate is TOTAL_PRICE, calculates the total price of all items.
+     *                            - Otherwise, calculates the total tax of all items.
+     * @return The calculated total value based on the specified variable.
+     */
+    private double calculateTotal(short variableToCalculate) {
+        double total = 0;
+
+        if (variableToCalculate == GROSS_PRICE) {
+            for (Item item : this.itemsList) {
+                total += item.getGrossPrice();
+            }
+        } else if (variableToCalculate == TAX) {
+            for (Item item : this.itemsList) {
+                total += item.getTotalTax();
+            }
+        }
+
+        return total;
     }
 
     @Override

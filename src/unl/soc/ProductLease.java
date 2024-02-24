@@ -51,11 +51,6 @@ public class ProductLease extends Item {
     }
 
     @Override
-    public double getNetPrice() {
-        return getGrossPrice();
-    }
-
-    @Override
     public String toString() {
         return String.format("Product Lease{" +
                 "\n  Unique identifier: " + getUniqueCode() +

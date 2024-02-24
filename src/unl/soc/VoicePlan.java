@@ -45,11 +45,6 @@ public class VoicePlan extends Item {
     }
 
     @Override
-    public double getNetPrice() {
-        return getGrossPrice() + getTotalTax();
-    }
-
-    @Override
     public String toString() {
         return String.format("Voice Plan{" +
                 "\n  Unique identifier: " + getUniqueCode() +
