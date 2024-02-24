@@ -4,7 +4,6 @@ import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -62,7 +61,7 @@ public class Service extends Item {
                 "\n  Total time: " + totalHours +
                 "\n  Total tax: $%.2f" +
                 "\n  Total price: $%.2f" +
-                "\n}", Math.round(hourlyRate * 100) / 100.0, Math.round(getTotalTax() * 100) /100.00, Math.round(getNetPrice() * 100) / 100.00);
+                "\n}", Math.round(hourlyRate * 100) / 100.0, Math.round(getTotalTax() * 100) / 100.00, Math.round(getNetPrice() * 100) / 100.00);
     }
 
     @Override
