@@ -19,7 +19,7 @@ public abstract class Item {
     private String name;
 
     @XStreamOmitField
-    private List<Store> storesAvailable;
+    private final List<Store> storesAvailable;
 
     public Item(String uniqueCode, String name) {
         this.uniqueCode = uniqueCode;
@@ -42,7 +42,6 @@ public abstract class Item {
     public abstract double getGrossPrice();
 
     public abstract double getTotalTax();
-
 
     public abstract double getNetPrice();
 

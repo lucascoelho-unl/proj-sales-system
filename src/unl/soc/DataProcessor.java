@@ -1,10 +1,7 @@
 package unl.soc;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.thoughtworks.xstream.XStream;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.*;
 
 /**
@@ -13,7 +10,7 @@ import java.util.*;
  * Additionally, it includes methods for creating JSON files from lists or maps of objects using the Gson library,
  * and for creating XML files from lists of objects using the XStream library.
  */
-public class Utils {
+public class DataProcessor {
 
     /**
      * Reads data from a CSV file containing information about items and converts it into a Map with item codes as keys
@@ -51,31 +48,9 @@ public class Utils {
             return codeItemMap;
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
-        } catch (NoSuchElementException nse){
+        } catch (NoSuchElementException nse) {
             return new HashMap<>();
         }
-    }
-
-    /**
-     * Reads data from a CSV file containing information about items and converts it into a List of Item objects.
-     *
-     * @param path The path to the CSV file.
-     * @return A List of Item objects created from the data in the CSV file.
-     * @throws RuntimeException if there is an issue reading the file or parsing the data.
-     */
-    public static List<Item> readItemsCSVtoList(String path) {
-        return new ArrayList<>(readItemsCSVtoMap(path).values());
-    }
-
-    /**
-     * Converts a Map of items, where keys are item codes and values are Item objects,
-     * into a List containing all the Item objects from the map.
-     *
-     * @param itemMap A Map<String, Item> where keys are item codes and values are Item objects.
-     * @return A List of Item objects created from the values in the provided itemMap.
-     */
-    public static List<Item> readItemsCSVtoList(Map<String, Item> itemMap) {
-        return new ArrayList<>(itemMap.values());
     }
 
     /**
@@ -155,9 +130,31 @@ public class Utils {
 
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
-        } catch (NoSuchElementException nse){
+        } catch (NoSuchElementException nse) {
             return new HashMap<>();
         }
+    }
+
+    /**
+     * Reads data from a CSV file containing information about items and converts it into a List of Item objects.
+     *
+     * @param path The path to the CSV file.
+     * @return A List of Item objects created from the data in the CSV file.
+     * @throws RuntimeException if there is an issue reading the file or parsing the data.
+     */
+    public static List<Item> readItemsCSVtoList(String path) {
+        return new ArrayList<>(readItemsCSVtoMap(path).values());
+    }
+
+    /**
+     * Converts a Map of items, where keys are item codes and values are Item objects,
+     * into a List containing all the Item objects from the map.
+     *
+     * @param itemMap A Map<String, Item> where keys are item codes and values are Item objects.
+     * @return A List of Item objects created from the values in the provided itemMap.
+     */
+    public static List<Item> convertItemMapToList(Map<String, Item> itemMap) {
+        return new ArrayList<>(itemMap.values());
     }
 
     /**
@@ -178,7 +175,7 @@ public class Utils {
      * @param personMap A Map<String, Person> where keys are UUIDs and values are Person objects.
      * @return A List of Person objects created from the values in the provided personMap.
      */
-    public static List<Person> readPersonCSVtoList(Map<String, Person> personMap) {
+    public static List<Person> convertPersonMapToList(Map<String, Person> personMap) {
         return new ArrayList<>(personMap.values());
     }
 
@@ -214,7 +211,7 @@ public class Utils {
 
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
-        } catch (NoSuchElementException nse){
+        } catch (NoSuchElementException nse) {
             return new HashMap<>();
         }
     }
@@ -237,100 +234,7 @@ public class Utils {
      * @param storeMap A Map<String, Store> where keys are store codes and values are Store objects.
      * @return A List of Store objects created from the values in the provided storeMap.
      */
-    public static List<Store> readStoreCSVtoList(Map<String, Store> storeMap) {
+    public static List<Store> convertStoreMapToList(Map<String, Store> storeMap) {
         return new ArrayList<>(storeMap.values());
-    }
-
-    /**
-     * This method creates a JSON file from a list of objects using the Gson library.
-     * The JSON file is written with pretty formatting.
-     *
-     * @param listOfObject The list of objects to be converted to JSON format.
-     * @param filePath The file path where the JSON file will be created.
-     */
-    public static void createJsonFile(List<?> listOfObject, String filePath) {
-
-        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
-
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-            String json = gson.toJson(listOfObject);
-            writer.write(json);
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * This method creates a JSON file from a map of objects using the Gson library.
-     * The JSON file is written with pretty formatting.
-     *
-     * @param mapOfObject The map of objects to be converted to JSON format.
-     * @param filePath The file path where the JSON file will be created.
-     */
-    public static void createJsonFile(Map<String,?> mapOfObject, String filePath) {
-
-        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
-
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-            String json = gson.toJson(mapOfObject);
-            writer.write(json);
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * This method creates an XML file from a list of objects using the XStream library.
-     * It processes annotations for specific classes and handles special cases such as empty lists and specific class names.
-     *
-     * @param listOfObject The list of objects to be converted to XML format.
-     * @param filePath The file path where the XML file will be created.
-     */
-    public static void createXMLFile(List<?> listOfObject, String filePath) {
-        XStream xstream = new XStream();
-        xstream.setMode(XStream.NO_REFERENCES);
-
-        if (listOfObject.isEmpty()){
-            try {
-                xstream.toXML(listOfObject, new FileWriter(filePath));
-                return;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        Class<?> listType = listOfObject.get(0).getClass();
-
-        if (listType.getSuperclass().isInstance(listOfObject.get(0)) && listType.getSuperclass() != Object.class){
-            // Process annotations from item classes, change label in XML file
-            xstream.processAnnotations(ProductPurchase.class);
-            xstream.processAnnotations(ProductLease.class);
-            xstream.processAnnotations(Service.class);
-            xstream.processAnnotations(VoicePlan.class);
-            xstream.processAnnotations(DataPlan.class);
-
-            //Changes the root of the list to the plural of the superclass name
-            xstream.alias(String.format(listType.getSuperclass().getSimpleName() + "s").toLowerCase(), List.class);
-        }
-        else {
-            xstream.processAnnotations(listType);
-            //Changes the root of the list to the plural of the class name
-            xstream.alias(String.format(listType.getSimpleName() + "s").toLowerCase(), List.class);
-        }
-
-        if (listType.getSimpleName().equals("Person")){
-            xstream.alias("email", String.class);
-        }
-
-        try {
-            xstream.toXML(listOfObject, new FileWriter(filePath));
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

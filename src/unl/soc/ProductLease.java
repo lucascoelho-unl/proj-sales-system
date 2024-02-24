@@ -3,7 +3,7 @@ package unl.soc;
 import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
-import java.time.LocalDateTime;
+
 import java.util.Objects;
 
 /**
@@ -13,7 +13,7 @@ import java.util.Objects;
  * It includes Getters, ToString, HashCode and Equals methods
  */
 @XStreamAlias("productLease")
-public class ProductLease extends Item{
+public class ProductLease extends Item {
     @XStreamOmitField
     private double totalMonths;
     @Expose
@@ -32,13 +32,14 @@ public class ProductLease extends Item{
         return price;
     }
 
-    public double getMarkupPrice(){
+    public double getMarkupPrice() {
         return getBasePrice() / 2;
     }
 
-    public double getFirstMonthPrice(){
+    public double getFirstMonthPrice() {
         return getMarkupPrice() / getTotalTime();
     }
+
     @Override
     public double getGrossPrice() {
         return getBasePrice() + getMarkupPrice();
@@ -64,7 +65,7 @@ public class ProductLease extends Item{
                 "\n  Markup price: $%.2f" +
                 "\n  Total tax: $%.2f" +
                 "\n  Total upfront price: $%.2f" +
-                "\n}", Math.round(getFirstMonthPrice() * 100) / 100, Math.round(getMarkupPrice() * 100)/100, Math.round(getTotalTax() * 100) / 100, Math.round(getNetPrice() * 100) / 100);
+                "\n}", Math.round(getFirstMonthPrice() * 100) / 100, Math.round(getMarkupPrice() * 100) / 100, Math.round(getTotalTax() * 100) / 100, Math.round(getNetPrice() * 100) / 100);
     }
 
     @Override

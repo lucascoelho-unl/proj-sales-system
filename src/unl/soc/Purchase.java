@@ -15,10 +15,10 @@ public class Purchase {
     private static final byte GROSS_PRICE = 0;
     private static final byte TAX = 1;
     private final UUID uniqueCode;
-    private Store store;
-    private List<Item> itemsList;
-    private Employee salesman;
-    private LocalDateTime dateTime;
+    private final Store store;
+    private final List<Item> itemsList;
+    private final Employee salesman;
+    private final LocalDateTime dateTime;
 
     public Purchase(Store store, List<Item> itemsList, Employee salesman) {
         this.uniqueCode = UUID.randomUUID();
@@ -43,7 +43,7 @@ public class Purchase {
             for (Item item : this.itemsList) {
                 total += item.getGrossPrice();
             }
-        } else if(variableToCalculate == TAX) {
+        } else if (variableToCalculate == TAX) {
             for (Item item : this.itemsList) {
                 total += item.getTotalTax();
             }
@@ -72,11 +72,17 @@ public class Purchase {
         return dateTime;
     }
 
-    public double getGrossPrice() { return calculateTotal(GROSS_PRICE); }
+    public double getGrossPrice() {
+        return calculateTotal(GROSS_PRICE);
+    }
 
-    public double getTotalTax() { return calculateTotal(TAX); }
+    public double getTotalTax() {
+        return calculateTotal(TAX);
+    }
 
-    public double getNetPrice() { return getGrossPrice() + getTotalTax(); }
+    public double getNetPrice() {
+        return getGrossPrice() + getTotalTax();
+    }
 
     @Override
     public String toString() {
@@ -87,9 +93,9 @@ public class Purchase {
         return "\nStore " + store +
                 "\nTime " + dateTime +
                 "\nEmployee: " + salesman +
-                "Purchase number: " + uniqueCode +
+                "\nPurchase number: " + uniqueCode +
                 "\nSold: " + items +
-                "Subtotal: $" + Math.round(getGrossPrice() * 100) / 100 +
+                "\nSubtotal: $" + Math.round(getGrossPrice() * 100) / 100 +
                 "\nTaxes: $" + Math.round(getTotalTax() * 100) / 100 +
                 "\nTotal: $" + Math.round(getNetPrice() * 100) / 100;
     }

@@ -12,7 +12,7 @@ import java.util.Objects;
  * It includes Getters, ToString, HashCode and Equals methods
  */
 @XStreamAlias("dataPlan")
-public class DataPlan extends Item{
+public class DataPlan extends Item {
     @XStreamOmitField
     private static final double TAX_PERCENTAGE = 0.055;
     @Expose
@@ -34,13 +34,19 @@ public class DataPlan extends Item{
     }
 
     @Override
-    public double getGrossPrice() { return pricePerGB * totalGigabyte; }
+    public double getGrossPrice() {
+        return pricePerGB * totalGigabyte;
+    }
 
     @Override
-    public double getTotalTax() { return getGrossPrice() * TAX_PERCENTAGE; }
+    public double getTotalTax() {
+        return getGrossPrice() * TAX_PERCENTAGE;
+    }
 
     @Override
-    public double getNetPrice() { return getGrossPrice() + getTotalTax(); }
+    public double getNetPrice() {
+        return getGrossPrice() + getTotalTax();
+    }
 
     @Override
     public String toString() {
@@ -51,7 +57,7 @@ public class DataPlan extends Item{
                 "\n  Total Bought GB: " + totalGigabyte +
                 "\n  Total tax: $%.2f" +
                 "\n  Total price: $%.2f" +
-                "\n}", Math.round(pricePerGB * 100) / 100.00, Math.round(getTotalTax() * 100) / 100.00,  Math.round(getGrossPrice() * 100) / 100.00);
+                "\n}", Math.round(pricePerGB * 100) / 100.00, Math.round(getTotalTax() * 100) / 100.00, Math.round(getGrossPrice() * 100) / 100.00);
     }
 
     @Override
