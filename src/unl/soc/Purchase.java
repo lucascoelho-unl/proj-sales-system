@@ -11,7 +11,7 @@ import java.util.UUID;
  * date and time of purchase, total tax, and total price.
  * It includes Getters, ToString, HashCode and Equals methods
  */
-public class Purchase {
+public class Purchase implements Priceable{
     private static final byte GROSS_PRICE = 0;
     private static final byte TAX = 1;
     private final UUID uniqueCode;
@@ -72,8 +72,10 @@ public class Purchase {
         return dateTime;
     }
 
+    @Override
     public double getGrossPrice() { return calculateTotal(GROSS_PRICE); }
 
+    @Override
     public double getTotalTax() { return calculateTotal(TAX); }
 
     public double getNetPrice() { return getGrossPrice() + getTotalTax(); }
