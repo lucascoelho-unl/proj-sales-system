@@ -11,14 +11,14 @@ import java.util.UUID;
  * date and time of purchase, total tax, and total price.
  * It includes Getters, ToString, HashCode and Equals methods
  */
-public class Purchase {
+public class Purchase implements Priceable{
     private static final byte GROSS_PRICE = 0;
     private static final byte TAX = 1;
     private final UUID uniqueCode;
-    private final Store store;
-    private final List<Item> itemsList;
-    private final Employee salesman;
-    private final LocalDateTime dateTime;
+    private Store store;
+    private List<Item> itemsList;
+    private Employee salesman;
+    private LocalDateTime dateTime;
 
     public Purchase(Store store, List<Item> itemsList, Employee salesman) {
         this.uniqueCode = UUID.randomUUID();
@@ -26,6 +26,30 @@ public class Purchase {
         this.itemsList = itemsList;
         this.salesman = salesman;
         this.dateTime = LocalDateTime.now();
+    }
+
+    /**
+     * Calculates the total price or total tax of the purchase..
+     *
+     * @param variableToCalculate A short variable indicating the type of calculation:
+     *                            - If variableToCalculate is TOTAL_PRICE, calculates the total price of all items.
+     *                            - Otherwise, calculates the total tax of all items.
+     * @return The calculated total value based on the specified variable.
+     */
+    private double calculateTotal(short variableToCalculate) {
+        double total = 0;
+
+        if (variableToCalculate == GROSS_PRICE) {
+            for (Item item : this.itemsList) {
+                total += item.getGrossPrice();
+            }
+        } else if(variableToCalculate == TAX) {
+            for (Item item : this.itemsList) {
+                total += item.getTotalTax();
+            }
+        }
+
+        return total;
     }
 
     public UUID getUniqueCode() {
@@ -48,41 +72,13 @@ public class Purchase {
         return dateTime;
     }
 
-    public double getGrossPrice() {
-        return calculateTotal(GROSS_PRICE);
-    }
+    @Override
+    public double getGrossPrice() { return calculateTotal(GROSS_PRICE); }
 
-    public double getTotalTax() {
-        return calculateTotal(TAX);
-    }
+    @Override
+    public double getTotalTax() { return calculateTotal(TAX); }
 
-    public double getNetPrice() {
-        return getGrossPrice() + getTotalTax();
-    }
-
-    /**
-     * Calculates the total price or total tax of the purchase..
-     *
-     * @param variableToCalculate A short variable indicating the type of calculation:
-     *                            - If variableToCalculate is TOTAL_PRICE, calculates the total price of all items.
-     *                            - Otherwise, calculates the total tax of all items.
-     * @return The calculated total value based on the specified variable.
-     */
-    private double calculateTotal(short variableToCalculate) {
-        double total = 0;
-
-        if (variableToCalculate == GROSS_PRICE) {
-            for (Item item : this.itemsList) {
-                total += item.getGrossPrice();
-            }
-        } else if (variableToCalculate == TAX) {
-            for (Item item : this.itemsList) {
-                total += item.getTotalTax();
-            }
-        }
-
-        return total;
-    }
+    public double getNetPrice() { return getGrossPrice() + getTotalTax(); }
 
     @Override
     public String toString() {
@@ -93,9 +89,9 @@ public class Purchase {
         return "\nStore " + store +
                 "\nTime " + dateTime +
                 "\nEmployee: " + salesman +
-                "\nPurchase number: " + uniqueCode +
+                "Purchase number: " + uniqueCode +
                 "\nSold: " + items +
-                "\nSubtotal: $" + Math.round(getGrossPrice() * 100) / 100 +
+                "Subtotal: $" + Math.round(getGrossPrice() * 100) / 100 +
                 "\nTaxes: $" + Math.round(getTotalTax() * 100) / 100 +
                 "\nTotal: $" + Math.round(getNetPrice() * 100) / 100;
     }

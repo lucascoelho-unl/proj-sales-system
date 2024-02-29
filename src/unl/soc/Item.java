@@ -12,14 +12,14 @@ import java.util.Objects;
  * It includes fields for unique code, name, tax, total price, and stores available.
  * It includes Getters, ToString, HashCode and Equals methods
  */
-public abstract class Item {
+public abstract class Item implements Priceable {
     @Expose
     private String uniqueCode;
     @Expose
     private String name;
 
     @XStreamOmitField
-    private final List<Store> storesAvailable;
+    private List<Store> storesAvailable;
 
     public Item(String uniqueCode, String name) {
         this.uniqueCode = uniqueCode;
@@ -39,11 +39,7 @@ public abstract class Item {
         return storesAvailable;
     }
 
-    public abstract double getGrossPrice();
-
-    public abstract double getTotalTax();
-
-    public double getNetPrice() {
+    public final double getNetPrice() {
         return getGrossPrice() + getTotalTax();
     }
 

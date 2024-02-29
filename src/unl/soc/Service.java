@@ -41,11 +41,6 @@ public class Service extends Item {
     }
 
     @Override
-    public double getNetPrice() {
-        return getGrossPrice() + getTotalTax();
-    }
-
-    @Override
     public double getTotalTax() {
         return getGrossPrice() * TAX_PERCENTAGE;
     }

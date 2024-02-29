@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -33,16 +34,11 @@ public class VoicePlan extends Item {
     public double getPeriodPrice() {
         return periodPrice;
     }
+    @Override
+    public double getGrossPrice() { return periodPrice * (totalPeriod / 30); }
 
     @Override
-    public double getGrossPrice() {
-        return (periodPrice / 30) * totalPeriod;
-    }
-
-    @Override
-    public double getTotalTax() {
-        return getGrossPrice() * TAX_PERCENTAGE;
-    }
+    public double getTotalTax() { return getGrossPrice() * TAX_PERCENTAGE; }
 
     @Override
     public String toString() {
@@ -53,7 +49,7 @@ public class VoicePlan extends Item {
                 "\n  Time period: " + totalPeriod +
                 "\n  Total tax: $%.2f" +
                 "\n  Total price: $%.2f" +
-                "\n}", Math.round(getPeriodPrice() * 100) / 100.0, Math.round(getTotalTax() * 100) / 100.0, Math.round(getGrossPrice() * 100) / 100.0);
+                "\n}", Math.round(getPeriodPrice() * 100) / 100.0, Math.round(getTotalTax() * 100) / 100.0,  Math.round(getGrossPrice() * 100) / 100.0 );
     }
 
     @Override
