@@ -17,13 +17,13 @@ public class Store {
     @Expose
     private String storeCode;
     @Expose
-    private Manager manager;
+    private Person manager;
     @Expose
     private Address address;
     @Expose
     private List<Item> items;
 
-    public Store(String storeCode, Address address, Manager manager) {
+    public Store(String storeCode, Address address, Person manager) {
         this.storeCode = storeCode;
         this.manager = manager;
         this.address = address;
@@ -33,7 +33,7 @@ public class Store {
         return storeCode;
     }
 
-    public Manager getManager() {
+    public Person getManager() {
         return manager;
     }
 

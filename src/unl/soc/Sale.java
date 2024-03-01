@@ -1,9 +1,9 @@
 package unl.soc;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * The Purchase class represents a purchase made at a store.
@@ -11,48 +11,66 @@ import java.util.UUID;
  * date and time of purchase, total tax, and total price.
  * It includes Getters, ToString, HashCode and Equals methods
  */
-public class Purchase implements Priceable{
+public class Sale implements Priceable{
     private static final byte GROSS_PRICE = 0;
     private static final byte TAX = 1;
-    private final UUID uniqueCode;
+    private final String uniqueCode;
     private Store store;
-    private List<Item> itemsList;
-    private Employee salesman;
-    private LocalDateTime dateTime;
+    private Person customer;
+    private Person salesman;
+    private LocalDate dateTime;
+    private List<Item> itemsList = new ArrayList<>();
 
-    public Purchase(Store store, List<Item> itemsList, Employee salesman) {
-        this.uniqueCode = UUID.randomUUID();
+    public Sale(String uniqueCode, Store store, Person customer, Person salesman, String dateString, List<Item> itemsList) {
+        this.uniqueCode = uniqueCode;
         this.store = store;
-        this.itemsList = itemsList;
+        this.customer = customer;
         this.salesman = salesman;
-        this.dateTime = LocalDateTime.now();
+        this.dateTime = LocalDate.parse(dateString);
+        this.itemsList = itemsList;
+    }
+
+    public Sale(String uniqueCode, Store store, Person customer, Person salesman, String dateString) {
+        this.uniqueCode = uniqueCode;
+        this.store = store;
+        this.customer = customer;
+        this.salesman = salesman;
+        this.dateTime = LocalDate.parse(dateString);
     }
 
     /**
-     * Calculates the total price or total tax of the purchase..
+     * Retrieves the total gross price of the sale,
      *
-     * @param variableToCalculate A short variable indicating the type of calculation:
-     *                            - If variableToCalculate is TOTAL_PRICE, calculates the total price of all items.
-     *                            - Otherwise, calculates the total tax of all items.
-     * @return The calculated total value based on the specified variable.
+     * @return The total gross price of the sale.
      */
-    private double calculateTotal(short variableToCalculate) {
+    @Override
+    public double getGrossPrice(){
         double total = 0;
-
-        if (variableToCalculate == GROSS_PRICE) {
-            for (Item item : this.itemsList) {
-                total += item.getGrossPrice();
-            }
-        } else if(variableToCalculate == TAX) {
-            for (Item item : this.itemsList) {
-                total += item.getTotalTax();
-            }
+        for (Item item : this.itemsList) {
+            total += item.getGrossPrice();
         }
-
         return total;
     }
 
-    public UUID getUniqueCode() {
+    /**
+     * Retrieves the total tax of the sale,
+     *
+     * @return The total tax of the sale.
+     */
+    @Override
+    public double getTotalTax(){
+        double total = 0;
+        for (Item item : this.itemsList) {
+            total += item.getTotalTax();
+        }
+        return total;
+    }
+
+    public void addItem(Item item){
+        this.itemsList.add(item);
+    }
+
+    public String getUniqueCode() {
         return uniqueCode;
     }
 
@@ -64,19 +82,13 @@ public class Purchase implements Priceable{
         return itemsList;
     }
 
-    public Employee getSalesman() {
+    public Person getSalesman() {
         return salesman;
     }
 
-    public LocalDateTime getDateTime() {
+    public LocalDate getDateTime() {
         return dateTime;
     }
-
-    @Override
-    public double getGrossPrice() { return calculateTotal(GROSS_PRICE); }
-
-    @Override
-    public double getTotalTax() { return calculateTotal(TAX); }
 
     public double getNetPrice() { return getGrossPrice() + getTotalTax(); }
 
@@ -100,7 +112,7 @@ public class Purchase implements Priceable{
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Purchase purchase = (Purchase) o;
+        Sale purchase = (Sale) o;
         return Double.compare(getTotalTax(), purchase.getTotalTax()) == 0 && Double.compare(getGrossPrice(), purchase.getGrossPrice()) == 0 && Objects.equals(uniqueCode, purchase.uniqueCode) && Objects.equals(store, purchase.store) && Objects.equals(itemsList, purchase.itemsList) && Objects.equals(salesman, purchase.salesman) && Objects.equals(dateTime, purchase.dateTime);
     }
 

@@ -12,6 +12,8 @@ import java.util.*;
  */
 public class DataProcessor {
 
+
+
     /**
      * Reads data from a CSV file containing information about items and converts it into a Map with item codes as keys
      * and corresponding Item objects as values.
@@ -145,11 +147,11 @@ public class DataProcessor {
             while (s.hasNext()) {
                 String line = s.nextLine();
                 List<String> storeData = Arrays.asList(line.split(","));
-                Person personManager = personMap.get(storeData.get(1));
+                Person manager = personMap.get(storeData.get(1));
 
                 Store store = new Store(storeData.get(0),
                         new Address(storeData.get(2), storeData.get(3), storeData.get(4), Integer.parseInt(storeData.get(5))),
-                        new Manager(personManager));
+                        manager);
 
                 codeStoreMap.put(storeData.get(0), store);
             }
