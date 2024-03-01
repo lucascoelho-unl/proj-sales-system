@@ -12,16 +12,16 @@ public class DataConverter {
         List<Item> itemList = DataProcessor.readItemsCSVtoList("data/Items.csv");
 
         DataWriter.createXMLFile(itemList, "data/itemOutput.xml");
-        DataWriter.createJsonFile(itemList, "data/ItemOutput.json");
+        DataWriter.createJsonFile(itemList, "Items", "data/ItemOutput.json");
 
         List<Person> personList = DataProcessor.readPersonCSVtoList("data/Persons.csv");
 
         DataWriter.createXMLFile(personList, "data/PersonOutput.xml");
-        DataWriter.createJsonFile(personList, "data/PersonOutput.json");
+        DataWriter.createJsonFile(personList, "Persons", "data/PersonOutput.json");
 
         List<Store> storeList = DataProcessor.readStoreCSVtoList("data/Stores.csv");
 
         DataWriter.createXMLFile(storeList, "data/StoreOutput.xml");
-        DataWriter.createJsonFile(storeList, "data/StoreOutput.json");
+        DataWriter.createJsonFile(storeList, "Stores", "data/StoreOutput.json");
     }
 }

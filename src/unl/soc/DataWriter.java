@@ -7,6 +7,7 @@ import com.thoughtworks.xstream.XStream;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,15 +19,22 @@ public class DataWriter {
      * @param listOfObject The list of objects to be converted to JSON format.
      * @param filePath     The file path where the JSON file will be created.
      */
-    public static void createJsonFile(List<?> listOfObject, String filePath) {
-
+    public static void createJsonFile(List<?> listOfObject, String header, String filePath) {
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
 
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-            String json = gson.toJson(listOfObject);
-            writer.write(json);
-            writer.close();
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            // Add the header to the JSON string
+            StringBuilder jsonBuilder = new StringBuilder();
+            jsonBuilder.append("{\n");
+            jsonBuilder.append("  \"" + header + "\": ");
+
+            // Convert the list of objects to JSON
+            String jsonData = gson.toJson(listOfObject);
+            jsonBuilder.append(jsonData);
+            jsonBuilder.append("\n}");
+
+            // Write the JSON string to the file
+            writer.write(jsonBuilder.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -39,7 +47,10 @@ public class DataWriter {
      * @param mapOfObject The map of objects to be converted to JSON format.
      * @param filePath The file path where the JSON file will be created.
      */
-    public static void createJsonFile(Map<String, ?> mapOfObject, String filePath) {
+    public static void createJsonFile(Map<String, ?> mapOfObject, String header, String filePath) {
+        Map<String, Object> dataWithHeader = new HashMap<>();
+        dataWithHeader.put("header", header);
+        dataWithHeader.putAll(mapOfObject);
 
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
 

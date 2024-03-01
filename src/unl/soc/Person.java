@@ -22,9 +22,9 @@ public class Person {
     private String lastName;
     @Expose
     private Address address;
-
     @XStreamAlias("emails")
     private final List<String> emailList;
+    private List<Sale> purchasedItems;
 
     public Person(String uuid, String firstName, String lastName, Address address, List<String> emailList) {
         this.uuid = uuid;

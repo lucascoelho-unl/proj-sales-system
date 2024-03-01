@@ -19,7 +19,7 @@ public class Service extends Item {
     @Expose
     private double hourlyRate;
     @XStreamOmitField
-    private Employee employee;
+    private Person employee;
     @XStreamOmitField
     private double totalHours; //Target Time - Purchased time
 
@@ -32,7 +32,7 @@ public class Service extends Item {
         return hourlyRate;
     }
 
-    public Employee getEmployee() {
+    public Person getEmployee() {
         return employee;
     }
 
