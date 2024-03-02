@@ -1,8 +1,6 @@
 package com.yrl;
 
-import unl.soc.*;
-
-import java.util.Map;
+import unl.soc.DataWriter;
 
 /**
  * The SalesReport class generates a summary report of sales data.
@@ -18,6 +16,6 @@ public class SalesReport {
      * @param args Command-line arguments (not used).
      */
     public static void main(String[] args) {
-        DataWriter.createSaleReport("data/outputFile.txt");
+        DataWriter.createSaleReport("data/output.txt");
     }
 }
