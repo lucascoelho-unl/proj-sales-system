@@ -12,23 +12,12 @@ import java.util.Objects;
  * It includes Getters, ToString, HashCode and Equals methods
  */
 public class Sale implements Priceable{
-    private static final byte GROSS_PRICE = 0;
-    private static final byte TAX = 1;
     private final String uniqueCode;
-    private Store store;
-    private Person customer;
-    private Person salesman;
-    private LocalDate dateTime;
-    private List<Item> itemsList = new ArrayList<>();
-
-    public Sale(String uniqueCode, Store store, Person customer, Person salesman, String dateString, List<Item> itemsList) {
-        this.uniqueCode = uniqueCode;
-        this.store = store;
-        this.customer = customer;
-        this.salesman = salesman;
-        this.dateTime = LocalDate.parse(dateString);
-        this.itemsList = itemsList;
-    }
+    private final Store store;
+    private final Person customer;
+    private final Person salesman;
+    private final LocalDate dateTime;
+    private List<Item> itemsList;
 
     public Sale(String uniqueCode, Store store, Person customer, Person salesman, String dateString) {
         this.uniqueCode = uniqueCode;
@@ -36,6 +25,7 @@ public class Sale implements Priceable{
         this.customer = customer;
         this.salesman = salesman;
         this.dateTime = LocalDate.parse(dateString);
+        this.itemsList = new ArrayList<>();
     }
 
     /**
@@ -82,6 +72,10 @@ public class Sale implements Priceable{
         return itemsList;
     }
 
+    public Person getCustomer() {
+        return customer;
+    }
+
     public Person getSalesman() {
         return salesman;
     }
@@ -94,18 +88,21 @@ public class Sale implements Priceable{
 
     @Override
     public String toString() {
-        StringBuilder items = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
+        sb.append("Sale    #").append(this.uniqueCode).append("\n");
+        sb.append("Store   #").append(this.getStore().getStoreCode()).append("\n");
+        sb.append("Date     ").append(this.getDateTime()).append("\n");
+        sb.append("Customer:\n").append(customer).append("\n");
+        sb.append("Sales Person:\n").append(salesman).append("\n");
+        sb.append(String.format("Items (%d) %61s %10s\n" , getItemsList().size(), "Tax", "Total"));
+        sb.append("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-                    -=-=-=-=-=-= -=-=-=-=-=\n");
         for (Item item : itemsList) {
-            items.append(item).append("\n");
+            sb.append(item).append("\n");
         }
-        return "\nStore " + store +
-                "\nTime " + dateTime +
-                "\nEmployee: " + salesman +
-                "Purchase number: " + uniqueCode +
-                "\nSold: " + items +
-                "Subtotal: $" + Math.round(getGrossPrice() * 100) / 100 +
-                "\nTaxes: $" + Math.round(getTotalTax() * 100) / 100 +
-                "\nTotal: $" + Math.round(getNetPrice() * 100) / 100;
+        sb.append("                                                           -=-=-=-=-=-= -=-=-=-=-=\n");
+        sb.append(String.format("%58s %2s %9.2f %1s %8.2f\n", "Subtotals", "$", getTotalTax(), "$", getGrossPrice()));
+        sb.append(String.format("%58s %14s %8.2f\n", "Grand total", "$", getNetPrice()));
+        return  sb.toString();
     }
 
     @Override

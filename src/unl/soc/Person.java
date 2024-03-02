@@ -56,9 +56,11 @@ public class Person {
 
     @Override
     public String toString() {
-        return lastName + ", " + firstName + " / " + uuid;
+        return getLastName() + ", " + getFirstName() + " (" + getUuid() + ")\n" +
+                "\t  " + getEmailList() + "\n" +
+                "\t  " + getAddress() + "\n" +
+                "\t  " + getAddress().getCity() + " " + getAddress().getState() + " " + getAddress().getZipCode() + "\n";
     }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

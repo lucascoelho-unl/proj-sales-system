@@ -3,6 +3,7 @@ package unl.soc;
 import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,12 +22,17 @@ public class Store {
     @Expose
     private Address address;
     @Expose
-    private List<Item> items;
+    private List<Sale> sales;
 
     public Store(String storeCode, Address address, Person manager) {
         this.storeCode = storeCode;
         this.manager = manager;
         this.address = address;
+        this.sales = new ArrayList<>();
+    }
+
+    public void addSale(Sale sale){
+        this.sales.add(sale);
     }
 
     public String getStoreCode() {
@@ -41,29 +47,26 @@ public class Store {
         return address;
     }
 
-    public List<Item> getItems() {
-        return items;
+    public List<Sale> getSales() {
+        return sales;
     }
 
     @Override
     public String toString() {
-        return "Store{" +
-                "\n  Store code: " + storeCode +
-                "\n  Manager: " + manager +
-                "\n  Address: " + address +
-                "\n}";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Store store = (Store) o;
-        return Objects.equals(storeCode, store.storeCode) && Objects.equals(manager, store.manager) && Objects.equals(address, store.address) && Objects.equals(items, store.items);
+        String store = getStoreCode();
+        String managerFullName = getManager().getFirstName() + " " + getManager().getLastName();
+        List<Sale> saleList = getSales();
+        int numSales = saleList.size();
+        double total = 0;
+        for (Sale sale : saleList) {
+            total += sale.getNetPrice();
+        }
+        String formatString = "%-9s  %-20s  %5d  %3s  %8.2f";
+        return String.format(formatString, store, managerFullName, numSales, "$", total);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(storeCode, manager, address, items);
+        return Objects.hash(storeCode, manager, address, sales);
     }
 }

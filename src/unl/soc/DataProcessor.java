@@ -12,7 +12,91 @@ import java.util.*;
  */
 public class DataProcessor {
 
+    /**
+     * Processes purchased items from a CSV file and updates the sales map accordingly.
+     *
+     * @param path The path to the CSV file containing purchased items.
+     */
+    public static Map<String, Sale> processPurchasedItemsIntoSalesMap(Map<String, Sale> salesMap,
+                                                                      Map<String, Item> itemsMap,
+                                                                      Map<String, Person> personsMap,
+                                                                      String path) {
 
+        try (Scanner scanner = new Scanner(new File(path))) {
+            scanner.nextLine();
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                List<String> itemInSaleInfo = Arrays.asList(line.split(","));
+
+                String saleCode = itemInSaleInfo.get(0);
+                String itemCode = itemInSaleInfo.get(1);
+                Sale sale = salesMap.get(saleCode);
+                Item item = itemsMap.get(itemCode);
+
+                // Determine the type of item and add it to the sale
+                if (item instanceof ProductPurchase) {
+                    if (itemInSaleInfo.size() == 2) {
+                        sale.addItem(new ProductPurchase(item));
+                    } else {
+                        String startDate = itemInSaleInfo.get(2);
+                        String endDate = itemInSaleInfo.get(3);
+                        sale.addItem(new ProductLease(item, startDate, endDate));
+                    }
+                } else if (item instanceof Service) {
+                    double totalHours = Double.parseDouble(itemInSaleInfo.get(2));
+                    Person employee = personsMap.get(itemInSaleInfo.get(3));
+                    sale.addItem(new Service(item, totalHours, employee));
+                } else if (item instanceof DataPlan) {
+                    double totalGB = Double.parseDouble(itemInSaleInfo.get(2));
+                    sale.addItem(new DataPlan(item, totalGB));
+                } else if (item instanceof VoicePlan) {
+                    String phoneNumber = itemInSaleInfo.get(2);
+                    double totalPeriod = Double.parseDouble(itemInSaleInfo.get(3));
+                    sale.addItem(new VoicePlan(item, phoneNumber, totalPeriod));
+                }
+            }
+            return salesMap;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Reads sales data from a CSV file and stores it in a map.
+     *
+     * @param path The path to the CSV file containing sales data.
+     * @return A map where keys are sale codes and values are Sale objects.
+     */
+    public static Map<String, Sale> readSalesToMap(Map<String, Person> personMap, Map<String, Store> storeCodeMap, String path) {
+        try {
+            Scanner s = new Scanner(new File(path));
+
+            Map<String, Sale> saleCodeMap = new HashMap<>();
+
+            s.nextLine();
+            while (s.hasNext()) {
+                String line = s.nextLine();
+                List<String> saleInfo = Arrays.asList(line.split(","));
+
+                String saleCode = saleInfo.get(0);
+                Store store = storeCodeMap.get(saleInfo.get(1));
+                Person customer = personMap.get(saleInfo.get(2));
+                Person salesman = personMap.get(saleInfo.get(3));
+                String date = saleInfo.get(4);
+
+                Sale sale = new Sale(saleCode, store, customer, salesman, date);
+
+                store.addSale(sale);
+
+                saleCodeMap.put(saleCode, sale);
+            }
+            return saleCodeMap;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     /**
      * Reads data from a CSV file containing information about items and converts it into a Map with item codes as keys
