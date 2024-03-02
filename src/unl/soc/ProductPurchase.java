@@ -1,6 +1,5 @@
 package unl.soc;
 
-import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
@@ -15,33 +14,28 @@ import java.util.Objects;
 public class ProductPurchase extends Item {
     @XStreamOmitField
     private static final double TAX_PERCENTAGE = 0.065;
-    @Expose
-    private double price;
 
     public ProductPurchase(String uniqueCode, String name, double basePrice) {
-        super(uniqueCode, name);
-        this.price = basePrice;
+        super(uniqueCode, name, basePrice);
+    }
+
+    public ProductPurchase(Item item) {
+        super(item.getUniqueCode(), item.getName(), item.getBasePrice());
     }
 
     @Override
     public double getGrossPrice() {
-        return price;
+        return super.getBasePrice();
     }
 
     @Override
     public double getTotalTax() {
-        return price * TAX_PERCENTAGE;
+        return super.getBasePrice() * TAX_PERCENTAGE;
     }
 
     @Override
     public String toString() {
-        return String.format("Product Purchase{" +
-                "\n  Unique identifier: " + getUniqueCode() +
-                "\n  Name: " + getName() +
-                "\n  Subtotal: $%.2f" +
-                "\n  Total tax: $%.2f" +
-                "\n  Total price: $%.2f" +
-                "\n}", Math.round(getGrossPrice() * 100) / 100.0, Math.round(getTotalTax() * 100) / 100.0, Math.round(getNetPrice() * 100) / 100.0);
+        return String.format("%s \n %60s %9.2f $%9.2f", getName() + " (" + getUniqueCode() + ")", "$", getTotalTax(), getGrossPrice());
     }
 
     @Override
@@ -50,11 +44,11 @@ public class ProductPurchase extends Item {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         ProductPurchase that = (ProductPurchase) o;
-        return Double.compare(price, that.price) == 0;
+        return Double.compare(super.getBasePrice(), that.getBasePrice()) == 0;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), price);
+        return Objects.hash(super.hashCode(), super.getBasePrice());
     }
 }

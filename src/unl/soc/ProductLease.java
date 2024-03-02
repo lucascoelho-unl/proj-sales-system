@@ -1,9 +1,10 @@
 package unl.soc;
 
-import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
-import java.time.LocalDateTime;
+
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Objects;
 
 /**
@@ -13,35 +14,42 @@ import java.util.Objects;
  * It includes Getters, ToString, HashCode and Equals methods
  */
 @XStreamAlias("productLease")
-public class ProductLease extends Item{
+public class ProductLease extends Item {
     @XStreamOmitField
-    private double totalMonths;
-    @Expose
-    private double price;
+    private LocalDate startDate;
+    @XStreamOmitField
+    private LocalDate endDate;
 
     public ProductLease(String uniqueCode, String name, double basePrice) {
-        super(uniqueCode, name);
-        this.price = basePrice;
+        super(uniqueCode, name, basePrice);
     }
 
-    public double getTotalTime() {
-        return totalMonths;
+    public ProductLease(Item productBeingLeased, String startDate, String endDate) {
+        super(productBeingLeased.getUniqueCode(), productBeingLeased.getName(), productBeingLeased.getBasePrice());
+        this.startDate = LocalDate.parse(startDate);
+        this.endDate = LocalDate.parse(endDate);
+    }
+
+    public int getPeriodInMonths() {
+        Period period = Period.between(this.startDate, this.endDate);
+        return period.getYears() * 12 + period.getMonths();
     }
 
     public double getBasePrice() {
-        return price;
+        return super.getBasePrice();
     }
 
-    public double getMarkupPrice(){
+    public double getMarkupPrice() {
         return getBasePrice() / 2;
     }
 
-    public double getFirstMonthPrice(){
-        return getMarkupPrice() / getTotalTime();
+    public double getFirstMonthPrice() {
+        return getMarkupPrice() / getPeriodInMonths();
     }
+
     @Override
     public double getGrossPrice() {
-        return getBasePrice() + getMarkupPrice();
+        return getFirstMonthPrice() + getMarkupPrice();
     }
 
     @Override
@@ -51,28 +59,19 @@ public class ProductLease extends Item{
 
     @Override
     public String toString() {
-        return String.format("Product Lease{" +
-                "\n  Unique identifier: " + getUniqueCode() +
-                "\n  Name: " + getName() +
-                "\n  Total lease time: " + getTotalTime() +
-                "\n  First month price: $%.2f" +
-                "\n  Markup price: $%.2f" +
-                "\n  Total tax: $%.2f" +
-                "\n  Total upfront price: $%.2f" +
-                "\n}", Math.round(getFirstMonthPrice() * 100) / 100.0, Math.round(getMarkupPrice() * 100)/100.0, Math.round(getTotalTax() * 100) / 100.0, Math.round(getNetPrice() * 100) / 100.0);
+        return String.format("%s - Lease for %s \n %60s %9.2f $%9.2f", getName() + " (" + getUniqueCode() + ")", "35 months", "$", getTotalTax(), getGrossPrice());
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
         ProductLease that = (ProductLease) o;
-        return Double.compare(price, that.price) == 0 && Double.compare(getGrossPrice(), that.getGrossPrice()) == 0 && Double.compare(getMarkupPrice(), that.getMarkupPrice()) == 0 && Objects.equals(getTotalTime(), that.getTotalTime());
+        return Double.compare(super.getBasePrice(), that.getBasePrice()) == 0 && Objects.equals(startDate, that.startDate) && Objects.equals(endDate, that.endDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getTotalTime(), price, getGrossPrice(), getMarkupPrice());
+        return Objects.hash(super.hashCode(), startDate, endDate, super.getBasePrice());
     }
 }
