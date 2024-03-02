@@ -50,7 +50,7 @@ public class VoicePlan extends Item {
 
     @Override
     public String toString() {
-        return String.format("%s - %s \n %20.2f days @ $%.2f /%s \n %60s %9.2f $%9.2f", getName() + " (" + getUniqueCode() + ")", "Voice " + getPhoneNumber(), getTotalPeriod(), getPeriodPrice(), " day", "$", getTotalTax(), getGrossPrice());
+        return String.format("%s - %s \n %20.2f days @ $%.2f / %s \n %60s %9.2f $%9.2f", getName() + " (" + getUniqueCode() + ")", "Voice " + getPhoneNumber(), getTotalPeriod(), getPeriodPrice(), "30 days", "$", getTotalTax(), getGrossPrice());
     }
 
     @Override

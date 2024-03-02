@@ -42,7 +42,7 @@ public class DataPlan extends Item{
 
     @Override
     public String toString() {
-        return String.format("%s - %s \n %20.2f GB @ $%5.2f/GB \n %60s %9.2f $%9.2f", getName() + " (" + getUniqueCode() + ")", "Data", getTotalGB(), getPricePerGB(), "$",getTotalTax(), getGrossPrice());
+        return String.format("%s - %s \n %20.2f GB @ $%5.2f / GB \n %60s %9.2f $%9.2f", getName() + " (" + getUniqueCode() + ")", "Data", getTotalGB(), getPricePerGB(), "$",getTotalTax(), getGrossPrice());
     }
 
     @Override

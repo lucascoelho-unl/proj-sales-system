@@ -39,7 +39,7 @@ Reddlesden, Hertha (wm0-95nz-32sq-9o1163m5ldv2)
 Items (1)                                                           Tax      Total
 -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-                    -=-=-=-=-=-= -=-=-=-=-=
 500 Calls & Text (y000) - Voice 560-298-9988 
-                30.00 days @ $29.99 / day 
+                30.00 days @ $29.99 / 30 days 
                                                             $      1.95 $    29.99
                                                            -=-=-=-=-=-= -=-=-=-=-=
                                                  Subtotals  $      1.95 $    29.99
@@ -64,10 +64,10 @@ Braksper, Phaedra (ry0-70yv-53rs-0o7641f4odi8)
 Items (8)                                                           Tax      Total
 -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-                    -=-=-=-=-=-= -=-=-=-=-=
 Unlimited Calls & Text (g007) - Voice 402-566-0956 
-               365.00 days @ $39.99 / day 
+               365.00 days @ $39.99 / 30 days 
                                                             $     31.63 $   486.55
 5g Deluxe (e002) - Data 
-               100.00 GB @ $ 1.00/GB 
+               100.00 GB @ $ 1.00 / GB 
                                                             $      5.50 $   100.00
 Iphone 15 HardCase (a008) 
                                                             $      3.25 $    49.99
@@ -104,19 +104,19 @@ Winslade, Caritta (oc9-70gt-75qu-6l7757a4xix4)
 Items (5)                                                           Tax      Total
 -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-                    -=-=-=-=-=-= -=-=-=-=-=
 Iphone Screen Repair (s004) - Served by Fordyce, Isa  
-                 0.50 hours @ $ 20.00/hour  
+                 0.50 hours @ $ 20.00 / hour  
                                                             $      0.35 $    10.00
 500 Calls & Text (y000) - Voice 402-390-2890 
-                90.00 days @ $29.99 / day 
+                90.00 days @ $29.99 / 30 days 
                                                             $      5.85 $    89.97
 Screen Repair (a006) - Served by Braksper, Phaedra  
-                 1.00 hours @ $ 29.99/hour  
+                 1.00 hours @ $ 29.99 / hour  
                                                             $      1.05 $    29.99
 Laptop Charger Repair (z008) - Served by Gouch, Emanuel  
-                 5.40 hours @ $ 50.00/hour  
+                 5.40 hours @ $ 50.00 / hour  
                                                             $      9.45 $   270.00
 4g Deluxe (g009) - Data 
-               200.00 GB @ $ 0.49/GB 
+               200.00 GB @ $ 0.49 / GB 
                                                             $      5.39 $    98.00
                                                            -=-=-=-=-=-= -=-=-=-=-=
                                                  Subtotals  $     22.09 $   497.96
@@ -140,18 +140,18 @@ Tomczykiewicz, Jerrilyn (vo8-71m9-55oi-2g4246y4wou9)
 
 Items (5)                                                           Tax      Total
 -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-                    -=-=-=-=-=-= -=-=-=-=-=
-Samsung s21 (x006) - Lease for 35 months 
+Samsung s21 (x006) - Lease for 17 months 
                                                             $      0.00 $   704.11
-MacBook Pro (h000) - Lease for 35 months 
+MacBook Pro (h000) - Lease for 56 months 
                                                             $      0.00 $  1272.32
 Screen Repair (a006) - Served by Bleier, Warden  
-                 3.40 hours @ $ 29.99/hour  
+                 3.40 hours @ $ 29.99 / hour  
                                                             $      3.57 $   101.97
 300 Calls & Text (p001) - Voice 402-577-2305 
-               120.00 days @ $20.00 / day 
+               120.00 days @ $20.00 / 30 days 
                                                             $      5.20 $    80.00
 5g Basic (c000) - Data 
-               350.00 GB @ $ 0.59/GB 
+               350.00 GB @ $ 0.59 / GB 
                                                             $     11.36 $   206.50
                                                            -=-=-=-=-=-= -=-=-=-=-=
                                                  Subtotals  $     20.13 $  2364.90

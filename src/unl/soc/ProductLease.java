@@ -59,7 +59,7 @@ public class ProductLease extends Item {
 
     @Override
     public String toString() {
-        return String.format("%s - Lease for %s \n %60s %9.2f $%9.2f", getName() + " (" + getUniqueCode() + ")", "35 months", "$", getTotalTax(), getGrossPrice());
+        return String.format("%s - Lease for %s months \n %60s %9.2f $%9.2f", getName() + " (" + getUniqueCode() + ")", getPeriodInMonths(), "$", getTotalTax(), getGrossPrice());
     }
 
     @Override

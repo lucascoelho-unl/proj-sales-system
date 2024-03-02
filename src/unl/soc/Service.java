@@ -55,7 +55,7 @@ public class Service extends Item {
 
     @Override
     public String toString() {
-        return String.format("%s - Served by %s  \n %20.2f hours @ $%6.2f/hour  \n %60s %9.2f $%9.2f", getName() + " (" + getUniqueCode() + ")", getEmployee().getLastName() + ", " + getEmployee().getFirstName(), getTotalHours(), getHourlyRate(), "$", getTotalTax(), getGrossPrice());
+        return String.format("%s - Served by %s  \n %20.2f hours @ $%6.2f / hour  \n %60s %9.2f $%9.2f", getName() + " (" + getUniqueCode() + ")", getEmployee().getLastName() + ", " + getEmployee().getFirstName(), getTotalHours(), getHourlyRate(), "$", getTotalTax(), getGrossPrice());
     }
 
     @Override
