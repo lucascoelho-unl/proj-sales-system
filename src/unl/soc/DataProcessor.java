@@ -28,6 +28,10 @@ public class DataProcessor {
                 String line = scanner.nextLine();
                 List<String> itemInSaleInfo = Arrays.asList(line.split(","));
 
+                if (itemInSaleInfo.size() < 2){
+                    return salesMap;
+                }
+
                 String saleCode = itemInSaleInfo.get(0);
                 String itemCode = itemInSaleInfo.get(1);
                 Sale sale = salesMap.get(saleCode);
@@ -79,6 +83,10 @@ public class DataProcessor {
                 String line = s.nextLine();
                 List<String> saleInfo = Arrays.asList(line.split(","));
 
+                if (saleInfo.size() < 2){
+                    return saleCodeMap;
+                }
+
                 String saleCode = saleInfo.get(0);
                 Store store = storeCodeMap.get(saleInfo.get(1));
                 Person customer = personMap.get(saleInfo.get(2));
@@ -116,6 +124,10 @@ public class DataProcessor {
             while (s.hasNext()) {
                 String line = s.nextLine();
                 List<String> itemsInfo = Arrays.asList(line.split(","));
+
+                if (itemsInfo.size() < 2){
+                    return codeItemMap;
+                }
 
                 Item item;
 
@@ -198,6 +210,11 @@ public class DataProcessor {
             while (s.hasNext()) {
                 String line = s.nextLine();
                 List<String> personData = Arrays.asList(line.split(","));
+
+                if (personData.size() < 2){
+                    return uuidPersonMap;
+                }
+
                 List<String> emailList = new ArrayList<>();
                 for (int i = 7; i < personData.size(); i++) {
                     emailList.add(personData.get(i));
@@ -231,6 +248,11 @@ public class DataProcessor {
             while (s.hasNext()) {
                 String line = s.nextLine();
                 List<String> storeData = Arrays.asList(line.split(","));
+
+                if (storeData.size() < 2){
+                    return codeStoreMap;
+                }
+
                 Person manager = personMap.get(storeData.get(1));
 
                 Store store = new Store(storeData.get(0),
