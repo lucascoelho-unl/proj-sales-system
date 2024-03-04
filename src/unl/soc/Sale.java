@@ -102,7 +102,7 @@ public class Sale implements Priceable{
         sb.append("                                                           -=-=-=-=-=-= -=-=-=-=-=\n");
         sb.append(String.format("%58s %2s %9.2f %1s %8.2f\n", "Subtotals", "$", getTotalTax(), "$", getGrossPrice()));
         sb.append(String.format("%58s %14s %8.2f\n", "Grand total", "$", getNetPrice()));
-        sb.append("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-                    -=-=-=-=-=-= -=-=-=-=-=\n");
+        sb.append("__________________________________________________________________________________\n");
         return  sb.toString();
     }
 

@@ -43,13 +43,17 @@ public class ProductLease extends Item {
         return getBasePrice() / 2;
     }
 
+    public double getTotalLeasePrice() {
+        return getMarkupPrice() + getBasePrice();
+    }
+
     public double getFirstMonthPrice() {
-        return getMarkupPrice() / getPeriodInMonths();
+        return getTotalLeasePrice() / getPeriodInMonths();
     }
 
     @Override
     public double getGrossPrice() {
-        return getFirstMonthPrice() + getMarkupPrice();
+        return getFirstMonthPrice();
     }
 
     @Override

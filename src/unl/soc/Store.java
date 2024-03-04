@@ -54,7 +54,12 @@ public class Store {
     @Override
     public String toString() {
         String store = getStoreCode();
-        String managerFullName = getManager().getFirstName() + " " + getManager().getLastName();
+        String managerFullName;
+        if (getManager() == null) {
+            managerFullName = "No manager.";
+        } else {
+            managerFullName = getManager().getFirstName() + " " + getManager().getLastName();
+        }
         List<Sale> saleList = getSales();
         int numSales = saleList.size();
         double total = 0;
