@@ -143,6 +143,7 @@ public class DataWriter {
             double totalPriceSales = 0;
 
             // Print individual sale details and update total sales variables
+            assert salesMap != null;
             for (Sale sale : salesMap.values()) {
                 String saleNum = sale.getUniqueCode();
                 String storeCode = sale.getStore().getStoreCode();

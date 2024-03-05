@@ -15,12 +15,12 @@ public class ProductPurchase extends Item {
     @XStreamOmitField
     private static final double TAX_PERCENTAGE = 0.065;
 
-    public ProductPurchase(String uniqueCode, String name, double basePrice) {
-        super(uniqueCode, name, basePrice);
+    public ProductPurchase(String uniqueCode, String itemType,  String name, double basePrice) {
+        super(uniqueCode, itemType, name,basePrice);
     }
 
     public ProductPurchase(Item item) {
-        super(item.getUniqueCode(), item.getName(), item.getBasePrice());
+        super(item.getUniqueCode(), item.getName(), item.getItemType() ,item.getBasePrice());
     }
 
     @Override

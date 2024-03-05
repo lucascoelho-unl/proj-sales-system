@@ -20,13 +20,12 @@ public class VoicePlan extends Item {
     @XStreamOmitField
     private String phoneNumber;
 
-    public VoicePlan(String uniqueCode, String name, double periodPrice) {
-        super(uniqueCode, name, periodPrice);
+    public VoicePlan(String uniqueCode, String itemType ,String name, double periodPrice) {
+        super(uniqueCode, itemType ,name ,periodPrice);
     }
 
-
     public VoicePlan(Item item, String phoneNumber, double totalPeriod) {
-        super(item.getUniqueCode(), item.getName(), item.getBasePrice());
+        super(item.getUniqueCode(), item.getName(), item.getItemType(), item.getBasePrice());
         this.phoneNumber = phoneNumber;
         this.totalPeriod = totalPeriod;
     }
