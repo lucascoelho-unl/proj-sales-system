@@ -17,12 +17,12 @@ public class DataPlan extends Item{
     @XStreamOmitField
     private double totalGB;
 
-    public DataPlan(String uniqueCode, String name, double pricePerGB) {
-        super(uniqueCode, name, pricePerGB);
+    public DataPlan(String uniqueCode, String itemType, String name, double pricePerGB) {
+        super(uniqueCode, itemType ,name ,pricePerGB);
     }
 
     public DataPlan(Item item, double totalGB) {
-        super(item.getUniqueCode(), item.getName(), item.getBasePrice());
+        super(item.getUniqueCode(), item.getName(), item.getItemType(), item.getBasePrice());
         this.totalGB = totalGB;
     }
 

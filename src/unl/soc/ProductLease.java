@@ -20,12 +20,12 @@ public class ProductLease extends Item {
     @XStreamOmitField
     private LocalDate endDate;
 
-    public ProductLease(String uniqueCode, String name, double basePrice) {
-        super(uniqueCode, name, basePrice);
+    public ProductLease(String uniqueCode, String itemType, String name, double basePrice) {
+        super(uniqueCode, itemType , name ,basePrice);
     }
 
     public ProductLease(Item productBeingLeased, String startDate, String endDate) {
-        super(productBeingLeased.getUniqueCode(), productBeingLeased.getName(), productBeingLeased.getBasePrice());
+        super(productBeingLeased.getUniqueCode(), productBeingLeased.getName(), productBeingLeased.getItemType() ,productBeingLeased.getBasePrice());
         this.startDate = LocalDate.parse(startDate);
         this.endDate = LocalDate.parse(endDate);
     }

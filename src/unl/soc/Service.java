@@ -20,12 +20,12 @@ public class Service extends Item {
     @XStreamOmitField
     private double totalHours;
 
-    public Service(String uniqueCode, String name, double hourlyRate) {
-        super(uniqueCode, name, hourlyRate);
+    public Service(String uniqueCode, String itemType, String name, double hourlyRate) {
+        super(uniqueCode, itemType, name ,hourlyRate);
     }
 
     public Service(Item item, double totalHours, Person employee){
-        super(item.getUniqueCode(), item.getName(), item.getBasePrice());
+        super(item.getUniqueCode(), item.getName(), item.getItemType(), item.getBasePrice());
         this.employee = employee;
         this.totalHours = totalHours;
     }
