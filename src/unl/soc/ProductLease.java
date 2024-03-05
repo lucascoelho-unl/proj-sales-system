@@ -15,48 +15,51 @@ import java.util.Objects;
 @XStreamAlias("productLease")
 public class ProductLease extends Item{
     @XStreamOmitField
-    private static final byte TAX_PERCENTAGE = 0;
-    @XStreamOmitField
-    private LocalDateTime totalTime;
+    private double totalMonths;
     @Expose
     private double price;
-    @XStreamOmitField
-    private double firstMonthPrice;
-    @XStreamOmitField
-    private double markupPrice;
 
     public ProductLease(String uniqueCode, String name, double basePrice) {
         super(uniqueCode, name);
         this.price = basePrice;
     }
 
-    public LocalDateTime getTotalTime() {
-        return totalTime;
+    public double getTotalTime() {
+        return totalMonths;
     }
 
-    public double getPrice() {
+    public double getBasePrice() {
         return price;
     }
 
-    public double getFirstMonthPrice() {
-        return firstMonthPrice;
+    public double getMarkupPrice(){
+        return getBasePrice() / 2;
     }
 
-    public double getMarkupPrice() {
-        return markupPrice;
+    public double getFirstMonthPrice(){
+        return getMarkupPrice() / getTotalTime();
+    }
+    @Override
+    public double getGrossPrice() {
+        return getBasePrice() + getMarkupPrice();
+    }
+
+    @Override
+    public double getTotalTax() {
+        return 0;
     }
 
     @Override
     public String toString() {
-        return "Product Lease{" +
-                "\n  Unique identifier: " + super.getUniqueCode() +
-                "\n  Name: " + super.getName() +
-                "\n  Total lease time: " + totalTime +
-                "\n  First month price: $" + firstMonthPrice +
-                "\n  Markup price: $" + markupPrice +
-                "\n  Total tax: $" + super.getTax() +
-                "\n  Total upfront price: $" + (firstMonthPrice + markupPrice) +
-                "\n}";
+        return String.format("Product Lease{" +
+                "\n  Unique identifier: " + getUniqueCode() +
+                "\n  Name: " + getName() +
+                "\n  Total lease time: " + getTotalTime() +
+                "\n  First month price: $%.2f" +
+                "\n  Markup price: $%.2f" +
+                "\n  Total tax: $%.2f" +
+                "\n  Total upfront price: $%.2f" +
+                "\n}", Math.round(getFirstMonthPrice() * 100) / 100.0, Math.round(getMarkupPrice() * 100)/100.0, Math.round(getTotalTax() * 100) / 100.0, Math.round(getNetPrice() * 100) / 100.0);
     }
 
     @Override
@@ -65,11 +68,11 @@ public class ProductLease extends Item{
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         ProductLease that = (ProductLease) o;
-        return Double.compare(price, that.price) == 0 && Double.compare(firstMonthPrice, that.firstMonthPrice) == 0 && Double.compare(markupPrice, that.markupPrice) == 0 && Objects.equals(totalTime, that.totalTime);
+        return Double.compare(price, that.price) == 0 && Double.compare(getGrossPrice(), that.getGrossPrice()) == 0 && Double.compare(getMarkupPrice(), that.getMarkupPrice()) == 0 && Objects.equals(getTotalTime(), that.getTotalTime());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), totalTime, price, firstMonthPrice, markupPrice);
+        return Objects.hash(super.hashCode(), getTotalTime(), price, getGrossPrice(), getMarkupPrice());
     }
 }

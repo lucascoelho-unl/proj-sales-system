@@ -23,15 +23,25 @@ public class ProductPurchase extends Item {
         this.price = basePrice;
     }
 
-    public double getPrice() {
+    @Override
+    public double getGrossPrice() {
         return price;
     }
 
     @Override
+    public double getTotalTax() {
+        return price * TAX_PERCENTAGE;
+    }
+
+    @Override
     public String toString() {
-        return "Product Purchase{" +
-                "\n  Total price: $" + price +
-                "\n}";
+        return String.format("Product Purchase{" +
+                "\n  Unique identifier: " + getUniqueCode() +
+                "\n  Name: " + getName() +
+                "\n  Subtotal: $%.2f" +
+                "\n  Total tax: $%.2f" +
+                "\n  Total price: $%.2f" +
+                "\n}", Math.round(getGrossPrice() * 100) / 100.0, Math.round(getTotalTax() * 100) / 100.0, Math.round(getNetPrice() * 100) / 100.0);
     }
 
     @Override

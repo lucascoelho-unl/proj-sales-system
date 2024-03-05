@@ -14,30 +14,42 @@ import java.util.Objects;
  */
 @XStreamAlias("voicePlan")
 public class VoicePlan extends Item {
+
     @XStreamOmitField
     private static final double TAX_PERCENTAGE = 0.065;
     @XStreamOmitField
-    private LocalDateTime timePeriod; //Target Time - Purchase time.
+    private double totalPeriod; //Target Time - Purchase time.
     @Expose
     private double periodPrice;
-    @XStreamOmitField
-    private double priceBeforeTax;
 
-    public VoicePlan(String uniqueCode, String name, double basePrice) {
+    public VoicePlan(String uniqueCode, String name, double periodPrice) {
         super(uniqueCode, name);
-        this.periodPrice = basePrice;
+        this.periodPrice = periodPrice;
     }
+
+    public double getTotalPeriod() {
+        return totalPeriod;
+    }
+
+    public double getPeriodPrice() {
+        return periodPrice;
+    }
+    @Override
+    public double getGrossPrice() { return periodPrice * (totalPeriod / 30); }
+
+    @Override
+    public double getTotalTax() { return getGrossPrice() * TAX_PERCENTAGE; }
 
     @Override
     public String toString() {
-        return "Data Plan{" +
-                "\n  Unique identifier: " + super.getUniqueCode() +
-                "\n  Plan name: " + super.getName() +
-                "\n  Period price: " + periodPrice +
-                "\n  Time period: " + timePeriod +
-                "\n  Total tax: $" + super.getTax() +
-                "\n  Total price: " + super.getTotalPrice() +
-                "\n}";
+        return String.format("Voice Plan{" +
+                "\n  Unique identifier: " + getUniqueCode() +
+                "\n  Plan name: " + getName() +
+                "\n  Period price: $%.2f" +
+                "\n  Time period: " + totalPeriod +
+                "\n  Total tax: $%.2f" +
+                "\n  Total price: $%.2f" +
+                "\n}", Math.round(getPeriodPrice() * 100) / 100.0, Math.round(getTotalTax() * 100) / 100.0,  Math.round(getGrossPrice() * 100) / 100.0 );
     }
 
     @Override
@@ -46,11 +58,11 @@ public class VoicePlan extends Item {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         VoicePlan voicePlan = (VoicePlan) o;
-        return Double.compare(periodPrice, voicePlan.periodPrice) == 0 && Double.compare(priceBeforeTax, voicePlan.priceBeforeTax) == 0 && Objects.equals(timePeriod, voicePlan.timePeriod);
+        return Double.compare(periodPrice, voicePlan.periodPrice) == 0 && Double.compare(getGrossPrice(), voicePlan.getGrossPrice()) == 0 && Objects.equals(totalPeriod, voicePlan.totalPeriod);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), timePeriod, periodPrice, priceBeforeTax);
+        return Objects.hash(super.hashCode(), totalPeriod, periodPrice, getGrossPrice());
     }
 }

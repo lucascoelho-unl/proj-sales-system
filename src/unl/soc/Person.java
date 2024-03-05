@@ -24,7 +24,7 @@ public class Person {
     private Address address;
 
     @XStreamAlias("emails")
-    private List<String> emailList;
+    private final List<String> emailList;
 
     public Person(String uuid, String firstName, String lastName, Address address, List<String> emailList) {
         this.uuid = uuid;

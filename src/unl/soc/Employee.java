@@ -8,7 +8,7 @@ import java.util.Objects;
  * It includes Getters, ToString, HashCode and Equals methods
  */
 public class Employee {
-    private Person employee;
+    private final Person employee;
 
     public Employee(Person employee) {
         this.employee = employee;

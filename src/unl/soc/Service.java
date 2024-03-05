@@ -4,7 +4,6 @@ import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -22,11 +21,11 @@ public class Service extends Item {
     @XStreamOmitField
     private Employee employee;
     @XStreamOmitField
-    private LocalDateTime totalTime; //Target Time - Purchased time
+    private double totalHours; //Target Time - Purchased time
 
-    public Service(String uniqueCode, String name, double basePrice) {
+    public Service(String uniqueCode, String name, double hourlyRate) {
         super(uniqueCode, name);
-        this.hourlyRate = basePrice;
+        this.hourlyRate = hourlyRate;
     }
 
     public double getHourlyRate() {
@@ -37,21 +36,32 @@ public class Service extends Item {
         return employee;
     }
 
-    public LocalDateTime getTotalTime() {
-        return totalTime;
+    public double getTotalHours() {
+        return totalHours;
     }
 
     @Override
+    public double getTotalTax() {
+        return getGrossPrice() * TAX_PERCENTAGE;
+    }
+
+    @Override
+    public double getGrossPrice() {
+        return hourlyRate * totalHours;
+    }
+
+
+    @Override
     public String toString() {
-        return "Service{" +
-                "\n  Unique identifier: " + super.getUniqueCode() +
-                "\n  Plan name: " + super.getName() +
+        return String.format("Service{" +
+                "\n  Unique identifier: " + getUniqueCode() +
+                "\n  Plan name: " + getName() +
                 "\n  Employee: " + employee +
-                "\n  Hourly rate: $" + hourlyRate +
-                "\n  TotalTime: " + totalTime +
-                "\n  Total tax: $" + super.getTax() +
-                "\n  Total price: $" + super.getTotalPrice() +
-                "\n}";
+                "\n  Hourly rate: $%.2f" +
+                "\n  Total time: " + totalHours +
+                "\n  Total tax: $%.2f" +
+                "\n  Total price: $%.2f" +
+                "\n}", Math.round(hourlyRate * 100) / 100.0, Math.round(getTotalTax() * 100) / 100.00, Math.round(getNetPrice() * 100) / 100.00);
     }
 
     @Override
@@ -60,11 +70,11 @@ public class Service extends Item {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Service service = (Service) o;
-        return Double.compare(hourlyRate, service.hourlyRate) == 0 && Objects.equals(employee, service.employee) && Objects.equals(totalTime, service.totalTime);
+        return Double.compare(hourlyRate, service.hourlyRate) == 0 && Objects.equals(employee, service.employee) && Objects.equals(totalHours, service.totalHours);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), hourlyRate, employee, totalTime);
+        return Objects.hash(super.hashCode(), hourlyRate, employee, totalHours);
     }
 }
