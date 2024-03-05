@@ -15,7 +15,7 @@ public abstract class Item implements Priceable {
     private String uniqueCode;
     @Expose
     private String name;
-    @Expose
+    @XStreamOmitField
     private double basePrice;
     @XStreamOmitField
     private String itemType;

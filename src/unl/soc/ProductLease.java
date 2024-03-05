@@ -1,5 +1,6 @@
 package unl.soc;
 
+import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
@@ -19,6 +20,8 @@ public class ProductLease extends Item {
     private LocalDate startDate;
     @XStreamOmitField
     private LocalDate endDate;
+    @Expose
+    private double price = getBasePrice();
 
     public ProductLease(String uniqueCode, String itemType, String name, double basePrice) {
         super(uniqueCode, itemType , name ,basePrice);

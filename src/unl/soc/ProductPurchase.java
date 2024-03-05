@@ -1,5 +1,6 @@
 package unl.soc;
 
+import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
@@ -14,7 +15,8 @@ import java.util.Objects;
 public class ProductPurchase extends Item {
     @XStreamOmitField
     private static final double TAX_PERCENTAGE = 0.065;
-
+    @Expose
+    private double price = getBasePrice();
     public ProductPurchase(String uniqueCode, String itemType,  String name, double basePrice) {
         super(uniqueCode, itemType, name,basePrice);
     }

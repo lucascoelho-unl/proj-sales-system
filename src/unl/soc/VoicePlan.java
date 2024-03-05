@@ -1,5 +1,6 @@
 package unl.soc;
 
+import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
@@ -19,9 +20,12 @@ public class VoicePlan extends Item {
     private double totalPeriod;
     @XStreamOmitField
     private String phoneNumber;
+    @Expose
+    private double periodCost;
 
     public VoicePlan(String uniqueCode, String itemType ,String name, double periodPrice) {
-        super(uniqueCode, itemType ,name ,periodPrice);
+        super(uniqueCode, itemType, name, periodPrice);
+        this.periodCost = periodPrice;
     }
 
     public VoicePlan(Item item, String phoneNumber, double totalPeriod) {
@@ -33,11 +37,6 @@ public class VoicePlan extends Item {
     public double getTotalPeriod() {
         return totalPeriod;
     }
-
-    public double getPeriodPrice() {
-        return super.getBasePrice();
-    }
-
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -49,7 +48,7 @@ public class VoicePlan extends Item {
 
     @Override
     public String toString() {
-        return String.format("%s - %s \n %20.2f days @ $%.2f / %s \n %60s %9.2f $%9.2f", getName() + " (" + getUniqueCode() + ")", "Voice " + getPhoneNumber(), getTotalPeriod(), getPeriodPrice(), "30 days", "$", getTotalTax(), getGrossPrice());
+        return String.format("%s - %s \n %20.2f days @ $%.2f / %s \n %60s %9.2f $%9.2f", getName() + " (" + getUniqueCode() + ")", "Voice " + getPhoneNumber(), getTotalPeriod(), periodCost, "30 days", "$", getTotalTax(), getGrossPrice());
     }
 
     @Override

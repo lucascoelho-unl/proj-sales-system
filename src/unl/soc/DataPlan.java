@@ -1,5 +1,6 @@
 package unl.soc;
 
+import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
@@ -16,6 +17,8 @@ public class DataPlan extends Item{
     private static final double TAX_PERCENTAGE = 0.055;
     @XStreamOmitField
     private double totalGB;
+    @Expose
+    private double costPerGB = getPricePerGB();
 
     public DataPlan(String uniqueCode, String itemType, String name, double pricePerGB) {
         super(uniqueCode, itemType ,name ,pricePerGB);

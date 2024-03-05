@@ -1,5 +1,6 @@
 package unl.soc;
 
+import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
@@ -19,9 +20,11 @@ public class Service extends Item {
     private Person employee;
     @XStreamOmitField
     private double totalHours;
+    @Expose
+    private double costPerHours = getHourlyRate();
 
     public Service(String uniqueCode, String itemType, String name, double hourlyRate) {
-        super(uniqueCode, itemType, name ,hourlyRate);
+        super(uniqueCode, itemType, name, hourlyRate);
     }
 
     public Service(Item item, double totalHours, Person employee){
