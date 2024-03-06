@@ -21,20 +21,18 @@ public class Service extends Item {
     @XStreamOmitField
     private double totalHours;
     @Expose
-    private double costPerHours = getHourlyRate();
+    private double costPerHours;
 
     public Service(String uniqueCode, String itemType, String name, double hourlyRate) {
-        super(uniqueCode, itemType, name, hourlyRate);
+        super(uniqueCode, itemType, name);
+        this.costPerHours = hourlyRate;
     }
 
     public Service(Item item, double totalHours, Person employee){
-        super(item.getUniqueCode(), item.getName(), item.getItemType(), item.getBasePrice());
+        super(item.getUniqueCode(), item.getItemType(), item.getName());
         this.employee = employee;
         this.totalHours = totalHours;
-    }
-
-    public double getHourlyRate() {
-        return super.getBasePrice();
+        this.costPerHours = item.getBasePrice();
     }
 
     public Person getEmployee() {
@@ -52,13 +50,18 @@ public class Service extends Item {
 
     @Override
     public double getGrossPrice() {
-        return super.getBasePrice() * totalHours;
+        return costPerHours * totalHours;
     }
 
 
     @Override
+    public double getBasePrice() {
+        return costPerHours;
+    }
+
+    @Override
     public String toString() {
-        return String.format("%s - Served by %s  \n %20.2f hours @ $%6.2f / hour  \n %60s %9.2f $%9.2f", getName() + " (" + getUniqueCode() + ")", getEmployee().getLastName() + ", " + getEmployee().getFirstName(), getTotalHours(), getHourlyRate(), "$", getTotalTax(), getGrossPrice());
+        return String.format("%s - Served by %s  \n %20.2f hours @ $%6.2f / hour  \n %60s %9.2f $%9.2f", getName() + " (" + getUniqueCode() + ")", getEmployee().getLastName() + ", " + getEmployee().getFirstName(), getTotalHours(), costPerHours, "$", getTotalTax(), getGrossPrice());
     }
 
     @Override
@@ -67,11 +70,11 @@ public class Service extends Item {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Service service = (Service) o;
-        return Double.compare(super.getBasePrice(), service.getBasePrice()) == 0 && Objects.equals(employee, service.employee) && Objects.equals(totalHours, service.totalHours);
+        return Double.compare(costPerHours, service.costPerHours) == 0 && Objects.equals(employee, service.employee) && Objects.equals(totalHours, service.totalHours);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), super.getBasePrice(), employee, totalHours);
+        return Objects.hash(super.hashCode(), costPerHours, employee, totalHours);
     }
 }

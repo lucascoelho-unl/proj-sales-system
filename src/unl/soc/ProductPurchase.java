@@ -16,23 +16,31 @@ public class ProductPurchase extends Item {
     @XStreamOmitField
     private static final double TAX_PERCENTAGE = 0.065;
     @Expose
-    private double price = getBasePrice();
-    public ProductPurchase(String uniqueCode, String itemType,  String name, double basePrice) {
-        super(uniqueCode, itemType, name,basePrice);
+    private double price;
+    public ProductPurchase(String uniqueCode, String itemType, String name, double basePrice) {
+        super(uniqueCode, itemType, name);
+        this.price = basePrice;
+
     }
 
     public ProductPurchase(Item item) {
-        super(item.getUniqueCode(), item.getName(), item.getItemType() ,item.getBasePrice());
+        super(item.getUniqueCode(), item.getItemType(), item.getName());
+        this.price = item.getBasePrice();
     }
 
     @Override
     public double getGrossPrice() {
-        return super.getBasePrice();
+        return price;
     }
 
     @Override
     public double getTotalTax() {
-        return super.getBasePrice() * TAX_PERCENTAGE;
+        return price * TAX_PERCENTAGE;
+    }
+
+    @Override
+    public double getBasePrice() {
+        return price;
     }
 
     @Override
@@ -46,11 +54,11 @@ public class ProductPurchase extends Item {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         ProductPurchase that = (ProductPurchase) o;
-        return Double.compare(super.getBasePrice(), that.getBasePrice()) == 0;
+        return Double.compare(price, that.price) == 0;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), super.getBasePrice());
+        return Objects.hash(super.hashCode(), price);
     }
 }

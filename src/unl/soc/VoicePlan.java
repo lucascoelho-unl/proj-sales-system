@@ -24,14 +24,15 @@ public class VoicePlan extends Item {
     private double periodCost;
 
     public VoicePlan(String uniqueCode, String itemType ,String name, double periodPrice) {
-        super(uniqueCode, itemType, name, periodPrice);
+        super(uniqueCode, itemType, name);
         this.periodCost = periodPrice;
     }
 
     public VoicePlan(Item item, String phoneNumber, double totalPeriod) {
-        super(item.getUniqueCode(), item.getName(), item.getItemType(), item.getBasePrice());
+        super(item.getUniqueCode(), item.getItemType(), item.getName());
         this.phoneNumber = phoneNumber;
         this.totalPeriod = totalPeriod;
+        this.periodCost = item.getBasePrice();
     }
 
     public double getTotalPeriod() {
@@ -41,10 +42,15 @@ public class VoicePlan extends Item {
         return phoneNumber;
     }
     @Override
-    public double getGrossPrice() { return super.getBasePrice() * (totalPeriod / 30); }
+    public double getGrossPrice() { return periodCost * (totalPeriod / 30); }
 
     @Override
     public double getTotalTax() { return getGrossPrice() * TAX_PERCENTAGE; }
+
+    @Override
+    public double getBasePrice() {
+        return periodCost;
+    }
 
     @Override
     public String toString() {
@@ -57,11 +63,11 @@ public class VoicePlan extends Item {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         VoicePlan voicePlan = (VoicePlan) o;
-        return Double.compare(super.getBasePrice(), voicePlan.getBasePrice()) == 0 && Double.compare(getGrossPrice(), voicePlan.getGrossPrice()) == 0 && Objects.equals(totalPeriod, voicePlan.totalPeriod);
+        return Double.compare(periodCost, voicePlan.periodCost) == 0 && Double.compare(getGrossPrice(), voicePlan.getGrossPrice()) == 0 && Objects.equals(totalPeriod, voicePlan.totalPeriod);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), totalPeriod, super.getBasePrice(), getGrossPrice());
+        return Objects.hash(super.hashCode(), totalPeriod, periodCost, getGrossPrice());
     }
 }

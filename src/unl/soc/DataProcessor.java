@@ -36,6 +36,7 @@ public class DataProcessor {
                 String itemCode = itemInSaleInfo.get(1);
                 Sale sale = salesMap.get(saleCode);
                 Item item = itemsMap.get(itemCode);
+                double basePrice = item.getBasePrice();
 
                 // Determine the type of item and add it to the sale
                 String itemType = item.getItemType();

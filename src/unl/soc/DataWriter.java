@@ -124,8 +124,8 @@ public class DataWriter {
             Map<String, Store> storeMap = DataProcessor.readStoreCSVtoMap("data/Stores.csv");
 
             // Read sales data, process purchased items, and create sales map
-            Map<String, Sale> salesMapRaw = DataProcessor.readSalesToMap(personsMap, storeMap, "data/Sales.csv");
-            Map<String, Sale> salesMap = DataProcessor.processPurchasedItemsIntoSalesMap(salesMapRaw, itemsMap, personsMap, "data/SaleItems.csv");
+            Map<String, Sale> salesMap = DataProcessor.readSalesToMap(personsMap, storeMap, "data/Sales.csv");
+            salesMap = DataProcessor.processPurchasedItemsIntoSalesMap(salesMap, itemsMap, personsMap, "data/SaleItems.csv");
 
             // Print sales report header
             writer.write("Sales Report:");

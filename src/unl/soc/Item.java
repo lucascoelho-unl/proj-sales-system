@@ -16,21 +16,15 @@ public abstract class Item implements Priceable {
     @Expose
     private String name;
     @XStreamOmitField
-    private double basePrice;
-    @XStreamOmitField
     private String itemType;
 
-    public Item(String uniqueCode, String itemType, String name, double basePrice) {
+    public Item(String uniqueCode, String itemType, String name) {
         this.uniqueCode = uniqueCode;
         this.name = name;
-        this.basePrice = basePrice;
         this.itemType = itemType;
     }
 
-    public double getBasePrice() {
-        return this.basePrice;
-    }
-
+    public abstract double getBasePrice();
     public String getUniqueCode() {
         return uniqueCode;
     }
