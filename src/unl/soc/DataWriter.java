@@ -23,10 +23,10 @@ public class DataWriter {
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-            // Add the header to the JSON string
+            // Add the header to the JSON string.
             StringBuilder jsonBuilder = new StringBuilder();
             jsonBuilder.append("{\n");
-            jsonBuilder.append("  \"" + header + "\": ");
+            jsonBuilder.append("  \"").append(header).append("\": ");
 
             // Convert the list of objects to JSON
             String jsonData = gson.toJson(listOfObject);
@@ -45,7 +45,7 @@ public class DataWriter {
      * The JSON file is written with pretty formatting.
      *
      * @param mapOfObject The map of objects to be converted to JSON format.
-     * @param filePath The file path where the JSON file will be created.
+     * @param filePath    The file path where the JSON file will be created.
      */
     public static void createJsonFile(Map<String, ?> mapOfObject, String header, String filePath) {
         Map<String, Object> dataWithHeader = new HashMap<>();
@@ -114,7 +114,12 @@ public class DataWriter {
         }
     }
 
-    public static void createSaleReport(String outputPath){
+    /**
+     * This method creates a sales report in a new file.
+     *
+     * @param outputPath The file path where the sales report will be created.
+     */
+    public static void createSaleReportInNewFile(String outputPath) {
 
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(outputPath));
@@ -170,14 +175,19 @@ public class DataWriter {
             writer.newLine();
             writer.write("Store      Manager              # Sales   Grand Total");
             writer.newLine();
+            double totalValue = 0;
+            int salesCount = 0;
             for (Store store : storeMap.values()) {
-                writer.write(store.toString());
-                writer.newLine();
+                writer.write(store.toString() + "\n");
+                totalValue += store.getTotalSalePrice();
+                salesCount++;
             }
+            writer.write("+--------------------------------------------------------+\n");
+            writer.write(String.format("%38d %4s %9.2f\n", salesCount, "$", totalValue));
 
             // Print individual sale details
             writer.newLine();
-            for (Sale sale : salesMap.values()){
+            for (Sale sale : salesMap.values()) {
                 writer.write(sale.toString());
                 writer.newLine();
             }
@@ -186,6 +196,72 @@ public class DataWriter {
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * This method creates a sales report and prints it to the output.
+     */
+    public static void printSalesReport() {
+        Map<String, Item> itemsMap = DataProcessor.readItemsCSVtoMap("data/Items.csv");
+        Map<String, Person> personsMap = DataProcessor.readPersonCSVtoMap("data/Persons.csv");
+        Map<String, Store> storeMap = DataProcessor.readStoreCSVtoMap("data/Stores.csv");
+
+        // Read sales data, process purchased items, and create sales map
+        Map<String, Sale> salesMap = DataProcessor.readSalesToMap(personsMap, storeMap, "data/Sales.csv");
+        salesMap = DataProcessor.processPurchasedItemsIntoSalesMap(salesMap, itemsMap, personsMap, "data/SaleItems.csv");
+
+        // Print sales report header
+        System.out.print("Sales Report:\n");
+        System.out.print("+-----------------------------------------------------------------------------------+\n" +
+                "|  Summary Report -- By Total                                                       |\n" +
+                "+-----------------------------------------------------------------------------------+\n");
+        System.out.print("Invoice #  Store     Customer                Num Items          Tax        Total\n");
+
+        // Initialize total sales variables
+        int totalItemSales = 0;
+        double totalTaxSales = 0;
+        double totalPriceSales = 0;
+
+        // Print individual sale details and update total sales variables
+        assert salesMap != null;
+        for (Sale sale : salesMap.values()) {
+            String saleNum = sale.getUniqueCode();
+            String storeCode = sale.getStore().getStoreCode();
+            String fullName = sale.getCustomer().getLastName() + ", " + sale.getCustomer().getFirstName();
+            int numItems = sale.getItemsList().size();
+            double tax = sale.getTotalTax();
+            double price = sale.getNetPrice();
+            System.out.printf("%-9s  %-9s  %-20s  %10d  $%10.2f  $%10.2f\n", saleNum, storeCode, fullName, numItems, tax, price);
+
+            totalItemSales += numItems;
+            totalTaxSales += tax;
+            totalPriceSales += price;
+        }
+
+        // Print total sales summary
+        System.out.print("+-----------------------------------------------------------------------------------+\n");
+        System.out.printf("%54d  $%10.2f  $%10.2f\n\n", totalItemSales, totalTaxSales, totalPriceSales);
+
+        // Print store sales summary
+        System.out.print("+--------------------------------------------------------+\n" +
+                "| Store Sales Summary Report                             |\n" +
+                "+--------------------------------------------------------+\n");
+        System.out.print("Store      Manager              # Sales   Grand Total\n");
+        double totalValue = 0;
+        int salesCount = 0;
+        for (Store store : storeMap.values()) {
+            System.out.print(store.toString() + "\n");
+            totalValue += store.getTotalSalePrice();
+            salesCount++;
+        }
+        System.out.print("+--------------------------------------------------------+\n");
+        System.out.printf("%38d %4s %9.2f\n", salesCount, "$", totalValue);
+
+        // Print individual sale details
+        System.out.println();
+        for (Sale sale : salesMap.values()) {
+            System.out.print(sale.toString() + "\n");
         }
     }
 }

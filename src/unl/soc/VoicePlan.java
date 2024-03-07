@@ -23,7 +23,7 @@ public class VoicePlan extends Item {
     @Expose
     private double periodCost;
 
-    public VoicePlan(String uniqueCode ,String name, double periodPrice) {
+    public VoicePlan(String uniqueCode, String name, double periodPrice) {
         super(uniqueCode, name);
         this.periodCost = periodPrice;
     }
@@ -38,14 +38,20 @@ public class VoicePlan extends Item {
     public double getTotalPeriod() {
         return totalPeriod;
     }
+
     public String getPhoneNumber() {
         return phoneNumber;
     }
-    @Override
-    public double getGrossPrice() { return periodCost * (totalPeriod / 30); }
 
     @Override
-    public double getTotalTax() { return getGrossPrice() * TAX_PERCENTAGE; }
+    public double getGrossPrice() {
+        return periodCost * (totalPeriod / 30);
+    }
+
+    @Override
+    public double getTotalTax() {
+        return getGrossPrice() * TAX_PERCENTAGE;
+    }
 
     @Override
     public double getBasePrice() {

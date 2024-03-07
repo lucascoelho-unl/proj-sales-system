@@ -11,7 +11,7 @@ import java.util.Objects;
  * date and time of purchase, total tax, and total price.
  * It includes Getters, ToString, HashCode and Equals methods
  */
-public class Sale implements Priceable{
+public class Sale implements Priceable {
     private final String uniqueCode;
     private final Store store;
     private final Person customer;
@@ -34,7 +34,7 @@ public class Sale implements Priceable{
      * @return The total gross price of the sale.
      */
     @Override
-    public double getGrossPrice(){
+    public double getGrossPrice() {
         double total = 0;
         for (Item item : this.itemsList) {
             total += item.getGrossPrice();
@@ -48,7 +48,7 @@ public class Sale implements Priceable{
      * @return The total tax of the sale.
      */
     @Override
-    public double getTotalTax(){
+    public double getTotalTax() {
         double total = 0;
         for (Item item : this.itemsList) {
             total += item.getTotalTax();
@@ -56,7 +56,7 @@ public class Sale implements Priceable{
         return total;
     }
 
-    public void addItem(Item item){
+    public void addItem(Item item) {
         this.itemsList.add(item);
     }
 
@@ -84,7 +84,9 @@ public class Sale implements Priceable{
         return dateTime;
     }
 
-    public double getNetPrice() { return getGrossPrice() + getTotalTax(); }
+    public double getNetPrice() {
+        return getGrossPrice() + getTotalTax();
+    }
 
     @Override
     public String toString() {
@@ -94,7 +96,7 @@ public class Sale implements Priceable{
         sb.append("Date     ").append(this.getDateTime()).append("\n");
         sb.append("Customer:\n").append(customer).append("\n");
         sb.append("Sales Person:\n").append(salesman).append("\n");
-        sb.append(String.format("Items (%d) %61s %10s\n" , getItemsList().size(), "Tax", "Total"));
+        sb.append(String.format("Items (%d) %61s %10s\n", getItemsList().size(), "Tax", "Total"));
         sb.append("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-                    -=-=-=-=-=-= -=-=-=-=-=\n");
         for (Item item : itemsList) {
             sb.append(item).append("\n");
@@ -103,7 +105,7 @@ public class Sale implements Priceable{
         sb.append(String.format("%58s %2s %9.2f %1s %8.2f\n", "Subtotals", "$", getTotalTax(), "$", getGrossPrice()));
         sb.append(String.format("%58s %14s %8.2f\n", "Grand total", "$", getNetPrice()));
         sb.append("__________________________________________________________________________________\n");
-        return  sb.toString();
+        return sb.toString();
     }
 
     @Override

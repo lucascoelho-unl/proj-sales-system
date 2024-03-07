@@ -17,6 +17,7 @@ public class ProductPurchase extends Item {
     private static final double TAX_PERCENTAGE = 0.065;
     @Expose
     private double price;
+
     public ProductPurchase(String uniqueCode, String name, double basePrice) {
         super(uniqueCode, name);
         this.price = basePrice;

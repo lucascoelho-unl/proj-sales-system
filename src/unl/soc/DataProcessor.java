@@ -28,7 +28,7 @@ public class DataProcessor {
                 String line = scanner.nextLine();
                 List<String> itemInSaleInfo = Arrays.asList(line.split(","));
 
-                if (itemInSaleInfo.size() < 2){
+                if (itemInSaleInfo.size() < 2) {
                     return salesMap;
                 }
 
@@ -84,7 +84,7 @@ public class DataProcessor {
                 String line = s.nextLine();
                 List<String> saleInfo = Arrays.asList(line.split(","));
 
-                if (saleInfo.size() < 2){
+                if (saleInfo.size() < 2) {
                     return saleCodeMap;
                 }
 
@@ -126,7 +126,7 @@ public class DataProcessor {
                 String line = s.nextLine();
                 List<String> itemsInfo = Arrays.asList(line.split(","));
 
-                if (itemsInfo.size() < 2){
+                if (itemsInfo.size() < 2) {
                     return codeItemMap;
                 }
 
@@ -136,14 +136,10 @@ public class DataProcessor {
                 double baseCost = Double.parseDouble(itemsInfo.get(3));
 
                 Item item = switch (type) {
-                    case "P" ->
-                            new ProductPurchase(code, name, baseCost);
-                    case "S" ->
-                            new Service(code, name, baseCost);
-                    case "D" ->
-                            new DataPlan(code, name, baseCost);
-                    case "V" ->
-                            new VoicePlan(code, name, baseCost);
+                    case "P" -> new ProductPurchase(code, name, baseCost);
+                    case "S" -> new Service(code, name, baseCost);
+                    case "D" -> new DataPlan(code, name, baseCost);
+                    case "V" -> new VoicePlan(code, name, baseCost);
                     default -> throw new IllegalStateException("Unexpected value: " + type);
                 };
 
@@ -218,7 +214,7 @@ public class DataProcessor {
                 String line = s.nextLine();
                 List<String> personData = Arrays.asList(line.split(","));
 
-                if (personData.size() < 2){
+                if (personData.size() < 2) {
                     return uuidPersonMap;
                 }
 
@@ -245,6 +241,14 @@ public class DataProcessor {
         }
     }
 
+    /**
+     * Reads data from a CSV file containing information about stores and their managers,
+     * and creates a map of store codes to Store objects.
+     *
+     * @param path The path to the CSV file.
+     * @return A map of store codes to Store objects.
+     * @throws RuntimeException If the file specified by 'path' is not found.
+     */
     public static Map<String, Store> readStoreCSVtoMap(String path) {
         try {
             Scanner s = new Scanner(new File(path));
@@ -256,7 +260,7 @@ public class DataProcessor {
                 String line = s.nextLine();
                 List<String> storeData = Arrays.asList(line.split(","));
 
-                if (storeData.size() < 2){
+                if (storeData.size() < 2) {
                     return codeStoreMap;
                 }
 

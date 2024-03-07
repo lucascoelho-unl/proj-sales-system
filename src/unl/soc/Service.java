@@ -28,7 +28,7 @@ public class Service extends Item {
         this.costPerHours = hourlyRate;
     }
 
-    public Service(Item item, double totalHours, Person employee){
+    public Service(Item item, double totalHours, Person employee) {
         super(item.getUniqueCode(), item.getName());
         this.employee = employee;
         this.totalHours = totalHours;

@@ -61,6 +61,7 @@ public class ProductLease extends Item {
     public double getTotalTax() {
         return 0;
     }
+
     @Override
     public double getBasePrice() {
         return price;

@@ -1,7 +1,6 @@
 package unl.soc;
 
 import com.google.gson.annotations.Expose;
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 import java.util.Objects;
 
@@ -22,6 +21,7 @@ public abstract class Item implements Priceable {
     }
 
     public abstract double getBasePrice();
+
     public String getUniqueCode() {
         return uniqueCode;
     }
@@ -29,6 +29,7 @@ public abstract class Item implements Priceable {
     public String getName() {
         return name;
     }
+
     public final double getNetPrice() {
         return getGrossPrice() + getTotalTax();
     }

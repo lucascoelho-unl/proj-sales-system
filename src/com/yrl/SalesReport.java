@@ -11,11 +11,10 @@ import unl.soc.DataWriter;
 public class SalesReport {
 
     /**
-     * The main method generates and prints the summary report.
-     *
-     * @param args Command-line arguments (not used).
+     * The main method generates and prints the summary reports.
      */
     public static void main(String[] args) {
-        DataWriter.createSaleReport("data/output.txt");
+        DataWriter.createSaleReportInNewFile("data/output.txt");
+        DataWriter.printSalesReport();
     }
 }

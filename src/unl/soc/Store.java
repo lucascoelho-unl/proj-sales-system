@@ -31,8 +31,16 @@ public class Store {
         this.sales = new ArrayList<>();
     }
 
-    public void addSale(Sale sale){
+    public void addSale(Sale sale) {
         this.sales.add(sale);
+    }
+
+    public double getTotalSalePrice() {
+        double total = 0;
+        for (Sale sale : this.sales) {
+            total += sale.getNetPrice();
+        }
+        return total;
     }
 
     public String getStoreCode() {
@@ -62,12 +70,9 @@ public class Store {
         }
         List<Sale> saleList = getSales();
         int numSales = saleList.size();
-        double total = 0;
-        for (Sale sale : saleList) {
-            total += sale.getNetPrice();
-        }
+        double totalPrice = getTotalSalePrice();
         String formatString = "%-9s  %-20s  %5d  %3s  %8.2f";
-        return String.format(formatString, store, managerFullName, numSales, "$", total);
+        return String.format(formatString, store, managerFullName, numSales, "$", totalPrice);
     }
 
     @Override

@@ -20,6 +20,8 @@ o768t8     Emanuel Gouch             1    $    592.91
 961865     Alix Desporte             0    $      0.00
 613774     Hedwiga Liversley         0    $      0.00
 0489g2     Hedwiga Liversley         1    $     31.94
++--------------------------------------------------------+
+                                     6    $   8776.21
 
 Sale    #s004
 Store   #0489g2
