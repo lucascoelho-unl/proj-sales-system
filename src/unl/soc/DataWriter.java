@@ -261,7 +261,7 @@ public class DataWriter {
             salesCount++;
         }
         System.out.print("+--------------------------------------------------------+\n");
-        System.out.printf("%38d %4s %9f\n", salesCount, "$", Math.round(totalValue * 100)/100.0);
+        System.out.printf("%38d %4s %9.2f\n", salesCount, "$", Math.round(totalValue * 100)/100.0);
 
         // Print individual sale details
         System.out.println();
