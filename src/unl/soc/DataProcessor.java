@@ -73,7 +73,7 @@ public class DataProcessor {
      * @param path The path to the CSV file containing sales data.
      * @return A map where keys are sale codes and values are Sale objects.
      */
-    public static Map<String, Sale> readSalesToMap(Map<String, Person> personMap, Map<String, Store> storeCodeMap, String path) {
+    public static Map<String, Sale> readSaleCSVToMap(Map<String, Person> personMap, Map<String, Store> storeCodeMap, String path) {
         try {
             Scanner s = new Scanner(new File(path));
 
@@ -280,6 +280,10 @@ public class DataProcessor {
         } catch (NoSuchElementException nse) {
             return new HashMap<>();
         }
+    }
+
+    public static List<Sale> convertSalesMapToList(Map<String, Sale> salesMap) {
+        return new ArrayList<>(salesMap.values());
     }
 
     /**
