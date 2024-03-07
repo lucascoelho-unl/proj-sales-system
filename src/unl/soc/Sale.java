@@ -112,12 +112,16 @@ public class Sale implements Priceable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Sale purchase = (Sale) o;
-        return Double.compare(getTotalTax(), purchase.getTotalTax()) == 0 && Double.compare(getGrossPrice(), purchase.getGrossPrice()) == 0 && Objects.equals(uniqueCode, purchase.uniqueCode) && Objects.equals(store, purchase.store) && Objects.equals(itemsList, purchase.itemsList) && Objects.equals(salesman, purchase.salesman) && Objects.equals(dateTime, purchase.dateTime);
+        Sale sale = (Sale) o;
+        return Objects.equals(uniqueCode, sale.uniqueCode) && Objects.equals(store, sale.store) && Objects.equals(customer, sale.customer) && Objects.equals(salesman, sale.salesman) && Objects.equals(dateTime, sale.dateTime) && Objects.equals(itemsList, sale.itemsList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uniqueCode, store, itemsList, salesman, dateTime, getTotalTax(), getGrossPrice());
+        return Objects.hash(uniqueCode, store, customer, salesman, dateTime, itemsList);
+    }
+
+    public static int compareSales(Sale sale1, Sale sale2) {
+        return Double.compare(sale2.getNetPrice(), sale1.getNetPrice());
     }
 }

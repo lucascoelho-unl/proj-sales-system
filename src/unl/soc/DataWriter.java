@@ -127,10 +127,14 @@ public class DataWriter {
             Map<String, Item> itemsMap = DataProcessor.readItemsCSVtoMap("data/Items.csv");
             Map<String, Person> personsMap = DataProcessor.readPersonCSVtoMap("data/Persons.csv");
             Map<String, Store> storeMap = DataProcessor.readStoreCSVtoMap("data/Stores.csv");
-
-            // Read sales data, process purchased items, and create sales map
-            Map<String, Sale> salesMap = DataProcessor.readSalesToMap(personsMap, storeMap, "data/Sales.csv");
+            Map<String, Sale> salesMap = DataProcessor.readSaleCSVToMap(personsMap, storeMap, "data/Sales.csv");
             salesMap = DataProcessor.processPurchasedItemsIntoSalesMap(salesMap, itemsMap, personsMap, "data/SaleItems.csv");
+
+            List<Sale> salesList = DataProcessor.convertSalesMapToList(salesMap);
+            List<Store> storesList = DataProcessor.convertStoreMapToList(storeMap);
+
+            salesList.sort(Sale::compareSales);
+            storesList.sort(Store::compareStores);
 
             // Print sales report header
             writer.write("Sales Report:");
@@ -148,8 +152,7 @@ public class DataWriter {
             double totalPriceSales = 0;
 
             // Print individual sale details and update total sales variables
-            assert salesMap != null;
-            for (Sale sale : salesMap.values()) {
+            for (Sale sale : salesList) {
                 String saleNum = sale.getUniqueCode();
                 String storeCode = sale.getStore().getStoreCode();
                 String fullName = sale.getCustomer().getLastName() + ", " + sale.getCustomer().getFirstName();
@@ -177,7 +180,7 @@ public class DataWriter {
             writer.newLine();
             double totalValue = 0;
             int salesCount = 0;
-            for (Store store : storeMap.values()) {
+            for (Store store : storesList) {
                 writer.write(store.toString() + "\n");
                 totalValue += store.getTotalSalePrice();
                 salesCount++;
@@ -187,11 +190,10 @@ public class DataWriter {
 
             // Print individual sale details
             writer.newLine();
-            for (Sale sale : salesMap.values()) {
+            for (Sale sale : salesList) {
                 writer.write(sale.toString());
                 writer.newLine();
             }
-
 
             writer.close();
         } catch (IOException e) {
@@ -206,10 +208,14 @@ public class DataWriter {
         Map<String, Item> itemsMap = DataProcessor.readItemsCSVtoMap("data/Items.csv");
         Map<String, Person> personsMap = DataProcessor.readPersonCSVtoMap("data/Persons.csv");
         Map<String, Store> storeMap = DataProcessor.readStoreCSVtoMap("data/Stores.csv");
-
-        // Read sales data, process purchased items, and create sales map
-        Map<String, Sale> salesMap = DataProcessor.readSalesToMap(personsMap, storeMap, "data/Sales.csv");
+        Map<String, Sale> salesMap = DataProcessor.readSaleCSVToMap(personsMap, storeMap, "data/Sales.csv");
         salesMap = DataProcessor.processPurchasedItemsIntoSalesMap(salesMap, itemsMap, personsMap, "data/SaleItems.csv");
+
+        List<Sale> salesList = DataProcessor.convertSalesMapToList(salesMap);
+        List<Store> storesList = DataProcessor.convertStoreMapToList(storeMap);
+
+        salesList.sort(Sale::compareSales);
+        storesList.sort(Store::compareStores);
 
         // Print sales report header
         System.out.print("Sales Report:\n");
@@ -224,8 +230,7 @@ public class DataWriter {
         double totalPriceSales = 0;
 
         // Print individual sale details and update total sales variables
-        assert salesMap != null;
-        for (Sale sale : salesMap.values()) {
+        for (Sale sale : salesList) {
             String saleNum = sale.getUniqueCode();
             String storeCode = sale.getStore().getStoreCode();
             String fullName = sale.getCustomer().getLastName() + ", " + sale.getCustomer().getFirstName();
@@ -250,7 +255,7 @@ public class DataWriter {
         System.out.print("Store      Manager              # Sales   Grand Total\n");
         double totalValue = 0;
         int salesCount = 0;
-        for (Store store : storeMap.values()) {
+        for (Store store : storesList) {
             System.out.print(store.toString() + "\n");
             totalValue += store.getTotalSalePrice();
             salesCount++;
@@ -260,7 +265,7 @@ public class DataWriter {
 
         // Print individual sale details
         System.out.println();
-        for (Sale sale : salesMap.values()) {
+        for (Sale sale : salesList) {
             System.out.print(sale.toString() + "\n");
         }
     }
