@@ -36,6 +36,7 @@ public class DataProcessor {
                 String itemCode = itemInSaleInfo.get(1);
                 Sale sale = salesMap.get(saleCode);
                 Item item = itemsMap.get(itemCode);
+                double basePrice = item.getBasePrice();
 
                 // Determine the type of item and add it to the sale
                 if (item instanceof ProductPurchase) {
@@ -129,18 +130,24 @@ public class DataProcessor {
                     return codeItemMap;
                 }
 
-                Item item;
+                String code = itemsInfo.get(0);
+                String type = itemsInfo.get(1);
+                String name = itemsInfo.get(2);
+                double baseCost = Double.parseDouble(itemsInfo.get(3));
 
-                if (itemsInfo.get(1).compareTo("P") == 0) {
-                    item = new ProductPurchase(itemsInfo.get(0), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
-                } else if (itemsInfo.get(1).compareTo("S") == 0) {
-                    item = new Service(itemsInfo.get(0), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
-                } else if (itemsInfo.get(1).compareTo("D") == 0) {
-                    item = new DataPlan(itemsInfo.get(0), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
-                } else {
-                    item = new VoicePlan(itemsInfo.get(0), itemsInfo.get(2), Double.parseDouble(itemsInfo.get(3)));
-                }
-                codeItemMap.put(itemsInfo.get(0), item);
+                Item item = switch (type) {
+                    case "P" ->
+                            new ProductPurchase(code, name, baseCost);
+                    case "S" ->
+                            new Service(code, name, baseCost);
+                    case "D" ->
+                            new DataPlan(code, name, baseCost);
+                    case "V" ->
+                            new VoicePlan(code, name, baseCost);
+                    default -> throw new IllegalStateException("Unexpected value: " + type);
+                };
+
+                codeItemMap.put(code, item);
             }
             s.close();
             return codeItemMap;

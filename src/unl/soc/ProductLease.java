@@ -1,5 +1,6 @@
 package unl.soc;
 
+import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
@@ -19,24 +20,24 @@ public class ProductLease extends Item {
     private LocalDate startDate;
     @XStreamOmitField
     private LocalDate endDate;
+    @Expose
+    private double price;
 
     public ProductLease(String uniqueCode, String name, double basePrice) {
-        super(uniqueCode, name, basePrice);
+        super(uniqueCode, name);
+        this.price = basePrice;
     }
 
     public ProductLease(Item productBeingLeased, String startDate, String endDate) {
-        super(productBeingLeased.getUniqueCode(), productBeingLeased.getName(), productBeingLeased.getBasePrice());
+        super(productBeingLeased.getUniqueCode(), productBeingLeased.getName());
         this.startDate = LocalDate.parse(startDate);
         this.endDate = LocalDate.parse(endDate);
+        this.price = productBeingLeased.getBasePrice();
     }
 
     public int getPeriodInMonths() {
         Period period = Period.between(this.startDate, this.endDate);
         return period.getYears() * 12 + period.getMonths();
-    }
-
-    public double getBasePrice() {
-        return super.getBasePrice();
     }
 
     public double getMarkupPrice() {
@@ -60,6 +61,10 @@ public class ProductLease extends Item {
     public double getTotalTax() {
         return 0;
     }
+    @Override
+    public double getBasePrice() {
+        return price;
+    }
 
     @Override
     public String toString() {
@@ -71,11 +76,11 @@ public class ProductLease extends Item {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProductLease that = (ProductLease) o;
-        return Double.compare(super.getBasePrice(), that.getBasePrice()) == 0 && Objects.equals(startDate, that.startDate) && Objects.equals(endDate, that.endDate);
+        return Double.compare(price, that.getBasePrice()) == 0 && Objects.equals(startDate, that.startDate) && Objects.equals(endDate, that.endDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), startDate, endDate, super.getBasePrice());
+        return Objects.hash(super.hashCode(), startDate, endDate, price);
     }
 }
