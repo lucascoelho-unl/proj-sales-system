@@ -159,7 +159,7 @@ public class DataWriter {
                 int numItems = sale.getItemsList().size();
                 double tax = Math.round(sale.getTotalTax() * 100)/100.0;
                 double price = Math.round(sale.getNetPrice() * 100)/100.0;
-                writer.write(String.format("%-9s  %-9s  %-20s  %10d  $%10f  $%10f\n", saleNum, storeCode, fullName, numItems, tax, price));
+                writer.write(String.format("%-9s  %-9s  %-20s  %10d  $%10.2f  $%10.2f\n", saleNum, storeCode, fullName, numItems, tax, price));
 
                 totalItemSales += numItems;
                 totalTaxSales += tax;
@@ -169,7 +169,7 @@ public class DataWriter {
             // Print total sales summary
             writer.write("+-----------------------------------------------------------------------------------+");
             writer.newLine();
-            writer.write(String.format("%54d  $%10f  $%10f\n\n", totalItemSales, Math.round(100 * totalTaxSales)/100.0, Math.round(100 * totalPriceSales)/100.0));
+            writer.write(String.format("%54d  $%10.2f  $%10.2f\n\n", totalItemSales, Math.round(100 * totalTaxSales)/100.0, Math.round(100 * totalPriceSales)/100.0));
 
             // Print store sales summary
             writer.write("+--------------------------------------------------------+\n" +
@@ -183,10 +183,10 @@ public class DataWriter {
             for (Store store : storesList) {
                 writer.write(store.toString() + "\n");
                 totalValue += store.getTotalSalePrice();
-                salesCount++;
+                salesCount += store.getSales().size();
             }
             writer.write("+--------------------------------------------------------+\n");
-            writer.write(String.format("%38d %4s %9f\n", salesCount, "$", Math.round(totalValue * 100)/100.0));
+            writer.write(String.format("%38d %4s %9.2f\n", salesCount, "$", Math.round(totalValue * 100)/100.0));
 
             // Print individual sale details
             writer.newLine();
@@ -258,7 +258,7 @@ public class DataWriter {
         for (Store store : storesList) {
             System.out.print(store.toString() + "\n");
             totalValue += store.getTotalSalePrice();
-            salesCount++;
+            salesCount += store.getSales().size();
         }
         System.out.print("+--------------------------------------------------------+\n");
         System.out.printf("%38d %4s %9.2f\n", salesCount, "$", Math.round(totalValue * 100)/100.0);

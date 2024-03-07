@@ -3,12 +3,12 @@ Sales Report:
 |  Summary Report -- By Total                                                       |
 +-----------------------------------------------------------------------------------+
 Invoice #  Store     Customer                Num Items          Tax        Total
-s003       178615     Heaviside, Delmor              8  $464.830000  $7631.330000
-s001       o768t8     Liversley, Hedwiga             5  $ 20.130000  $592.910000
-s002       178615     Braksper, Phaedra              5  $ 22.090000  $520.050000
-s004       0489g2     Fordyce, Isa                   1  $  1.950000  $ 31.940000
+s003       178615     Heaviside, Delmor              8  $    464.83  $   7631.33
+s001       o768t8     Liversley, Hedwiga             5  $     20.13  $    592.91
+s002       178615     Braksper, Phaedra              5  $     22.09  $    520.05
+s004       0489g2     Fordyce, Isa                   1  $      1.95  $     31.94
 +-----------------------------------------------------------------------------------+
-                                                    19  $509.000000  $8776.230000
+                                                    19  $    509.00  $   8776.23
 
 +--------------------------------------------------------+
 | Store Sales Summary Report                             |
@@ -21,7 +21,7 @@ o768t8     Emanuel Gouch             1    $    592.91
 0489g2     Hedwiga Liversley         1    $     31.94
 613774     Hedwiga Liversley         0    $      0.00
 +--------------------------------------------------------+
-                                     6    $ 8776.230000
+                                     4    $   8776.23
 
 Sale    #s003
 Store   #178615
@@ -81,9 +81,9 @@ Tomczykiewicz, Jerrilyn (vo8-71m9-55oi-2g4246y4wou9)
 Items (5)                                                           Tax      Total
 -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-                    -=-=-=-=-=-= -=-=-=-=-=
 Samsung s21 (x006) - Lease for 17 months 
-                                                            $      0.00 $117.35
+                                                            $      0.00 $   117.35
 MacBook Pro (h000) - Lease for 56 months 
-                                                            $      0.00 $66.96
+                                                            $      0.00 $    66.96
 Screen Repair (a006) - Served by Bleier, Warden  
                  3.40 hours @ $ 29.99 / hour  
                                                             $      3.57 $   101.97

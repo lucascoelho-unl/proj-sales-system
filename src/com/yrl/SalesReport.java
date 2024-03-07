@@ -2,6 +2,8 @@ package com.yrl;
 
 import unl.soc.DataWriter;
 
+import javax.xml.crypto.Data;
+
 /**
  * The SalesReport class generates a summary report of sales data.
  * It reads sales, items, persons, and store information from CSV files,
@@ -14,6 +16,7 @@ public class SalesReport {
      * The main method generates and prints the summary reports.
      */
     public static void main(String[] args) {
+        DataWriter.createSaleReportInNewFile("data/output.txt");
         DataWriter.printSalesReport();
     }
 }
