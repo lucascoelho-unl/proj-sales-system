@@ -39,7 +39,7 @@ public class Sale implements Priceable {
         for (Item item : this.itemsList) {
             total += item.getGrossPrice();
         }
-        return total;
+        return Math.round(100 * total)/100.0;
     }
 
     /**
@@ -53,7 +53,7 @@ public class Sale implements Priceable {
         for (Item item : this.itemsList) {
             total += item.getTotalTax();
         }
-        return total;
+        return Math.round(100 * total)/100.0;
     }
 
     public void addItem(Item item) {

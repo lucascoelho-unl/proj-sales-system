@@ -33,7 +33,7 @@ public class DataPlan extends Item {
 
     @Override
     public double getBasePrice() {
-        return costPerGB;
+        return Math.round(costPerGB * 100)/100.0;
     }
 
     public double getTotalGB() {
@@ -42,12 +42,12 @@ public class DataPlan extends Item {
 
     @Override
     public double getGrossPrice() {
-        return costPerGB * totalGB;
+        return Math.round(costPerGB * totalGB * 100)/100.0;
     }
 
     @Override
     public double getTotalTax() {
-        return getGrossPrice() * TAX_PERCENTAGE;
+        return Math.round(getGrossPrice() * TAX_PERCENTAGE * 100)/100.0;
     }
 
     @Override

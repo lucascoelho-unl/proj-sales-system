@@ -154,9 +154,9 @@ public class DataWriter {
                 String storeCode = sale.getStore().getStoreCode();
                 String fullName = sale.getCustomer().getLastName() + ", " + sale.getCustomer().getFirstName();
                 int numItems = sale.getItemsList().size();
-                double tax = sale.getTotalTax();
-                double price = sale.getNetPrice();
-                writer.write(String.format("%-9s  %-9s  %-20s  %10d  $%10.2f  $%10.2f\n", saleNum, storeCode, fullName, numItems, tax, price));
+                double tax = Math.round(sale.getTotalTax() * 100)/100.0;
+                double price = Math.round(sale.getNetPrice() * 100)/100.0;
+                writer.write(String.format("%-9s  %-9s  %-20s  %10d  $%10f  $%10f\n", saleNum, storeCode, fullName, numItems, tax, price));
 
                 totalItemSales += numItems;
                 totalTaxSales += tax;
@@ -166,7 +166,7 @@ public class DataWriter {
             // Print total sales summary
             writer.write("+-----------------------------------------------------------------------------------+");
             writer.newLine();
-            writer.write(String.format("%54d  $%10.2f  $%10.2f\n\n", totalItemSales, totalTaxSales, totalPriceSales));
+            writer.write(String.format("%54d  $%10f  $%10f\n\n", totalItemSales, Math.round(100 * totalTaxSales)/100.0, Math.round(100 * totalPriceSales)/100.0));
 
             // Print store sales summary
             writer.write("+--------------------------------------------------------+\n" +
@@ -183,7 +183,7 @@ public class DataWriter {
                 salesCount++;
             }
             writer.write("+--------------------------------------------------------+\n");
-            writer.write(String.format("%38d %4s %9.2f\n", salesCount, "$", totalValue));
+            writer.write(String.format("%38d %4s %9f\n", salesCount, "$", Math.round(totalValue * 100)/100.0));
 
             // Print individual sale details
             writer.newLine();
@@ -230,8 +230,8 @@ public class DataWriter {
             String storeCode = sale.getStore().getStoreCode();
             String fullName = sale.getCustomer().getLastName() + ", " + sale.getCustomer().getFirstName();
             int numItems = sale.getItemsList().size();
-            double tax = sale.getTotalTax();
-            double price = sale.getNetPrice();
+            double tax = Math.round(sale.getTotalTax() * 100)/100.0;
+            double price = Math.round(sale.getNetPrice() * 100)/100.0;
             System.out.printf("%-9s  %-9s  %-20s  %10d  $%10.2f  $%10.2f\n", saleNum, storeCode, fullName, numItems, tax, price);
 
             totalItemSales += numItems;
@@ -256,7 +256,7 @@ public class DataWriter {
             salesCount++;
         }
         System.out.print("+--------------------------------------------------------+\n");
-        System.out.printf("%38d %4s %9.2f\n", salesCount, "$", totalValue);
+        System.out.printf("%38d %4s %9f\n", salesCount, "$", Math.round(totalValue * 100)/100.0);
 
         // Print individual sale details
         System.out.println();

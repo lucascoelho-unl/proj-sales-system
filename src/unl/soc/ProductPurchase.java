@@ -31,17 +31,17 @@ public class ProductPurchase extends Item {
 
     @Override
     public double getGrossPrice() {
-        return price;
+        return Math.round(100 * price)/100.0;
     }
 
     @Override
     public double getTotalTax() {
-        return price * TAX_PERCENTAGE;
+        return Math.round(100 * price * TAX_PERCENTAGE)/100.0;
     }
 
     @Override
     public double getBasePrice() {
-        return price;
+        return getGrossPrice();
     }
 
     @Override
