@@ -23,13 +23,13 @@ public class VoicePlan extends Item {
     @Expose
     private double periodCost;
 
-    public VoicePlan(String uniqueCode, String itemType ,String name, double periodPrice) {
-        super(uniqueCode, itemType, name);
+    public VoicePlan(String uniqueCode ,String name, double periodPrice) {
+        super(uniqueCode, name);
         this.periodCost = periodPrice;
     }
 
     public VoicePlan(Item item, String phoneNumber, double totalPeriod) {
-        super(item.getUniqueCode(), item.getItemType(), item.getName());
+        super(item.getUniqueCode(), item.getName());
         this.phoneNumber = phoneNumber;
         this.totalPeriod = totalPeriod;
         this.periodCost = item.getBasePrice();

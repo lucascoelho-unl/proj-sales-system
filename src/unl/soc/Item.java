@@ -15,13 +15,10 @@ public abstract class Item implements Priceable {
     private String uniqueCode;
     @Expose
     private String name;
-    @XStreamOmitField
-    private String itemType;
 
-    public Item(String uniqueCode, String itemType, String name) {
+    public Item(String uniqueCode, String name) {
         this.uniqueCode = uniqueCode;
         this.name = name;
-        this.itemType = itemType;
     }
 
     public abstract double getBasePrice();
@@ -32,11 +29,6 @@ public abstract class Item implements Priceable {
     public String getName() {
         return name;
     }
-
-    public String getItemType() {
-        return itemType;
-    }
-
     public final double getNetPrice() {
         return getGrossPrice() + getTotalTax();
     }

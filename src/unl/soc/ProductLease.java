@@ -23,13 +23,13 @@ public class ProductLease extends Item {
     @Expose
     private double price;
 
-    public ProductLease(String uniqueCode, String itemType, String name, double basePrice) {
-        super(uniqueCode, itemType , name);
+    public ProductLease(String uniqueCode, String name, double basePrice) {
+        super(uniqueCode, name);
         this.price = basePrice;
     }
 
     public ProductLease(Item productBeingLeased, String startDate, String endDate) {
-        super(productBeingLeased.getUniqueCode(), productBeingLeased.getItemType(), productBeingLeased.getName());
+        super(productBeingLeased.getUniqueCode(), productBeingLeased.getName());
         this.startDate = LocalDate.parse(startDate);
         this.endDate = LocalDate.parse(endDate);
         this.price = productBeingLeased.getBasePrice();

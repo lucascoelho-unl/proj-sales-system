@@ -20,13 +20,13 @@ public class DataPlan extends Item{
     @Expose
     private double costPerGB;
 
-    public DataPlan(String uniqueCode, String itemType, String name, double pricePerGB) {
-        super(uniqueCode, itemType ,name);
+    public DataPlan(String uniqueCode, String name, double pricePerGB) {
+        super(uniqueCode ,name);
         this.costPerGB = pricePerGB;
     }
 
     public DataPlan(Item item, double totalGB) {
-        super(item.getUniqueCode(), item.getItemType(), item.getName());
+        super(item.getUniqueCode(), item.getName());
         this.totalGB = totalGB;
         this.costPerGB = item.getBasePrice();
     }

@@ -39,32 +39,25 @@ public class DataProcessor {
                 double basePrice = item.getBasePrice();
 
                 // Determine the type of item and add it to the sale
-                String itemType = item.getItemType();
-                switch (itemType) {
-                    case "P" -> {
-                        if (itemInSaleInfo.size() == 2) {
-                            sale.addItem(new ProductPurchase(item));
-                        } else {
-                            String startDate = itemInSaleInfo.get(2);
-                            String endDate = itemInSaleInfo.get(3);
-                            sale.addItem(new ProductLease(item, startDate, endDate));
-                        }
+                if (item instanceof ProductPurchase) {
+                    if (itemInSaleInfo.size() == 2) {
+                        sale.addItem(new ProductPurchase(item));
+                    } else {
+                        String startDate = itemInSaleInfo.get(2);
+                        String endDate = itemInSaleInfo.get(3);
+                        sale.addItem(new ProductLease(item, startDate, endDate));
                     }
-                    case "S" -> {
-                        double totalHours = Double.parseDouble(itemInSaleInfo.get(2));
-                        Person employee = personsMap.get(itemInSaleInfo.get(3));
-                        sale.addItem(new Service(item, totalHours, employee));
-                    }
-                    case "D" -> {
-                        double totalGB = Double.parseDouble(itemInSaleInfo.get(2));
-                        sale.addItem(new DataPlan(item, totalGB));
-                    }
-                    case "V" -> {
-                        String phoneNumber = itemInSaleInfo.get(2);
-                        double totalPeriod = Double.parseDouble(itemInSaleInfo.get(3));
-                        sale.addItem(new VoicePlan(item, phoneNumber, totalPeriod));
-                    }
-
+                } else if (item instanceof Service) {
+                    double totalHours = Double.parseDouble(itemInSaleInfo.get(2));
+                    Person employee = personsMap.get(itemInSaleInfo.get(3));
+                    sale.addItem(new Service(item, totalHours, employee));
+                } else if (item instanceof DataPlan) {
+                    double totalGB = Double.parseDouble(itemInSaleInfo.get(2));
+                    sale.addItem(new DataPlan(item, totalGB));
+                } else if (item instanceof VoicePlan) {
+                    String phoneNumber = itemInSaleInfo.get(2);
+                    double totalPeriod = Double.parseDouble(itemInSaleInfo.get(3));
+                    sale.addItem(new VoicePlan(item, phoneNumber, totalPeriod));
                 }
             }
             return salesMap;
@@ -144,13 +137,13 @@ public class DataProcessor {
 
                 Item item = switch (type) {
                     case "P" ->
-                            new ProductPurchase(code, type, name, baseCost);
+                            new ProductPurchase(code, name, baseCost);
                     case "S" ->
-                            new Service(code, type, name, baseCost);
+                            new Service(code, name, baseCost);
                     case "D" ->
-                            new DataPlan(code, type, name, baseCost);
+                            new DataPlan(code, name, baseCost);
                     case "V" ->
-                            new VoicePlan(code, type, name, baseCost);
+                            new VoicePlan(code, name, baseCost);
                     default -> throw new IllegalStateException("Unexpected value: " + type);
                 };
 

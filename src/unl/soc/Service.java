@@ -23,13 +23,13 @@ public class Service extends Item {
     @Expose
     private double costPerHours;
 
-    public Service(String uniqueCode, String itemType, String name, double hourlyRate) {
-        super(uniqueCode, itemType, name);
+    public Service(String uniqueCode, String name, double hourlyRate) {
+        super(uniqueCode, name);
         this.costPerHours = hourlyRate;
     }
 
     public Service(Item item, double totalHours, Person employee){
-        super(item.getUniqueCode(), item.getItemType(), item.getName());
+        super(item.getUniqueCode(), item.getName());
         this.employee = employee;
         this.totalHours = totalHours;
         this.costPerHours = item.getBasePrice();

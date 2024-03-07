@@ -17,14 +17,14 @@ public class ProductPurchase extends Item {
     private static final double TAX_PERCENTAGE = 0.065;
     @Expose
     private double price;
-    public ProductPurchase(String uniqueCode, String itemType, String name, double basePrice) {
-        super(uniqueCode, itemType, name);
+    public ProductPurchase(String uniqueCode, String name, double basePrice) {
+        super(uniqueCode, name);
         this.price = basePrice;
 
     }
 
     public ProductPurchase(Item item) {
-        super(item.getUniqueCode(), item.getItemType(), item.getName());
+        super(item.getUniqueCode(), item.getName());
         this.price = item.getBasePrice();
     }
 
