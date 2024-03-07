@@ -45,18 +45,18 @@ public class Service extends Item {
 
     @Override
     public double getTotalTax() {
-        return getGrossPrice() * TAX_PERCENTAGE;
+        return Math.round(100 * getGrossPrice() * TAX_PERCENTAGE)/100.0;
     }
 
     @Override
     public double getGrossPrice() {
-        return costPerHours * totalHours;
+        return Math.round(100 * costPerHours * totalHours)/100.0;
     }
 
 
     @Override
     public double getBasePrice() {
-        return costPerHours;
+        return Math.round(100 * costPerHours)/100.0;
     }
 
     @Override
