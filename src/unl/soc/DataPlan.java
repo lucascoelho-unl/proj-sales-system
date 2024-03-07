@@ -15,40 +15,40 @@ import java.util.Objects;
 public class DataPlan extends Item{
     @XStreamOmitField
     private static final double TAX_PERCENTAGE = 0.055;
-    @Expose
-    private double pricePerGB;
     @XStreamOmitField
-    private double totalGigabyte;
+    private double totalGB;
+    @Expose
+    private double costPerGB;
 
     public DataPlan(String uniqueCode, String name, double pricePerGB) {
-        super(uniqueCode, name);
-        this.pricePerGB = pricePerGB;
+        super(uniqueCode ,name);
+        this.costPerGB = pricePerGB;
     }
 
-    public double getPricePerGB() {
-        return pricePerGB;
-    }
-
-    public double getTotalGigabyte() {
-        return totalGigabyte;
+    public DataPlan(Item item, double totalGB) {
+        super(item.getUniqueCode(), item.getName());
+        this.totalGB = totalGB;
+        this.costPerGB = item.getBasePrice();
     }
 
     @Override
-    public double getGrossPrice() { return pricePerGB * totalGigabyte; }
+    public double getBasePrice() {
+        return costPerGB;
+    }
+
+    public double getTotalGB() {
+        return totalGB;
+    }
+
+    @Override
+    public double getGrossPrice() { return costPerGB * totalGB; }
 
     @Override
     public double getTotalTax() { return getGrossPrice() * TAX_PERCENTAGE; }
 
     @Override
     public String toString() {
-        return String.format("Data Plan{" +
-                "\n  Unique identifier: " + getUniqueCode() +
-                "\n  Plan name: " + getName() +
-                "\n  Price per GB: $%.2f" +
-                "\n  Total Bought GB: " + totalGigabyte +
-                "\n  Total tax: $%.2f" +
-                "\n  Total price: $%.2f" +
-                "\n}", Math.round(pricePerGB * 100) / 100.00, Math.round(getTotalTax() * 100) / 100.00,  Math.round(getGrossPrice() * 100) / 100.00);
+        return String.format("%s - %s \n %20.2f GB @ $%5.2f / GB \n %60s %9.2f $%9.2f", getName() + " (" + getUniqueCode() + ")", "Data", getTotalGB(), costPerGB, "$",getTotalTax(), getGrossPrice());
     }
 
     @Override
@@ -56,11 +56,11 @@ public class DataPlan extends Item{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DataPlan dataPlan = (DataPlan) o;
-        return Double.compare(pricePerGB, dataPlan.pricePerGB) == 0 && Double.compare(totalGigabyte, dataPlan.totalGigabyte) == 0 && Double.compare(getGrossPrice(), dataPlan.getGrossPrice()) == 0;
+        return Double.compare(costPerGB, dataPlan.costPerGB) == 0 && Double.compare(totalGB, dataPlan.totalGB) == 0 && Double.compare(getGrossPrice(), dataPlan.getGrossPrice()) == 0;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pricePerGB, totalGigabyte, getGrossPrice());
+        return Objects.hash(costPerGB, totalGB, getGrossPrice());
     }
 }

@@ -17,10 +17,15 @@ public class ProductPurchase extends Item {
     private static final double TAX_PERCENTAGE = 0.065;
     @Expose
     private double price;
-
     public ProductPurchase(String uniqueCode, String name, double basePrice) {
         super(uniqueCode, name);
         this.price = basePrice;
+
+    }
+
+    public ProductPurchase(Item item) {
+        super(item.getUniqueCode(), item.getName());
+        this.price = item.getBasePrice();
     }
 
     @Override
@@ -34,14 +39,13 @@ public class ProductPurchase extends Item {
     }
 
     @Override
+    public double getBasePrice() {
+        return price;
+    }
+
+    @Override
     public String toString() {
-        return String.format("Product Purchase{" +
-                "\n  Unique identifier: " + getUniqueCode() +
-                "\n  Name: " + getName() +
-                "\n  Subtotal: $%.2f" +
-                "\n  Total tax: $%.2f" +
-                "\n  Total price: $%.2f" +
-                "\n}", Math.round(getGrossPrice() * 100) / 100.0, Math.round(getTotalTax() * 100) / 100.0, Math.round(getNetPrice() * 100) / 100.0);
+        return String.format("%s \n %60s %9.2f $%9.2f", getName() + " (" + getUniqueCode() + ")", "$", getTotalTax(), getGrossPrice());
     }
 
     @Override

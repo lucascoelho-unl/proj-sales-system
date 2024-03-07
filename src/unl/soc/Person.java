@@ -22,9 +22,9 @@ public class Person {
     private String lastName;
     @Expose
     private Address address;
-
     @XStreamAlias("emails")
     private final List<String> emailList;
+    private List<Sale> purchasedItems;
 
     public Person(String uuid, String firstName, String lastName, Address address, List<String> emailList) {
         this.uuid = uuid;
@@ -56,9 +56,11 @@ public class Person {
 
     @Override
     public String toString() {
-        return lastName + ", " + firstName + " / " + uuid;
+        return getLastName() + ", " + getFirstName() + " (" + getUuid() + ")\n" +
+                "\t  " + getEmailList() + "\n" +
+                "\t  " + getAddress() + "\n" +
+                "\t  " + getAddress().getCity() + " " + getAddress().getState() + " " + getAddress().getZipCode() + "\n";
     }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

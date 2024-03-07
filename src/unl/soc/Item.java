@@ -3,8 +3,6 @@ package unl.soc;
 import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -18,15 +16,12 @@ public abstract class Item implements Priceable {
     @Expose
     private String name;
 
-    @XStreamOmitField
-    private List<Store> storesAvailable;
-
     public Item(String uniqueCode, String name) {
         this.uniqueCode = uniqueCode;
         this.name = name;
-        this.storesAvailable = new ArrayList<>();
     }
 
+    public abstract double getBasePrice();
     public String getUniqueCode() {
         return uniqueCode;
     }
@@ -34,29 +29,21 @@ public abstract class Item implements Priceable {
     public String getName() {
         return name;
     }
-
-    public List<Store> getStoresAvailable() {
-        return storesAvailable;
-    }
-
     public final double getNetPrice() {
         return getGrossPrice() + getTotalTax();
     }
 
     public String toString() {
-        StringBuilder item = new StringBuilder(String.format("Item{" +
+        String item = String.format("Item{" +
                 "\n  Unique identifier: " + uniqueCode +
                 "\n  Name: " + name +
                 "\n  Total tax: $" + getTotalTax() +
-                "\n  Total price: $" + getNetPrice()));
-        for (Store store : this.storesAvailable) {
-            item.append("\n  Stores available: ").append(store);
-        }
+                "\n  Total price: $" + getNetPrice());
         return item + "\n}";
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uniqueCode, name, getTotalTax(), getNetPrice(), storesAvailable);
+        return Objects.hash(uniqueCode, name, getTotalTax(), getNetPrice());
     }
 }

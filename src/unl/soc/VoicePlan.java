@@ -4,7 +4,6 @@ import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -18,38 +17,44 @@ public class VoicePlan extends Item {
     @XStreamOmitField
     private static final double TAX_PERCENTAGE = 0.065;
     @XStreamOmitField
-    private double totalPeriod; //Target Time - Purchase time.
+    private double totalPeriod;
+    @XStreamOmitField
+    private String phoneNumber;
     @Expose
-    private double periodPrice;
+    private double periodCost;
 
-    public VoicePlan(String uniqueCode, String name, double periodPrice) {
+    public VoicePlan(String uniqueCode ,String name, double periodPrice) {
         super(uniqueCode, name);
-        this.periodPrice = periodPrice;
+        this.periodCost = periodPrice;
+    }
+
+    public VoicePlan(Item item, String phoneNumber, double totalPeriod) {
+        super(item.getUniqueCode(), item.getName());
+        this.phoneNumber = phoneNumber;
+        this.totalPeriod = totalPeriod;
+        this.periodCost = item.getBasePrice();
     }
 
     public double getTotalPeriod() {
         return totalPeriod;
     }
-
-    public double getPeriodPrice() {
-        return periodPrice;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
     @Override
-    public double getGrossPrice() { return periodPrice * (totalPeriod / 30); }
+    public double getGrossPrice() { return periodCost * (totalPeriod / 30); }
 
     @Override
     public double getTotalTax() { return getGrossPrice() * TAX_PERCENTAGE; }
 
     @Override
+    public double getBasePrice() {
+        return periodCost;
+    }
+
+    @Override
     public String toString() {
-        return String.format("Voice Plan{" +
-                "\n  Unique identifier: " + getUniqueCode() +
-                "\n  Plan name: " + getName() +
-                "\n  Period price: $%.2f" +
-                "\n  Time period: " + totalPeriod +
-                "\n  Total tax: $%.2f" +
-                "\n  Total price: $%.2f" +
-                "\n}", Math.round(getPeriodPrice() * 100) / 100.0, Math.round(getTotalTax() * 100) / 100.0,  Math.round(getGrossPrice() * 100) / 100.0 );
+        return String.format("%s - %s \n %20.2f days @ $%.2f / %s \n %60s %9.2f $%9.2f", getName() + " (" + getUniqueCode() + ")", "Voice " + getPhoneNumber(), getTotalPeriod(), periodCost, "30 days", "$", getTotalTax(), getGrossPrice());
     }
 
     @Override
@@ -58,11 +63,11 @@ public class VoicePlan extends Item {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         VoicePlan voicePlan = (VoicePlan) o;
-        return Double.compare(periodPrice, voicePlan.periodPrice) == 0 && Double.compare(getGrossPrice(), voicePlan.getGrossPrice()) == 0 && Objects.equals(totalPeriod, voicePlan.totalPeriod);
+        return Double.compare(periodCost, voicePlan.periodCost) == 0 && Double.compare(getGrossPrice(), voicePlan.getGrossPrice()) == 0 && Objects.equals(totalPeriod, voicePlan.totalPeriod);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), totalPeriod, periodPrice, getGrossPrice());
+        return Objects.hash(super.hashCode(), totalPeriod, periodCost, getGrossPrice());
     }
 }
