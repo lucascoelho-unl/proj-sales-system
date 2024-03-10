@@ -17,6 +17,8 @@ public class CsvToSql {
         storePersonAddress("testOutput/store.txt");
 
         itemToSql("testOutput/items.txt");
+
+        saleSql("testOutput/sales.txt");
     }
 
     public static List<String> getEmail() throws IOException {
@@ -83,10 +85,10 @@ public class CsvToSql {
 
         for (Person person : people) {
             var personAddress = person.getAddress();
-            var indexAddress = addressList.indexOf(personAddress) + 1;
+            var addressId = addressList.indexOf(personAddress) + 1;
             var indexListPeople = people.indexOf(person);
 
-            writer.write(String.format("('%s', '%s', '%s', '%d')", person.getUuid(), person.getFirstName(), person.getLastName(), indexAddress));
+            writer.write(String.format("('%s', '%s', '%s', '%d')", person.getUuid(), person.getFirstName(), person.getLastName(), addressId));
             if (indexListPeople == people.size() -1){
                 writer.write(';');
             }
@@ -110,9 +112,9 @@ public class CsvToSql {
             var personEmailList = person.getEmailList();
             for (String email : emailList){
                 if (personEmailList.contains(email)){
-                    var indexPerson = people.indexOf(person);
+                    var personId = people.indexOf(person) + 1;
                     var index = people.indexOf(person);
-                    writer.write(String.format("('%s', '%d')", email, indexPerson + 1));
+                    writer.write(String.format("('%s', '%d')", email, personId));
 
                     if (index == people.size() -1){
                         writer.write(';');
@@ -138,10 +140,10 @@ public class CsvToSql {
         writer.newLine();
         for (Store store : stores){
             var storeCode = store.getStoreCode();
-            var addressIndex = addressList.indexOf(store.getAddress()) + 1;
-            var managerIndex = peopleList.indexOf(store.getManager()) + 1;
+            var addressId = addressList.indexOf(store.getAddress()) + 1;
+            var managerId = peopleList.indexOf(store.getManager()) + 1;
             var index = stores.indexOf(store);
-            writer.write(String.format("('%s', '%d', '%d')", storeCode, managerIndex, addressIndex));
+            writer.write(String.format("('%s', '%d', '%d')", storeCode, managerId, addressId));
             if (index == stores.size() - 1){
                 writer.write(';');
             }
@@ -155,12 +157,9 @@ public class CsvToSql {
     }
 
     public static void itemToSql(String filePath) throws IOException {
-        var personMap = DataProcessor.readPersonCSVtoMap("data/Persons.csv");
-        var storeMap = DataProcessor.readStoreCSVtoMap("data/Stores.csv");
         var personList = DataProcessor.readPersonCSVtoList("data/Persons.csv");
-        var salesMap = DataProcessor.readSaleCSVToMap(personMap, storeMap, "data/Sales.csv");
-        var itemMap = DataProcessor.readItemsCSVtoMap("data/Items.csv");
-        var itemProcessor = DataProcessor.processPurchasedItemsIntoSalesMap(salesMap,itemMap,personMap,"data/SaleItems.csv");
+        var salesMap = DataProcessor.readSaleCSVToMap("data/Sales.csv");
+        var itemProcessor = DataProcessor.processPurchasedItemsIntoSalesMap(salesMap,"data/SaleItems.csv");
 
         BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
 
@@ -201,13 +200,49 @@ public class CsvToSql {
                     writer.write("(uniqueCode, type, name, basePrice, totalHours, employeeId) values ");
                     var totalHours = ((Service) item).getTotalHours();
                     var employee = ((Service) item).getEmployee();
-                    var employeeIndex = personList.indexOf(employee) + 1;
-                    writer.write(String.format("('%s','S','%s','%.2f', '%.2f','%d');", uniqueCode, name, basePrice, totalHours, employeeIndex));
+                    var employeeId = personList.indexOf(employee) + 1;
+                    writer.write(String.format("('%s','S','%s','%.2f', '%.2f','%d');", uniqueCode, name, basePrice, totalHours, employeeId));
                     writer.newLine();
                 }
             }
         }
 
+        writer.close();
+    }
+
+    public static void saleSql(String filePath) throws IOException {
+        var saleList = DataProcessor.salesList("data/Sales.csv");
+        var personList = DataProcessor.readPersonCSVtoList("data/Persons.csv");
+        var storeList = DataProcessor.readStoreCSVtoList("data/Stores.csv");
+
+        List<String> storeCodeList = new ArrayList<>();
+        for (Store store : storeList){
+            storeCodeList.add(store.getStoreCode());
+        }
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+        writer.write("insert into Sale (uniqueCode, saleDate, customerId, salesmanId, storeId) \nvalues");
+        writer.newLine();
+        for (Sale sale : saleList){
+            var uniqueCode = sale.getUniqueCode();
+            var saleDate = sale.getDateTime();
+            var customer = sale.getCustomer();
+            var customerId = personList.indexOf(customer) + 1;
+            var salesman = sale.getSalesman();
+            var salesmanId = personList.indexOf(salesman) + 1;
+            var storeCode = sale.getStore().getStoreCode();
+            var storeId = storeCodeList.indexOf(storeCode) + 1;
+            var index = saleList.indexOf(sale);
+            writer.write(String.format("('%s', '%s', '%d', '%d', '%d')", uniqueCode,saleDate,customerId,salesmanId,storeId));
+
+            if (index == saleList.size() - 1){
+                writer.write(';');
+            }
+            else {
+                writer.write(',');
+                writer.newLine();
+            }
+        }
         writer.close();
     }
 }

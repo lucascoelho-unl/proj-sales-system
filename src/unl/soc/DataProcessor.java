@@ -1,5 +1,6 @@
 package unl.soc;
 
+import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -21,6 +22,7 @@ public class DataProcessor {
                                                                       Map<String, Item> itemsMap,
                                                                       Map<String, Person> personsMap,
                                                                       String path) {
+
 
         try (Scanner scanner = new Scanner(new File(path))) {
             scanner.nextLine();
@@ -68,12 +70,69 @@ public class DataProcessor {
     }
 
     /**
+     * Processes purchased items from a CSV file and updates the sales map accordingly.
+     *
+     * @param path The path to the CSV file containing purchased items.
+     */
+    public static Map<String, Sale> processPurchasedItemsIntoSalesMap(Map<String, Sale> salesMap, String path){
+
+        Map<String, Item> itemsMap = DataProcessor.readItemsCSVtoMap("data/Items.csv");
+        Map<String, Person> personsMap = DataProcessor.readPersonCSVtoMap("data/Persons.csv");
+
+        try (Scanner scanner = new Scanner(new File(path))) {
+            scanner.nextLine();
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                List<String> itemInSaleInfo = Arrays.asList(line.split(","));
+
+                if (itemInSaleInfo.size() < 2) {
+                    return salesMap;
+                }
+
+                String saleCode = itemInSaleInfo.get(0);
+                String itemCode = itemInSaleInfo.get(1);
+                Sale sale = salesMap.get(saleCode);
+                Item item = itemsMap.get(itemCode);
+
+                // Determine the type of item and add it to the sale
+                if (item instanceof ProductPurchase) {
+                    if (itemInSaleInfo.size() == 2) {
+                        sale.addItem(new ProductPurchase(item));
+                    } else {
+                        String startDate = itemInSaleInfo.get(2);
+                        String endDate = itemInSaleInfo.get(3);
+                        sale.addItem(new ProductLease(item, startDate, endDate));
+                    }
+                } else if (item instanceof Service) {
+                    double totalHours = Double.parseDouble(itemInSaleInfo.get(2));
+                    Person employee = personsMap.get(itemInSaleInfo.get(3));
+                    sale.addItem(new Service(item, totalHours, employee));
+                } else if (item instanceof DataPlan) {
+                    double totalGB = Double.parseDouble(itemInSaleInfo.get(2));
+                    sale.addItem(new DataPlan(item, totalGB));
+                } else if (item instanceof VoicePlan) {
+                    String phoneNumber = itemInSaleInfo.get(2);
+                    double totalPeriod = Double.parseDouble(itemInSaleInfo.get(3));
+                    sale.addItem(new VoicePlan(item, phoneNumber, totalPeriod));
+                }
+            }
+            return salesMap;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
      * Reads sales data from a CSV file and stores it in a map.
      *
      * @param path The path to the CSV file containing sales data.
      * @return A map where keys are sale codes and values are Sale objects.
      */
-    public static Map<String, Sale> readSaleCSVToMap(Map<String, Person> personMap, Map<String, Store> storeCodeMap, String path) {
+    public static Map<String, Sale> readSaleCSVToMap(String path) {
+        Map<String, Person> personMap = DataProcessor.readPersonCSVtoMap("data/Persons.csv");
+        Map<String, Store> storeCodeMap = DataProcessor.readStoreCSVtoMap("data/Stores.csv");
+
         try {
             Scanner s = new Scanner(new File(path));
 
@@ -284,6 +343,12 @@ public class DataProcessor {
 
     public static List<Sale> convertSalesMapToList(Map<String, Sale> salesMap) {
         return new ArrayList<>(salesMap.values());
+    }
+
+    public static List<Sale> salesList(String path) {
+        List<Sale> saleList = new ArrayList<>(readSaleCSVToMap(path).values());
+        Collections.reverse(saleList);
+        return saleList;
     }
 
     /**

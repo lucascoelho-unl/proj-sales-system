@@ -127,7 +127,7 @@ public class DataWriter {
             Map<String, Item> itemsMap = DataProcessor.readItemsCSVtoMap("data/Items.csv");
             Map<String, Person> personsMap = DataProcessor.readPersonCSVtoMap("data/Persons.csv");
             Map<String, Store> storeMap = DataProcessor.readStoreCSVtoMap("data/Stores.csv");
-            Map<String, Sale> salesMap = DataProcessor.readSaleCSVToMap(personsMap, storeMap, "data/Sales.csv");
+            Map<String, Sale> salesMap = DataProcessor.readSaleCSVToMap("data/Sales.csv");
             salesMap = DataProcessor.processPurchasedItemsIntoSalesMap(salesMap, itemsMap, personsMap, "data/SaleItems.csv");
 
             List<Sale> salesList = DataProcessor.convertSalesMapToList(salesMap);
@@ -208,7 +208,7 @@ public class DataWriter {
         Map<String, Item> itemsMap = DataProcessor.readItemsCSVtoMap("data/Items.csv");
         Map<String, Person> personsMap = DataProcessor.readPersonCSVtoMap("data/Persons.csv");
         Map<String, Store> storeMap = DataProcessor.readStoreCSVtoMap("data/Stores.csv");
-        Map<String, Sale> salesMap = DataProcessor.readSaleCSVToMap(personsMap, storeMap, "data/Sales.csv");
+        Map<String, Sale> salesMap = DataProcessor.readSaleCSVToMap("data/Sales.csv");
         salesMap = DataProcessor.processPurchasedItemsIntoSalesMap(salesMap, itemsMap, personsMap, "data/SaleItems.csv");
 
         List<Sale> salesList = DataProcessor.convertSalesMapToList(salesMap);
