@@ -1,8 +1,11 @@
 package com.yrl;
 
+import unl.soc.DataProcessor;
 import unl.soc.DataWriter;
 
-import javax.xml.crypto.Data;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  * The SalesReport class generates a summary report of sales data.
