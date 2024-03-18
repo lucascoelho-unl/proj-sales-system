@@ -8,5 +8,8 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="lib" level="project" />
+    <orderEntry type="library" name="mysql.connector.j" level="project" />
+    <orderEntry type="library" name="springframework.spring.jdbc" level="project" />
+    <orderEntry type="library" name="io.github.cdimascio.dotenv.java" level="project" />
   </component>
 </module>

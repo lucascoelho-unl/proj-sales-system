@@ -1,6 +1,5 @@
 package unl.soc;
 
-import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -14,14 +13,20 @@ import java.util.*;
 public class DataProcessor {
 
     /**
-     * Processes purchased items from a CSV file and updates the sales map accordingly.
+     * Fills the provided sales map with items from a CSV file located at the given path.
+     * Uses pre-existing maps of items and persons to retrieve additional information.
      *
-     * @param path The path to the CSV file containing purchased items.
+     * @param salesMap The map of sales where items will be added.
+     * @param itemsMap The map containing item codes mapped to their respective items.
+     * @param personsMap The map containing person IDs mapped to their respective person objects.
+     * @param path The path to the CSV file containing sale information.
+     * @return The updated sales map after adding items from the CSV file, or null if the file is not found.
      */
-    public static Map<String, Sale> processPurchasedItemsIntoSalesMap(Map<String, Sale> salesMap,
-                                                                      Map<String, Item> itemsMap,
-                                                                      Map<String, Person> personsMap,
-                                                                      String path) {
+    public static Map<String, Sale> fillSalesWithItemsMap(Map<String, Sale> salesMap,
+                                                          Map<String, Item> itemsMap,
+                                                          Map<String, Person> personsMap,
+                                                          String path) {
+
 
 
         try (Scanner scanner = new Scanner(new File(path))) {
@@ -38,7 +43,6 @@ public class DataProcessor {
                 String itemCode = itemInSaleInfo.get(1);
                 Sale sale = salesMap.get(saleCode);
                 Item item = itemsMap.get(itemCode);
-                double basePrice = item.getBasePrice();
 
                 // Determine the type of item and add it to the sale
                 if (item instanceof ProductPurchase) {
@@ -70,12 +74,44 @@ public class DataProcessor {
     }
 
     /**
-     * Processes purchased items from a CSV file and updates the sales map accordingly.
+     * Fills the provided sales map with items from a CSV file located at the given path.
+     * Reads items and persons data from separate CSV files to create a comprehensive map of items and persons.
      *
-     * @param path The path to the CSV file containing purchased items.
+     * @param salesMap The map of sales where items will be added.
+     * @param path The path to the CSV file containing sale information.
+     * @return The updated sales map after adding items from the CSV file, or null if the file is not found.
      */
-    public static Map<String, Sale> processPurchasedItemsIntoSalesMap(Map<String, Sale> salesMap, String path){
+    public static Map<String, Sale> fillSalesWithItemsMap(Map<String, Sale> salesMap, String path){
 
+        Map<String, Item> itemsMap = DataProcessor.readItemsCSVtoMap("data/Items.csv");
+        Map<String, Person> personsMap = DataProcessor.readPersonCSVtoMap("data/Persons.csv");
+        return fillSalesWithItemsMap(salesMap,itemsMap, personsMap, path);
+    }
+
+    /**
+     * Returns sales map with purchase items from a CSV file located at the given path.
+     * Reads items and persons data from separate CSV files to create a comprehensive map of items and persons.
+     *
+     *
+     * @param path The path to the CSV file containing sale information.
+     * @return The updated sales map after adding items from the CSV file, or null if the file is not found.
+     */
+    public static Map<String, Sale> processedSalesWithItemsMap(String path){
+
+        Map<String, Sale> salesMap = DataProcessor.readSaleCSVToMap("data/Sales.csv");
+        return fillSalesWithItemsMap(salesMap, path);
+    }
+
+    /**
+     * Generates a map of sales with purchased items based on the provided CSV file path.
+     * Reads sales, items, and persons data from separate CSV files to create maps.
+     *
+     * @param path The path to the CSV file containing sale information.
+     * @return A map of sales with purchased items, or null if the file is not found.
+     */
+    public static Map<String, Sale> purchasedItemsSalesMap(String path){
+
+        Map<String, Sale> salesMap = DataProcessor.readSaleCSVToMap("data/Sales.csv");
         Map<String, Item> itemsMap = DataProcessor.readItemsCSVtoMap("data/Items.csv");
         Map<String, Person> personsMap = DataProcessor.readPersonCSVtoMap("data/Persons.csv");
 
@@ -214,48 +250,6 @@ public class DataProcessor {
     }
 
     /**
-     * Parses a Map of items, where keys are item codes and values are Item objects, into categorized maps
-     * based on their types and constructs a map containing these categorized maps for product purchases,
-     * product leases, voice plans, data plans, and services.
-     *
-     * @param itemsMap A Map<String, Item> where keys are item codes and values are Item objects.
-     * @return A Map<String, Object> where keys are item types and values are categorized maps (e.g., product purchases, services).
-     */
-    public static Map<String, Object> itemsMapParse(Map<String, Item> itemsMap) {
-        Map<String, ProductPurchase> productPurchaseList = new HashMap<>();
-        Map<String, VoicePlan> voicePlanMap = new HashMap<>();
-        Map<String, DataPlan> dataPlanMap = new HashMap<>();
-        Map<String, ProductLease> productLeaseMap = new HashMap<>();
-        Map<String, Service> serviceMap = new HashMap<>();
-
-        Map<String, Object> result = new HashMap<>(Map.of(
-                "purchase", productPurchaseList,
-                "lease", productLeaseMap,
-                "voicePlan", voicePlanMap,
-                "dataPlan", dataPlanMap,
-                "service", serviceMap));
-
-        for (Item item : itemsMap.values()) {
-            if (item instanceof ProductPurchase) {
-                productPurchaseList.put(item.getUniqueCode(), (ProductPurchase) item);
-            } else if (item instanceof Service) {
-                serviceMap.put(item.getUniqueCode(), (Service) item);
-            } else if (item instanceof VoicePlan) {
-                voicePlanMap.put(item.getUniqueCode(), (VoicePlan) item);
-            } else if (item instanceof DataPlan) {
-                dataPlanMap.put(item.getUniqueCode(), (DataPlan) item);
-            }
-        }
-
-        result.put("purchase", productPurchaseList);
-        result.put("service", serviceMap);
-        result.put("voicePlan", voicePlanMap);
-        result.put("dataPlan", dataPlanMap);
-
-        return result;
-    }
-
-    /**
      * Reads data from a CSV file containing information about persons and converts it into a Map with UUIDs as keys
      * and corresponding Person objects as values.
      *
@@ -342,13 +336,17 @@ public class DataProcessor {
     }
 
     public static List<Sale> convertSalesMapToList(Map<String, Sale> salesMap) {
-        return new ArrayList<>(salesMap.values());
-    }
-
-    public static List<Sale> salesList(String path) {
-        List<Sale> saleList = new ArrayList<>(readSaleCSVToMap(path).values());
+        List<Sale> saleList = new ArrayList<>(salesMap.values());
         Collections.reverse(saleList);
         return saleList;
+    }
+
+    public static List<Sale> rawSalesList(String path) {
+        return new ArrayList<>(Objects.requireNonNull(readSaleCSVToMap(path)).values());
+    }
+
+    public static List<Sale> processedSalesList(String path) {
+        return new ArrayList<>(Objects.requireNonNull(purchasedItemsSalesMap(path)).values());
     }
 
     /**
@@ -394,16 +392,6 @@ public class DataProcessor {
     public static List<Person> convertPersonMapToList(Map<String, Person> personMap) {
         return new ArrayList<>(personMap.values());
     }
-
-    /**
-     * Reads data from a CSV file containing information about stores and converts it into a Map with store codes as keys
-     * and corresponding Store objects as values. Additionally, it associates each store with a manager from the provided
-     * Persons CSV file.
-     *
-     * @param path The path to the CSV file containing store information.
-     * @return A Map<String, Store> where keys are store codes and values are Store objects created from the data in the CSV file.
-     * @throws RuntimeException if there is an issue reading the file or parsing the data.
-     */
 
     /**
      * Reads data from a CSV file containing information about stores and converts it into a List of Store objects.

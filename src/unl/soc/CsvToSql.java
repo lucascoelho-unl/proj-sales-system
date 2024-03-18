@@ -1,248 +1,487 @@
 package unl.soc;
 
-import javax.xml.crypto.Data;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import com.mysql.cj.jdbc.MysqlDataSource;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import io.github.cdimascio.dotenv.Dotenv;
+
+import javax.sql.DataSource;
+import java.sql.*;
+import java.util.*;
 
 public class CsvToSql {
-    public static void main(String[] args) throws IOException {
-        getAllAddressCsv("testOutput/address.txt");
-        getAllPerson("testOutput/personAddress.txt");
+    public static void main(String[] args) throws SQLException {
+        try (Connection conn = getMySqlDataSource().getConnection()) {
+            cleanDB(conn);
+            createDB(conn);
+            fillDB(conn);
+        }
 
-        emailPerson("testOutput/email.txt");
-
-        storePersonAddress("testOutput/store.txt");
-
-        itemToSql("testOutput/items.txt");
-
-        saleSql("testOutput/sales.txt");
     }
 
-    public static List<String> getEmail() throws IOException {
-        var people = DataProcessor.readPersonCSVtoList("data/Persons.csv");
-        List<String> emailsList = new ArrayList<>();
+    private static DataSource getMySqlDataSource() {
+        MysqlDataSource dataSource = new MysqlDataSource();
+        Dotenv dotenv;
+        dotenv = Dotenv.configure().load();
+        dataSource.setServerName(dotenv.get("SERVER_NAME"));
+        dataSource.setPortNumber(Integer.parseInt(dotenv.get("PORT_NUMBER")));
+        dataSource.setDatabaseName(dotenv.get("DATABASE_NAME"));
+        dataSource.setUser(dotenv.get("USERNAME"));
+        dataSource.setPassword(dotenv.get("PASSWORD"));
+        return dataSource;
+    }
+
+    public static void insertAddressToDB(Connection conn) throws SQLException {
+        String insertStatement = "insert into Address (street, city, state, zipCode) values (?,?,?,?)";
+        PreparedStatement ps = conn.prepareStatement(insertStatement);
+
+        List<Person> people = DataProcessor.readPersonCSVtoList("data/Persons.csv");
+        List<Store> stores = DataProcessor.readStoreCSVtoList("data/Stores.csv");
 
         for (Person person : people) {
-            var emails = person.getEmailList();
-            emailsList.addAll(emails);
+            Address address = person.getAddress();
+            ps.setString(1, address.getStreet());
+            ps.setString(2, address.getCity());
+            ps.setString(3, address.getState());
+            ps.setInt(4, address.getZipCode());
+            ps.addBatch();
         }
-        return emailsList;
+        for (Store store : stores) {
+            Address address = store.getAddress();
+            ps.setString(1, address.getStreet());
+            ps.setString(2, address.getCity());
+            ps.setString(3, address.getState());
+            ps.setInt(4, address.getZipCode());
+            ps.addBatch();
+        }
+        ps.executeBatch();
     }
 
-    public static void getAllAddressCsv(String filePathOutput) throws IOException {
-        var people = DataProcessor.readPersonCSVtoList("data/Persons.csv");
-        var stores = DataProcessor.readStoreCSVtoList("data/Stores.csv");
-        BufferedWriter writer = new BufferedWriter(new FileWriter(filePathOutput));
-        writer.write("insert into Address (street, city, state, zipCode) \nvalues");
-        writer.newLine();
+    public static void insertPersonToDB(Connection conn) throws SQLException {
+        String statement = "insert into Person (uuid, firstName, lastName, addressId) values (?,?,?,?)";
+        PreparedStatement ps = conn.prepareStatement(statement);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(getMySqlDataSource());
+
+        List<Person> people = DataProcessor.readPersonCSVtoList("data/Persons.csv");
         for (Person person : people) {
-            var address = person.getAddress();
-            writer.write(String.format("('%s','%s','%s','%d'),", address.getStreet(), address.getCity(),address.getState(), address.getZipCode()));
-            writer.newLine();
-        }
-        for (var store : stores) {
-            var address = store.getAddress();
-            var index = stores.indexOf(store);
-            writer.write(String.format("('%s','%s','%s','%d')", address.getStreet(), address.getCity(),address.getState(), address.getZipCode()));
-            if (index == stores.size() - 1){
-                writer.write(";");
+            Address address = person.getAddress();
+
+            ps.setString(1, person.getUuid());
+            ps.setString(2, person.getFirstName());
+            ps.setString(3, person.getLastName());
+            try {
+                String addressIdQuery = "select addressId from Address where zipCode=? and street=?";
+                Integer addressId = jdbcTemplate.queryForObject(addressIdQuery, Integer.class, address.getZipCode(), address.getStreet());
+                if (addressId == null) {
+                    throw new NullPointerException();
+                }
+                ps.setInt(4, addressId);
+            } catch (SQLException e) {
+                ps.setNull(4, Types.INTEGER);
             }
-            else{
-                writer.write(",");
-                writer.newLine();
-            }
+            ps.addBatch();
         }
-        writer.close();
+        ps.executeBatch();
     }
 
-    public static List<Address> getAllAddressList() throws IOException {
-        var people = DataProcessor.readPersonCSVtoList("data/Persons.csv");
-        var stores = DataProcessor.readStoreCSVtoList("data/Stores.csv");
-        List<Address> addressList = new ArrayList<>();
-        for (Person person : people) {
-            var address = person.getAddress();
-            addressList.add(address);
+    public static void insertEmailToDB(Connection conn) throws SQLException {
+        String emailInsert = "insert into Email(address, personId) values (?,?)";
+        PreparedStatement ps = conn.prepareStatement(emailInsert);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(getMySqlDataSource());
 
-        }
-        for (var store : stores) {
-            var address = store.getAddress();
-            addressList.add(address);
-        }
-        return addressList;
-    }
-
-    public static void getAllPerson(String filePath) throws IOException {
-        var people = DataProcessor.readPersonCSVtoList("data/Persons.csv");
-
-        List<Address> addressList = getAllAddressList();
-
-        BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-        writer.write("insert into Person (uuid, firstName, lastName, addressId) \nvalues");
-        writer.newLine();
+        List<Person> people = DataProcessor.readPersonCSVtoList("data/Persons.csv");
 
         for (Person person : people) {
-            var personAddress = person.getAddress();
-            var addressId = addressList.indexOf(personAddress) + 1;
-            var indexListPeople = people.indexOf(person);
+            List<String> emailList = person.getEmailList();
 
-            writer.write(String.format("('%s', '%s', '%s', '%d')", person.getUuid(), person.getFirstName(), person.getLastName(), addressId));
-            if (indexListPeople == people.size() -1){
-                writer.write(';');
-            }
-            else {
-                writer.write(',');
-                writer.newLine();
-            }
+            //Get Person
+            String personQuery = "select personId from Person where uuid=?";
+            Integer personId = jdbcTemplate.queryForObject(personQuery, Integer.class, person.getUuid());
 
+            for (String email : emailList) {
+                ps.setString(1, email);
+                if (personId == null) {
+                    throw new NullPointerException();
+                }
+                ps.setInt(2, personId);
+                ps.addBatch();
+            }
         }
-        writer.close();
+        ps.executeBatch();
     }
 
-    public static void emailPerson(String filePath) throws IOException {
-        var people = DataProcessor.readPersonCSVtoList("data/Persons.csv");
-        var emailList = getEmail();
-        BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-        writer.write("insert into Email (address, personId) \nvalues");
-        writer.newLine();
+    public static void insertStoreDB(Connection conn) throws SQLException, DataAccessException {
+        String insertQuery = "insert into Store (storeCode, managerId, addressId) values (?,?,?)";
+        PreparedStatement ps = conn.prepareStatement(insertQuery);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(getMySqlDataSource());
+        List<Store> stores = DataProcessor.readStoreCSVtoList("data/Stores.csv");
 
-        for (Person person : people){
-            var personEmailList = person.getEmailList();
-            for (String email : emailList){
-                if (personEmailList.contains(email)){
-                    var personId = people.indexOf(person) + 1;
-                    var index = people.indexOf(person);
-                    writer.write(String.format("('%s', '%d')", email, personId));
+        for (Store store : stores) {
+            String storeCode = store.getStoreCode();
+            Person manager = store.getManager();
+            Address address = store.getAddress();
 
-                    if (index == people.size() -1){
-                        writer.write(';');
+            //Get Manager and Address
+            String managerQuery = "select personId from Person where uuid=?";
+            String addressQuery = "select addressId from Address where street=? and zipCode=?";
+
+            Integer managerId = jdbcTemplate.queryForObject(managerQuery, Integer.class, manager.getUuid());
+            Integer addressId = jdbcTemplate.queryForObject(addressQuery, Integer.class, address.getStreet(), address.getZipCode());
+
+            ps.setString(1, storeCode);
+            if (managerId == null) {
+                throw new NullPointerException();
+            }
+            ps.setInt(2, managerId);
+            if (addressId == null) {
+                throw new NullPointerException();
+            }
+            ps.setInt(3, addressId);
+            ps.addBatch();
+        }
+        ps.executeBatch();
+    }
+
+    public static void itemToSql(Connection conn) throws SQLException {
+        PreparedStatement ps;
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(getMySqlDataSource());
+
+        Map<String, Sale> itemProcessor = DataProcessor.processedSalesWithItemsMap("data/SaleItems.csv");
+        if (itemProcessor == null) {
+            throw new NullPointerException();
+        }
+        List<Item> allItemSale = itemProcessor.values().stream()
+                .flatMap(sale -> sale.getItemsList().stream())
+                .toList();
+        List<Item> itemList = new ArrayList<>();
+        Set<String> itemToStringSet = new HashSet<>();
+
+        for (Item item : allItemSale) {
+            if (!itemToStringSet.contains(item.toString())) {
+                itemToStringSet.add(item.toString());
+                itemList.add(item);
+            }
+        }
+
+        for (Item item : itemList) {
+            String uniqueCode = item.getUniqueCode();
+            String name = item.getName();
+            double basePrice = item.getBasePrice();
+
+            if (item instanceof ProductLease) {
+                String productLeaseInsert = "insert into Item (uniqueCode, type, name, basePrice, startDate, endDate) values (?,'L',?,?,?,?)";
+                String startDate = ((ProductLease) item).getStartDate().toString();
+                String endDate = ((ProductLease) item).getEndDate().toString();
+
+                ps = conn.prepareStatement(productLeaseInsert);
+                ps.setString(1, uniqueCode);
+                ps.setString(2, name);
+                ps.setDouble(3, basePrice);
+                ps.setString(4, startDate);
+                ps.setString(5, endDate);
+            } else if (item instanceof ProductPurchase) {
+                String productPurchaseInsert = "insert into Item (uniqueCode, type, name, basePrice) values (?,'P',?,?)";
+
+                ps = conn.prepareStatement(productPurchaseInsert);
+                ps.setString(1, uniqueCode);
+                ps.setString(2, name);
+                ps.setDouble(3, basePrice);
+                ps.executeUpdate();
+            } else if (item instanceof DataPlan) {
+                String productPurchaseInsert = "insert into Item (uniqueCode, type, name, basePrice,totalGb) values (?,'D',?,?,?)";
+                double totalGB = ((DataPlan) item).getTotalGB();
+
+                ps = conn.prepareStatement(productPurchaseInsert);
+                ps.setString(1, uniqueCode);
+                ps.setString(2, name);
+                ps.setDouble(3, basePrice);
+                ps.setDouble(4, totalGB);
+                ps.executeUpdate();
+            } else if (item instanceof VoicePlan) {
+                String productPurchaseInsert = "insert into Item (uniqueCode, type, name, basePrice, phoneNumber, totalPeriod) values (?,'V',?,?,?,?)";
+                String phoneNumber = ((VoicePlan) item).getPhoneNumber();
+                double totalPeriod = ((VoicePlan) item).getTotalPeriod();
+                ps = conn.prepareStatement(productPurchaseInsert);
+                ps.setString(1, uniqueCode);
+                ps.setString(2, name);
+                ps.setDouble(3, basePrice);
+                ps.setString(4, phoneNumber);
+                ps.setDouble(5, totalPeriod);
+                ps.executeUpdate();
+
+            } else if (item instanceof Service) {
+                String productPurchaseInsert = "insert into Item (uniqueCode, type, name, basePrice, totalHours, employeeId) values (?,'S',?,?,?,?)";
+                double totalHours = ((Service) item).getTotalHours();
+
+                //Get employee
+                String employeeQuery = "Select personId from Person where uuid=?";
+
+                Person employee = ((Service) item).getEmployee();
+                Integer employeeId = jdbcTemplate.queryForObject(employeeQuery, Integer.class, employee.getUuid());
+
+                ps = conn.prepareStatement(productPurchaseInsert);
+                ps.setString(1, uniqueCode);
+                ps.setString(2, name);
+                ps.setDouble(3, basePrice);
+                ps.setDouble(4, totalHours);
+                if (employeeId == null) {
+                    throw new NullPointerException("employeeId is null");
+                }
+                ps.setInt(5, employeeId);
+                ps.executeUpdate();
+            }
+        }
+    }
+
+    public static void saleSql(Connection conn) throws SQLException {
+        PreparedStatement ps;
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(getMySqlDataSource());
+        List<Sale> saleList = DataProcessor.rawSalesList("data/Sales.csv");
+
+        for (Sale sale : saleList) {
+            String uniqueCode = sale.getUniqueCode();
+            String saleDate = sale.getDateTime().toString();
+            Person customer = sale.getCustomer();
+            Person salesman = sale.getSalesman();
+            Store store = sale.getStore();
+
+            //Get customer and salesman
+            String personQuery = "select personId from Person where uuid=?";
+            Integer customerId = jdbcTemplate.queryForObject(personQuery, Integer.class, customer.getUuid());
+            Integer salesmanId = jdbcTemplate.queryForObject(personQuery, Integer.class, salesman.getUuid());
+
+            //Get store
+            String storeQuery = "select storeId from Store where storeCode=?";
+            Integer storeId = jdbcTemplate.queryForObject(storeQuery, Integer.class, store.getStoreCode());
+
+            String insertSQL = "insert into Sale (uniqueCode, saleDate, customerId, salesmanId, storeId) values (?,?,?,?,?)";
+            ps = conn.prepareStatement(insertSQL);
+            ps.setString(1, uniqueCode);
+            ps.setString(2, saleDate);
+            if (customerId == null) {
+                throw new NullPointerException();
+            }
+            ps.setInt(3, customerId);
+            if (salesmanId == null) {
+                throw new NullPointerException();
+            }
+            ps.setInt(4, salesmanId);
+            if (storeId == null) {
+                throw new NullPointerException();
+            }
+            ps.setInt(5, storeId);
+            ps.executeUpdate();
+        }
+    }
+
+    public static void itemSaleSql(Connection conn) throws SQLException {
+        PreparedStatement ps;
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(getMySqlDataSource());
+
+        List<Sale> saleProcessedList = DataProcessor.processedSalesList("data/SaleItems.csv");
+
+        for (Sale sale : saleProcessedList) {
+            String saleIdQuery = "select saleId from Sale where uniqueCode=?";
+            Integer saleId = jdbcTemplate.queryForObject(saleIdQuery, Integer.class, sale.getUniqueCode());
+            if (saleId == null) {
+                throw new NullPointerException();
+            }
+
+            List<Item> itemFromSaleList = sale.getItemsList();
+            for (Item item : itemFromSaleList) {
+                String itemType = verifyItemType(item);
+
+                switch (Objects.requireNonNull(itemType)) {
+                    case "V" -> {
+                        VoicePlan itemVoicePlan = (VoicePlan) item;
+
+                        String voiceIdQuery = "select itemId from Item where phoneNumber =? and uniqueCode =?";
+                        Integer itemId = jdbcTemplate.queryForObject(voiceIdQuery, Integer.class, itemVoicePlan.getPhoneNumber(), itemVoicePlan.getUniqueCode());
+
+                        String insertSQL = "insert into ItemSale (itemId, saleId) values (?,?)";
+                        ps = conn.prepareStatement(insertSQL);
+                        if (itemId == null) {
+                            throw new NullPointerException();
+                        }
+                        ps.setInt(1, itemId);
+                        ps.setInt(2, saleId);
+                        ps.executeUpdate();
                     }
-                    else {
-                        writer.write(',');
-                        writer.newLine();
+                    case "L" -> {
+                        ProductLease itemLease = (ProductLease) item;
+
+                        String itemLeaseIdQuery = "select itemId from Item where uniqueCode=? and startDate=? and endDate=?";
+                        Integer itemId = jdbcTemplate.queryForObject(itemLeaseIdQuery, Integer.class, itemLease.getUniqueCode(), itemLease.getStartDate(), itemLease.getEndDate());
+
+                        String insertSQL = "insert into ItemSale (itemId, saleId) values (?,?)";
+                        ps = conn.prepareStatement(insertSQL);
+                        if (itemId == null) {
+                            throw new NullPointerException();
+                        }
+                        ps.setInt(1, itemId);
+                        ps.setInt(2, saleId);
+                        ps.executeUpdate();
+                    }
+                    case "D" -> {
+                        DataPlan itemData = (DataPlan) item;
+
+                        String dataPlanItemId = "select itemId from Item where uniqueCode=? and totalGb=?";
+                        Integer itemId = jdbcTemplate.queryForObject(dataPlanItemId, Integer.class, itemData.getUniqueCode(), itemData.getTotalGB());
+
+                        String insertSQL = "insert into ItemSale (itemId, saleId) values (?,?)";
+                        ps = conn.prepareStatement(insertSQL);
+                        if (itemId == null) {
+                            throw new NullPointerException();
+                        }
+                        ps.setInt(1, itemId);
+                        ps.setInt(2, saleId);
+                        ps.executeUpdate();
+                    }
+                    case "S" -> {
+                        Service itemService = (Service) item;
+
+                        String employeeQueryId = "select personId from Person where uuid=?";
+                        Integer employeeId = jdbcTemplate.queryForObject(employeeQueryId, Integer.class, itemService.getEmployee().getUuid());
+
+                        String itemQuery = "select itemId from Item where uniqueCode=? and totalHours=? and employeeId=?";
+                        Integer itemId = jdbcTemplate.queryForObject(itemQuery, Integer.class, itemService.getUniqueCode(), itemService.getTotalHours(), employeeId);
+
+                        String insertSQL = "insert into ItemSale (itemId, saleId) values (?,?)";
+                        ps = conn.prepareStatement(insertSQL);
+                        if (itemId == null) {
+                            throw new NullPointerException();
+                        }
+                        ps.setInt(1, itemId);
+                        ps.setInt(2, saleId);
+                        ps.executeUpdate();
+                    }
+                    default -> {
+                        ProductPurchase productPurchase = (ProductPurchase) item;
+                        String s = "select itemId from Item \nwhere uniqueCode=? and startDate is null and endDate is null";
+
+                        ps = conn.prepareStatement(s);
+                        ps.setString(1, productPurchase.getUniqueCode());
+                        ResultSet rs = ps.executeQuery();
+                        int itemId = -1;
+
+                        while (rs.next()) {
+                            itemId = rs.getInt("itemId");
+                        }
+
+                        String insertSQL = "insert into ItemSale (itemId, saleId) values (?,?)";
+                        ps = conn.prepareStatement(insertSQL);
+                        ps.setInt(1, itemId);
+                        ps.setInt(2, saleId);
+                        ps.executeUpdate();
                     }
                 }
+
             }
         }
-        writer.close();
+
     }
 
-    public static void storePersonAddress(String filePath) throws IOException {
-        var peopleList = DataProcessor.readPersonCSVtoList("data/Persons.csv");
-        var stores = DataProcessor.readStoreCSVtoList("data/Stores.csv");
-
-        List<Address> addressList = getAllAddressList();
-
-        BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-        writer.write("insert into Store (storeCode, managerId, addressId) \nvalues ");
-        writer.newLine();
-        for (Store store : stores){
-            var storeCode = store.getStoreCode();
-            var addressId = addressList.indexOf(store.getAddress()) + 1;
-            var managerId = peopleList.indexOf(store.getManager()) + 1;
-            var index = stores.indexOf(store);
-            writer.write(String.format("('%s', '%d', '%d')", storeCode, managerId, addressId));
-            if (index == stores.size() - 1){
-                writer.write(';');
-            }
-            else {
-                writer.write(',');
-                writer.newLine();
-            }
+    public static String verifyItemType(Item item) {
+        if (item instanceof VoicePlan) {
+            return "V";
+        } else if (item instanceof DataPlan) {
+            return "D";
+        } else if (item instanceof ProductPurchase) {
+            return "P";
+        } else if (item instanceof ProductLease) {
+            return "L";
+        } else if (item instanceof Service) {
+            return "S";
         }
-
-        writer.close();
+        return null;
     }
 
-    public static void itemToSql(String filePath) throws IOException {
-        var personList = DataProcessor.readPersonCSVtoList("data/Persons.csv");
-        var salesMap = DataProcessor.readSaleCSVToMap("data/Sales.csv");
-        var itemProcessor = DataProcessor.processPurchasedItemsIntoSalesMap(salesMap,"data/SaleItems.csv");
-
-        BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-
-        assert itemProcessor != null;
-        for (Sale sale : itemProcessor.values()){
-            var items = sale.getItemsList();
-            for (Item item : items){
-                var uniqueCode = item.getUniqueCode();
-                var name = item.getName();
-                var basePrice = item.getBasePrice();
-                writer.write("insert into Item ");
-                if(item instanceof ProductLease){
-                    writer.write("(uniqueCode, type, name, basePrice, startDate, endDate) values ");
-                    var startDate = ((ProductLease) item).getStartDate();
-                    var endDate = ((ProductLease) item).getEndDate();
-                    writer.write(String.format("('%s','L','%s','%.2f', '%s','%s');", uniqueCode, name, basePrice, startDate, endDate));
-                    writer.newLine();
-                }
-                else if(item instanceof ProductPurchase){
-                    writer.write("(uniqueCode, type, name, basePrice) values ");
-                    writer.write(String.format("('%s','P','%s','%.2f');", uniqueCode, name, basePrice));
-                    writer.newLine();
-                }
-                else if(item instanceof DataPlan){
-                    writer.write("(uniqueCode, type, name, basePrice,totalGb) values ");
-                    var totalGB = ((DataPlan) item).getTotalGB();
-                    writer.write(String.format("('%s','D','%s','%.2f','%.2f');", uniqueCode, name, basePrice, totalGB));
-                    writer.newLine();
-                }
-                else if(item instanceof VoicePlan){
-                    writer.write("(uniqueCode, type, name, basePrice, phoneNumber, totalPeriod) values ");
-                    var phoneNumber = ((VoicePlan) item).getPhoneNumber();
-                    var totalPeriod = ((VoicePlan) item).getTotalPeriod();
-                    writer.write(String.format("('%s','V','%s','%.2f', '%s','%.2f');", uniqueCode, name, basePrice, phoneNumber, totalPeriod));
-                    writer.newLine();
-                }
-                else if(item instanceof Service){
-                    writer.write("(uniqueCode, type, name, basePrice, totalHours, employeeId) values ");
-                    var totalHours = ((Service) item).getTotalHours();
-                    var employee = ((Service) item).getEmployee();
-                    var employeeId = personList.indexOf(employee) + 1;
-                    writer.write(String.format("('%s','S','%s','%.2f', '%.2f','%d');", uniqueCode, name, basePrice, totalHours, employeeId));
-                    writer.newLine();
-                }
-            }
-        }
-
-        writer.close();
+    public static void cleanDB(Connection conn) throws SQLException {
+        String drop = "drop table if exists Email, ItemSale, Item, Sale, Store, Person, Address";
+        Statement ps = conn.createStatement();
+        ps.execute(drop);
     }
 
-    public static void saleSql(String filePath) throws IOException {
-        var saleList = DataProcessor.salesList("data/Sales.csv");
-        var personList = DataProcessor.readPersonCSVtoList("data/Persons.csv");
-        var storeList = DataProcessor.readStoreCSVtoList("data/Stores.csv");
+    public static void createDB(Connection conn) throws SQLException {
+        Statement ps = conn.createStatement();
+        List<String> createTbList = new ArrayList<>();
 
-        List<String> storeCodeList = new ArrayList<>();
-        for (Store store : storeList){
-            storeCodeList.add(store.getStoreCode());
+        createTbList.add("create table if not exists Address(addressId int primary key not null auto_increment, street varchar(255) not null, city varchar(255) not null, state varchar(255) not null, zipCode int not null)");
+        createTbList.add(
+                "create table if not exists Person(" +
+                        "personId int primary key not null auto_increment," +
+                        "uuid varchar(255) not null," +
+                        "firstName varchar(255)," +
+                        "lastName varchar(255) not null," +
+                        "addressId int not null," +
+                        "FOREIGN KEY (addressId) references Address(addressId))");
+
+        createTbList.add(
+                "create table if not exists Email(" +
+                        "emailId int primary key not null auto_increment," +
+                        "address varchar(255) not null," +
+                        "personId int not null," +
+                        "FOREIGN KEY (personId) references Person(personId))"
+        );
+        createTbList.add(
+                "create table if not exists Store(" +
+                        "storeId int primary key not null auto_increment," +
+                        "storeCode varchar(255) not null," +
+                        "managerId int not null," +
+                        "addressId int not null," +
+                        "FOREIGN KEY (managerId) references Person(personId)," +
+                        "FOREIGN KEY (addressId) references Address(addressId))"
+        );
+        createTbList.add(
+                "create table if not exists Sale(" +
+                        "saleId int primary key not null auto_increment," +
+                        "uniqueCode varchar(255) not null," +
+                        "saleDate varchar(255)," +
+                        "customerId int not null ," +
+                        "salesmanId int not null ," +
+                        "storeId int not null ," +
+                        "FOREIGN KEY (customerId) references Person(personId)," +
+                        "FOREIGN KEY (salesmanId) references Person(personId)," +
+                        "FOREIGN KEY (storeId) references Store(storeId))"
+        );
+        createTbList.add(
+                "create table if not exists Item(" +
+                        "itemId int primary key not null auto_increment," +
+                        "uniqueCode varchar(255) not null," +
+                        "name varchar(255) not null," +
+                        "type varchar(1) not null," +
+                        "basePrice double not null," +
+                        "startDate varchar(40)," +
+                        "endDate varchar(40)," +
+                        "totalGb double," +
+                        "totalHours double," +
+                        "employeeId int," +
+                        "totalPeriod double," +
+                        "phoneNumber varchar(40)," +
+                        "FOREIGN KEY (employeeId) references Person(personId))"
+        );
+        createTbList.add(
+                "create table if not exists ItemSale(" +
+                        "itemSaleId int PRIMARY KEY auto_increment," +
+                        "itemId int," +
+                        "saleId int," +
+                        "FOREIGN KEY (itemId) references Item(itemId)," +
+                        "FOREIGN KEY (saleId) references Sale(saleId))"
+        );
+        for (String query : createTbList) {
+            ps.execute(query);
         }
-
-        BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-        writer.write("insert into Sale (uniqueCode, saleDate, customerId, salesmanId, storeId) \nvalues");
-        writer.newLine();
-        for (Sale sale : saleList){
-            var uniqueCode = sale.getUniqueCode();
-            var saleDate = sale.getDateTime();
-            var customer = sale.getCustomer();
-            var customerId = personList.indexOf(customer) + 1;
-            var salesman = sale.getSalesman();
-            var salesmanId = personList.indexOf(salesman) + 1;
-            var storeCode = sale.getStore().getStoreCode();
-            var storeId = storeCodeList.indexOf(storeCode) + 1;
-            var index = saleList.indexOf(sale);
-            writer.write(String.format("('%s', '%s', '%d', '%d', '%d')", uniqueCode,saleDate,customerId,salesmanId,storeId));
-
-            if (index == saleList.size() - 1){
-                writer.write(';');
-            }
-            else {
-                writer.write(',');
-                writer.newLine();
-            }
-        }
-        writer.close();
     }
+
+    public static void fillDB(Connection conn) throws SQLException {
+        insertAddressToDB(conn);
+        insertPersonToDB(conn);
+        insertEmailToDB(conn);
+        insertStoreDB(conn);
+        itemToSql(conn);
+        saleSql(conn);
+        itemSaleSql(conn);
+    }
+
 }
+
