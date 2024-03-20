@@ -414,4 +414,19 @@ public class DataProcessor {
     public static List<Store> convertStoreMapToList(Map<String, Store> storeMap) {
         return new ArrayList<>(storeMap.values());
     }
+
+    public static String verifyItemType(Item item) {
+        if (item instanceof VoicePlan) {
+            return "V";
+        } else if (item instanceof DataPlan) {
+            return "D";
+        } else if (item instanceof ProductPurchase) {
+            return "P";
+        } else if (item instanceof ProductLease) {
+            return "L";
+        } else if (item instanceof Service) {
+            return "S";
+        }
+        return null;
+    }
 }

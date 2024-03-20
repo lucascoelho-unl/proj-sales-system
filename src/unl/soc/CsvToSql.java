@@ -1,32 +1,37 @@
 package unl.soc;
 
-import com.mysql.cj.jdbc.MysqlDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import io.github.cdimascio.dotenv.Dotenv;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Objects;
 
 public class CsvToSql {
-    public static void main(String[] args) throws SQLException {
-        try (Connection conn = getMySqlDataSource().getConnection()) {
+    public static void main(String[] args) {
+        try (Connection conn = getDataSource().getConnection()) {
             cleanDB(conn);
             createDB(conn);
             fillDB(conn);
+        } catch (SQLException e){
+           System.err.println("Error connecting to Database");
         }
-
     }
 
-    private static DataSource getMySqlDataSource() {
-        MysqlDataSource dataSource = new MysqlDataSource();
-        Dotenv dotenv;
-        dotenv = Dotenv.configure().load();
-        dataSource.setServerName(dotenv.get("SERVER_NAME"));
-        dataSource.setPortNumber(Integer.parseInt(dotenv.get("PORT_NUMBER")));
-        dataSource.setDatabaseName(dotenv.get("DATABASE_NAME"));
-        dataSource.setUser(dotenv.get("USERNAME"));
+    private static DataSource getDataSource() {
+        BasicDataSource dataSource = new BasicDataSource();
+        Dotenv dotenv = Dotenv.configure().load();
+
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        dataSource.setUrl("jdbc:mysql://" + dotenv.get("SERVER_NAME") + ":"+ dotenv.get("PORT_NUMBER") + "/" + dotenv.get("DATABASE_NAME"));
+        dataSource.setUsername(dotenv.get("USERNAME"));
         dataSource.setPassword(dotenv.get("PASSWORD"));
         return dataSource;
     }
@@ -55,12 +60,13 @@ public class CsvToSql {
             ps.addBatch();
         }
         ps.executeBatch();
+        ps.close();
     }
 
     public static void insertPersonToDB(Connection conn) throws SQLException {
         String statement = "insert into Person (uuid, firstName, lastName, addressId) values (?,?,?,?)";
         PreparedStatement ps = conn.prepareStatement(statement);
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(getMySqlDataSource());
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource());
 
         List<Person> people = DataProcessor.readPersonCSVtoList("data/Persons.csv");
         for (Person person : people) {
@@ -82,12 +88,13 @@ public class CsvToSql {
             ps.addBatch();
         }
         ps.executeBatch();
+        ps.close();
     }
 
     public static void insertEmailToDB(Connection conn) throws SQLException {
         String emailInsert = "insert into Email(address, personId) values (?,?)";
         PreparedStatement ps = conn.prepareStatement(emailInsert);
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(getMySqlDataSource());
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource());
 
         List<Person> people = DataProcessor.readPersonCSVtoList("data/Persons.csv");
 
@@ -108,12 +115,13 @@ public class CsvToSql {
             }
         }
         ps.executeBatch();
+        ps.close();
     }
 
     public static void insertStoreDB(Connection conn) throws SQLException, DataAccessException {
         String insertQuery = "insert into Store (storeCode, managerId, addressId) values (?,?,?)";
         PreparedStatement ps = conn.prepareStatement(insertQuery);
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(getMySqlDataSource());
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource());
         List<Store> stores = DataProcessor.readStoreCSVtoList("data/Stores.csv");
 
         for (Store store : stores) {
@@ -140,11 +148,11 @@ public class CsvToSql {
             ps.addBatch();
         }
         ps.executeBatch();
+        ps.close();
     }
 
     public static void itemToSql(Connection conn) throws SQLException {
-        PreparedStatement ps;
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(getMySqlDataSource());
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource());
 
         Map<String, Sale> itemProcessor = DataProcessor.processedSalesWithItemsMap("data/SaleItems.csv");
         if (itemProcessor == null) {
@@ -164,6 +172,7 @@ public class CsvToSql {
         }
 
         for (Item item : itemList) {
+            PreparedStatement ps;
             String uniqueCode = item.getUniqueCode();
             String name = item.getName();
             double basePrice = item.getBasePrice();
@@ -179,6 +188,8 @@ public class CsvToSql {
                 ps.setDouble(3, basePrice);
                 ps.setString(4, startDate);
                 ps.setString(5, endDate);
+                ps.executeUpdate();
+                ps.close();
             } else if (item instanceof ProductPurchase) {
                 String productPurchaseInsert = "insert into Item (uniqueCode, type, name, basePrice) values (?,'P',?,?)";
 
@@ -187,6 +198,7 @@ public class CsvToSql {
                 ps.setString(2, name);
                 ps.setDouble(3, basePrice);
                 ps.executeUpdate();
+                ps.close();
             } else if (item instanceof DataPlan) {
                 String productPurchaseInsert = "insert into Item (uniqueCode, type, name, basePrice,totalGb) values (?,'D',?,?,?)";
                 double totalGB = ((DataPlan) item).getTotalGB();
@@ -197,6 +209,7 @@ public class CsvToSql {
                 ps.setDouble(3, basePrice);
                 ps.setDouble(4, totalGB);
                 ps.executeUpdate();
+                ps.close();
             } else if (item instanceof VoicePlan) {
                 String productPurchaseInsert = "insert into Item (uniqueCode, type, name, basePrice, phoneNumber, totalPeriod) values (?,'V',?,?,?,?)";
                 String phoneNumber = ((VoicePlan) item).getPhoneNumber();
@@ -208,6 +221,7 @@ public class CsvToSql {
                 ps.setString(4, phoneNumber);
                 ps.setDouble(5, totalPeriod);
                 ps.executeUpdate();
+                ps.close();
 
             } else if (item instanceof Service) {
                 String productPurchaseInsert = "insert into Item (uniqueCode, type, name, basePrice, totalHours, employeeId) values (?,'S',?,?,?,?)";
@@ -229,13 +243,15 @@ public class CsvToSql {
                 }
                 ps.setInt(5, employeeId);
                 ps.executeUpdate();
+                ps.close();
             }
         }
+
     }
 
     public static void saleSql(Connection conn) throws SQLException {
         PreparedStatement ps;
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(getMySqlDataSource());
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource());
         List<Sale> saleList = DataProcessor.rawSalesList("data/Sales.csv");
 
         for (Sale sale : saleList) {
@@ -276,7 +292,7 @@ public class CsvToSql {
 
     public static void itemSaleSql(Connection conn) throws SQLException {
         PreparedStatement ps;
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(getMySqlDataSource());
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource());
 
         List<Sale> saleProcessedList = DataProcessor.processedSalesList("data/SaleItems.csv");
 
@@ -289,7 +305,7 @@ public class CsvToSql {
 
             List<Item> itemFromSaleList = sale.getItemsList();
             for (Item item : itemFromSaleList) {
-                String itemType = verifyItemType(item);
+                String itemType = DataProcessor.verifyItemType(item);
 
                 switch (Objects.requireNonNull(itemType)) {
                     case "V" -> {
@@ -381,20 +397,6 @@ public class CsvToSql {
 
     }
 
-    public static String verifyItemType(Item item) {
-        if (item instanceof VoicePlan) {
-            return "V";
-        } else if (item instanceof DataPlan) {
-            return "D";
-        } else if (item instanceof ProductPurchase) {
-            return "P";
-        } else if (item instanceof ProductLease) {
-            return "L";
-        } else if (item instanceof Service) {
-            return "S";
-        }
-        return null;
-    }
 
     public static void cleanDB(Connection conn) throws SQLException {
         String drop = "drop table if exists Email, ItemSale, Item, Sale, Store, Person, Address";
@@ -404,10 +406,9 @@ public class CsvToSql {
 
     public static void createDB(Connection conn) throws SQLException {
         Statement ps = conn.createStatement();
-        List<String> createTbList = new ArrayList<>();
 
-        createTbList.add("create table if not exists Address(addressId int primary key not null auto_increment, street varchar(255) not null, city varchar(255) not null, state varchar(255) not null, zipCode int not null)");
-        createTbList.add(
+        ps.addBatch("create table if not exists Address(addressId int primary key not null auto_increment, street varchar(255) not null, city varchar(255) not null, state varchar(255) not null, zipCode int not null)");
+        ps.addBatch(
                 "create table if not exists Person(" +
                         "personId int primary key not null auto_increment," +
                         "uuid varchar(255) not null," +
@@ -416,14 +417,14 @@ public class CsvToSql {
                         "addressId int not null," +
                         "FOREIGN KEY (addressId) references Address(addressId))");
 
-        createTbList.add(
+        ps.addBatch(
                 "create table if not exists Email(" +
                         "emailId int primary key not null auto_increment," +
                         "address varchar(255) not null," +
                         "personId int not null," +
                         "FOREIGN KEY (personId) references Person(personId))"
         );
-        createTbList.add(
+        ps.addBatch(
                 "create table if not exists Store(" +
                         "storeId int primary key not null auto_increment," +
                         "storeCode varchar(255) not null," +
@@ -432,7 +433,7 @@ public class CsvToSql {
                         "FOREIGN KEY (managerId) references Person(personId)," +
                         "FOREIGN KEY (addressId) references Address(addressId))"
         );
-        createTbList.add(
+        ps.addBatch(
                 "create table if not exists Sale(" +
                         "saleId int primary key not null auto_increment," +
                         "uniqueCode varchar(255) not null," +
@@ -444,7 +445,7 @@ public class CsvToSql {
                         "FOREIGN KEY (salesmanId) references Person(personId)," +
                         "FOREIGN KEY (storeId) references Store(storeId))"
         );
-        createTbList.add(
+        ps.addBatch(
                 "create table if not exists Item(" +
                         "itemId int primary key not null auto_increment," +
                         "uniqueCode varchar(255) not null," +
@@ -460,7 +461,7 @@ public class CsvToSql {
                         "phoneNumber varchar(40)," +
                         "FOREIGN KEY (employeeId) references Person(personId))"
         );
-        createTbList.add(
+        ps.addBatch(
                 "create table if not exists ItemSale(" +
                         "itemSaleId int PRIMARY KEY auto_increment," +
                         "itemId int," +
@@ -468,9 +469,7 @@ public class CsvToSql {
                         "FOREIGN KEY (itemId) references Item(itemId)," +
                         "FOREIGN KEY (saleId) references Sale(saleId))"
         );
-        for (String query : createTbList) {
-            ps.execute(query);
-        }
+        ps.executeBatch();
     }
 
     public static void fillDB(Connection conn) throws SQLException {
