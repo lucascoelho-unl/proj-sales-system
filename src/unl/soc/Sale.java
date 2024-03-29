@@ -69,7 +69,7 @@ public class Sale implements Priceable {
     }
 
     public List<Item> getItemsList() {
-        return itemsList;
+        return new ArrayList<>(itemsList);
     }
 
     public Person getCustomer() {

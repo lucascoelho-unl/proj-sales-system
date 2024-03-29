@@ -3,6 +3,7 @@ package unl.soc;
 import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -51,7 +52,7 @@ public class Person {
     }
 
     public List<String> getEmailList() {
-        return emailList;
+        return new ArrayList<>(emailList);
     }
 
     @Override
