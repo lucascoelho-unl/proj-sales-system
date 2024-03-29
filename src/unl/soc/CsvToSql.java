@@ -7,21 +7,19 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.Objects;
+
 
 public class CsvToSql {
     public static void main(String[] args) {
         try (Connection conn = getDataSource().getConnection()) {
+//            tempFunction(conn);
             cleanDB(conn);
             createDB(conn);
             fillDB(conn);
         } catch (SQLException e){
-           System.err.println("Error connecting to Database");
+           System.err.println(e);
         }
     }
 
@@ -151,102 +149,22 @@ public class CsvToSql {
         ps.close();
     }
 
-    public static void itemToSql(Connection conn) throws SQLException {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource());
-
-        Map<String, Sale> itemProcessor = DataProcessor.processedSalesWithItemsMap("data/SaleItems.csv");
-        if (itemProcessor == null) {
-            throw new NullPointerException();
-        }
-        List<Item> allItemSale = itemProcessor.values().stream()
-                .flatMap(sale -> sale.getItemsList().stream())
-                .toList();
-        List<Item> itemList = new ArrayList<>();
-        Set<String> itemToStringSet = new HashSet<>();
-
-        for (Item item : allItemSale) {
-            if (!itemToStringSet.contains(item.toString())) {
-                itemToStringSet.add(item.toString());
-                itemList.add(item);
+    public static void itemToSql(Connection conn) {
+        List<Item> itemList = DataProcessor.readItemsCSVtoList("data/Items.csv");
+        try{
+            String insertItem = "insert into Item(uniqueCode, name, basePrice) values (?,?,?)";
+            PreparedStatement ps = conn.prepareStatement(insertItem);
+            for (Item item : itemList){
+                ps.setString(1, item.getUniqueCode());
+                ps.setString(2, item.getName());
+                ps.setDouble(3, item.getBasePrice());
+                ps.addBatch();
             }
+            ps.executeBatch();
+            ps.close();
+        } catch (SQLException e){
+            System.err.println(e);
         }
-
-        for (Item item : itemList) {
-            PreparedStatement ps;
-            String uniqueCode = item.getUniqueCode();
-            String name = item.getName();
-            double basePrice = item.getBasePrice();
-
-            if (item instanceof ProductLease) {
-                String productLeaseInsert = "insert into Item (uniqueCode, type, name, basePrice, startDate, endDate) values (?,'L',?,?,?,?)";
-                String startDate = ((ProductLease) item).getStartDate().toString();
-                String endDate = ((ProductLease) item).getEndDate().toString();
-
-                ps = conn.prepareStatement(productLeaseInsert);
-                ps.setString(1, uniqueCode);
-                ps.setString(2, name);
-                ps.setDouble(3, basePrice);
-                ps.setString(4, startDate);
-                ps.setString(5, endDate);
-                ps.executeUpdate();
-                ps.close();
-            } else if (item instanceof ProductPurchase) {
-                String productPurchaseInsert = "insert into Item (uniqueCode, type, name, basePrice) values (?,'P',?,?)";
-
-                ps = conn.prepareStatement(productPurchaseInsert);
-                ps.setString(1, uniqueCode);
-                ps.setString(2, name);
-                ps.setDouble(3, basePrice);
-                ps.executeUpdate();
-                ps.close();
-            } else if (item instanceof DataPlan) {
-                String productPurchaseInsert = "insert into Item (uniqueCode, type, name, basePrice,totalGb) values (?,'D',?,?,?)";
-                double totalGB = ((DataPlan) item).getTotalGB();
-
-                ps = conn.prepareStatement(productPurchaseInsert);
-                ps.setString(1, uniqueCode);
-                ps.setString(2, name);
-                ps.setDouble(3, basePrice);
-                ps.setDouble(4, totalGB);
-                ps.executeUpdate();
-                ps.close();
-            } else if (item instanceof VoicePlan) {
-                String productPurchaseInsert = "insert into Item (uniqueCode, type, name, basePrice, phoneNumber, totalPeriod) values (?,'V',?,?,?,?)";
-                String phoneNumber = ((VoicePlan) item).getPhoneNumber();
-                double totalPeriod = ((VoicePlan) item).getTotalPeriod();
-                ps = conn.prepareStatement(productPurchaseInsert);
-                ps.setString(1, uniqueCode);
-                ps.setString(2, name);
-                ps.setDouble(3, basePrice);
-                ps.setString(4, phoneNumber);
-                ps.setDouble(5, totalPeriod);
-                ps.executeUpdate();
-                ps.close();
-
-            } else if (item instanceof Service) {
-                String productPurchaseInsert = "insert into Item (uniqueCode, type, name, basePrice, totalHours, employeeId) values (?,'S',?,?,?,?)";
-                double totalHours = ((Service) item).getTotalHours();
-
-                //Get employee
-                String employeeQuery = "Select personId from Person where uuid=?";
-
-                Person employee = ((Service) item).getEmployee();
-                Integer employeeId = jdbcTemplate.queryForObject(employeeQuery, Integer.class, employee.getUuid());
-
-                ps = conn.prepareStatement(productPurchaseInsert);
-                ps.setString(1, uniqueCode);
-                ps.setString(2, name);
-                ps.setDouble(3, basePrice);
-                ps.setDouble(4, totalHours);
-                if (employeeId == null) {
-                    throw new NullPointerException("employeeId is null");
-                }
-                ps.setInt(5, employeeId);
-                ps.executeUpdate();
-                ps.close();
-            }
-        }
-
     }
 
     public static void saleSql(Connection conn) throws SQLException {
@@ -291,7 +209,7 @@ public class CsvToSql {
     }
 
     public static void itemSaleSql(Connection conn) throws SQLException {
-        PreparedStatement ps;
+
         JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource());
 
         List<Sale> saleProcessedList = DataProcessor.processedSalesList("data/SaleItems.csv");
@@ -305,53 +223,54 @@ public class CsvToSql {
 
             List<Item> itemFromSaleList = sale.getItemsList();
             for (Item item : itemFromSaleList) {
+                PreparedStatement ps;
                 String itemType = DataProcessor.verifyItemType(item);
+                String itemIdQuery = "select itemId from Item where uniqueCode=?";
+                Integer itemId = jdbcTemplate.queryForObject(itemIdQuery, Integer.class, item.getUniqueCode());
 
                 switch (Objects.requireNonNull(itemType)) {
                     case "V" -> {
                         VoicePlan itemVoicePlan = (VoicePlan) item;
 
-                        String voiceIdQuery = "select itemId from Item where phoneNumber =? and uniqueCode =?";
-                        Integer itemId = jdbcTemplate.queryForObject(voiceIdQuery, Integer.class, itemVoicePlan.getPhoneNumber(), itemVoicePlan.getUniqueCode());
-
-                        String insertSQL = "insert into ItemSale (itemId, saleId) values (?,?)";
+                        String insertSQL = "insert into ItemSale (itemId, saleId, type, totalPeriod, phoneNumber) values (?,?,?,?,?)";
                         ps = conn.prepareStatement(insertSQL);
-                        if (itemId == null) {
-                            throw new NullPointerException();
-                        }
+
                         ps.setInt(1, itemId);
                         ps.setInt(2, saleId);
+                        ps.setString(3,itemType);
+                        ps.setDouble(4, itemVoicePlan.getTotalPeriod());
+                        ps.setString(5, itemVoicePlan.getPhoneNumber());
                         ps.executeUpdate();
+                        ps.close();
                     }
                     case "L" -> {
                         ProductLease itemLease = (ProductLease) item;
 
-                        String itemLeaseIdQuery = "select itemId from Item where uniqueCode=? and startDate=? and endDate=?";
-                        Integer itemId = jdbcTemplate.queryForObject(itemLeaseIdQuery, Integer.class, itemLease.getUniqueCode(), itemLease.getStartDate(), itemLease.getEndDate());
-
-                        String insertSQL = "insert into ItemSale (itemId, saleId) values (?,?)";
+                        String insertSQL = "insert into ItemSale (itemId, saleId, type, startDate, endDate) values (?,?,?,?,?)";
                         ps = conn.prepareStatement(insertSQL);
-                        if (itemId == null) {
-                            throw new NullPointerException();
-                        }
+
                         ps.setInt(1, itemId);
                         ps.setInt(2, saleId);
+                        ps.setString(3,itemType);
+                        ps.setString(4, itemLease.getStartDate().toString());
+                        ps.setString(5, itemLease.getEndDate().toString());
                         ps.executeUpdate();
+                        ps.close();
                     }
                     case "D" -> {
                         DataPlan itemData = (DataPlan) item;
 
-                        String dataPlanItemId = "select itemId from Item where uniqueCode=? and totalGb=?";
-                        Integer itemId = jdbcTemplate.queryForObject(dataPlanItemId, Integer.class, itemData.getUniqueCode(), itemData.getTotalGB());
-
-                        String insertSQL = "insert into ItemSale (itemId, saleId) values (?,?)";
+                        String insertSQL = "insert into ItemSale (itemId, saleId,type, totalGb) values (?,?,?,?)";
                         ps = conn.prepareStatement(insertSQL);
                         if (itemId == null) {
                             throw new NullPointerException();
                         }
                         ps.setInt(1, itemId);
                         ps.setInt(2, saleId);
+                        ps.setString(3,itemType);
+                        ps.setDouble(4,itemData.getTotalGB());
                         ps.executeUpdate();
+                        ps.close();
                     }
                     case "S" -> {
                         Service itemService = (Service) item;
@@ -359,36 +278,28 @@ public class CsvToSql {
                         String employeeQueryId = "select personId from Person where uuid=?";
                         Integer employeeId = jdbcTemplate.queryForObject(employeeQueryId, Integer.class, itemService.getEmployee().getUuid());
 
-                        String itemQuery = "select itemId from Item where uniqueCode=? and totalHours=? and employeeId=?";
-                        Integer itemId = jdbcTemplate.queryForObject(itemQuery, Integer.class, itemService.getUniqueCode(), itemService.getTotalHours(), employeeId);
-
-                        String insertSQL = "insert into ItemSale (itemId, saleId) values (?,?)";
+                        String insertSQL = "insert into ItemSale (itemId, saleId, type, totalHours, employeeId) values (?,?,?,?,?)";
                         ps = conn.prepareStatement(insertSQL);
                         if (itemId == null) {
                             throw new NullPointerException();
                         }
                         ps.setInt(1, itemId);
                         ps.setInt(2, saleId);
+                        ps.setString(3,itemType);
+                        ps.setDouble(4, itemService.getTotalHours());
+                        ps.setInt(5, employeeId);
                         ps.executeUpdate();
+                        ps.close();
                     }
                     default -> {
-                        ProductPurchase productPurchase = (ProductPurchase) item;
-                        String s = "select itemId from Item \nwhere uniqueCode=? and startDate is null and endDate is null";
 
-                        ps = conn.prepareStatement(s);
-                        ps.setString(1, productPurchase.getUniqueCode());
-                        ResultSet rs = ps.executeQuery();
-                        int itemId = -1;
-
-                        while (rs.next()) {
-                            itemId = rs.getInt("itemId");
-                        }
-
-                        String insertSQL = "insert into ItemSale (itemId, saleId) values (?,?)";
+                        String insertSQL = "insert into ItemSale (itemId, saleId, type) values (?,?,?)";
                         ps = conn.prepareStatement(insertSQL);
                         ps.setInt(1, itemId);
                         ps.setInt(2, saleId);
+                        ps.setString(3,itemType);
                         ps.executeUpdate();
+                        ps.close();
                     }
                 }
 
@@ -400,13 +311,14 @@ public class CsvToSql {
 
     public static void cleanDB(Connection conn) throws SQLException {
         String drop = "drop table if exists Email, ItemSale, Item, Sale, Store, Person, Address";
-        Statement ps = conn.createStatement();
-        ps.execute(drop);
+        PreparedStatement ps = conn.prepareStatement(drop);
+        ps.execute();
+        ps.close();
     }
 
     public static void createDB(Connection conn) throws SQLException {
+//        PreparedStatement ps = conn.prepareStatement("create table if not exists Address(addressId int primary key not null auto_increment, street varchar(255) not null, city varchar(255) not null, state varchar(255) not null, zipCode int not null)");
         Statement ps = conn.createStatement();
-
         ps.addBatch("create table if not exists Address(addressId int primary key not null auto_increment, street varchar(255) not null, city varchar(255) not null, state varchar(255) not null, zipCode int not null)");
         ps.addBatch(
                 "create table if not exists Person(" +
@@ -450,8 +362,14 @@ public class CsvToSql {
                         "itemId int primary key not null auto_increment," +
                         "uniqueCode varchar(255) not null," +
                         "name varchar(255) not null," +
+                        "basePrice double not null)"
+        );
+        ps.addBatch(
+                "create table if not exists ItemSale(" +
+                        "itemSaleId int PRIMARY KEY auto_increment," +
+                        "itemId int," +
+                        "saleId int," +
                         "type varchar(1) not null," +
-                        "basePrice double not null," +
                         "startDate varchar(40)," +
                         "endDate varchar(40)," +
                         "totalGb double," +
@@ -459,17 +377,12 @@ public class CsvToSql {
                         "employeeId int," +
                         "totalPeriod double," +
                         "phoneNumber varchar(40)," +
-                        "FOREIGN KEY (employeeId) references Person(personId))"
-        );
-        ps.addBatch(
-                "create table if not exists ItemSale(" +
-                        "itemSaleId int PRIMARY KEY auto_increment," +
-                        "itemId int," +
-                        "saleId int," +
                         "FOREIGN KEY (itemId) references Item(itemId)," +
-                        "FOREIGN KEY (saleId) references Sale(saleId))"
+                        "FOREIGN KEY (saleId) references Sale(saleId)," +
+                        "FOREIGN KEY (employeeId) references Person(personId));"
         );
         ps.executeBatch();
+        ps.close();
     }
 
     public static void fillDB(Connection conn) throws SQLException {
