@@ -4,8 +4,6 @@ import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
-import java.util.Objects;
-
 /**
  * The ProductPurchase class represents a purchased product.
  * It extends the Item class and includes a field for the price of the product.
@@ -58,8 +56,8 @@ public class ProductPurchase extends Item {
         return Double.compare(price, that.price) == 0;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), price);
-    }
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(super.hashCode(), price);
+//    }
 }

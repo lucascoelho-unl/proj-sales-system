@@ -19,7 +19,7 @@ public class CsvToSql {
             createDB(conn);
             fillDB(conn);
         } catch (SQLException e){
-            System.err.println(e);
+           System.err.println(e);
         }
     }
 
