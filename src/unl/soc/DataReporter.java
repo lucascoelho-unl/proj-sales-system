@@ -15,7 +15,7 @@ public class DataReporter {
      */
     public static String reportTotalsBySales() {
         // Load sales, items, and persons maps from CSV files
-        Map<String, Sale> salesMap = DataProcessor.processPurchasedItemsIntoSalesMap("data/SaleItems.csv");
+        Map<String, Sale> salesMap = DataProcessor.processedSalesWithItemsMap("data/SaleItems.csv");
         List<Sale> salesList = DataProcessor.convertSalesMapToList(salesMap);
 
         salesList.sort(Sale::compareSales);
@@ -63,7 +63,7 @@ public class DataReporter {
      */
     public static String reportTotalsByStore() {
         // Load sales, items, and persons maps from CSV files
-        Map<String, Sale> salesMap = DataProcessor.processPurchasedItemsIntoSalesMap("data/SaleItems.csv");
+        Map<String, Sale> salesMap = DataProcessor.processedSalesWithItemsMap("data/SaleItems.csv");
         Map<String, Store> storeMap = DataProcessor.updateStoreMapFromSalesMap(salesMap);
         List<Store> storesList = DataProcessor.convertStoreMapToList(storeMap);
 
@@ -96,7 +96,7 @@ public class DataReporter {
      */
     public static String reportSales() {
         // Load sales, items, and persons maps from CSV files
-        Map<String, Sale> salesMap = DataProcessor.processPurchasedItemsIntoSalesMap("data/SaleItems.csv");
+        Map<String, Sale> salesMap = DataProcessor.processedSalesWithItemsMap("data/SaleItems.csv");
 
         List<Sale> salesList = DataProcessor.convertSalesMapToList(salesMap);
 
