@@ -429,4 +429,19 @@ public class DataProcessor {
         }
         return null;
     }
+
+    /**
+     * Updates stores and add the sales into the map.
+     *
+     * @param salesMap
+     * @return storesMap
+     */
+    public static Map<String, Store> updateStoreMapFromSalesMap(Map<String, Sale> salesMap){
+        Map<String, Store> storesMap = readStoreCSVtoMap("data/Stores.csv");
+        for (Sale sale : salesMap.values()) {
+            storesMap.put(sale.getStore().getStoreCode(), sale.getStore());
+        }
+        return storesMap;
+    }
+
 }

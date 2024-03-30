@@ -1,11 +1,6 @@
 package com.yrl;
 
-import unl.soc.DataProcessor;
-import unl.soc.DataWriter;
-
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import unl.soc.DataReporter;
 
 /**
  * The SalesReport class generates a summary report of sales data.
@@ -19,6 +14,12 @@ public class SalesReport {
      * The main method generates and prints the summary reports.
      */
     public static void main(String[] args) {
-        DataWriter.printSalesReport();
+        String totalsReport = DataReporter.reportTotalsBySales();
+        String storeTotals = DataReporter.reportTotalsByStore();
+        String salesReport = DataReporter.reportSales();
+
+        System.out.println(totalsReport);
+        System.out.println(storeTotals);
+        System.out.println(salesReport);
     }
 }
