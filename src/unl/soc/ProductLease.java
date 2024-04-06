@@ -67,6 +67,14 @@ public class ProductLease extends Item {
         return Math.round(100 * price) / 100.0;
     }
 
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
     @Override
     public String toString() {
         return String.format("%s - Lease for %s months \n %60s %9.2f $%9.2f", getName() + " (" + getUniqueCode() + ")", getPeriodInMonths(), "$", getTotalTax(), getGrossPrice());

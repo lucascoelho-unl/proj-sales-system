@@ -16,6 +16,8 @@ public class VoicePlan extends Item {
 
     @XStreamOmitField
     private static final double TAX_PERCENTAGE = 0.065;
+
+    private int id;
     @XStreamOmitField
     private double totalPeriod;
     @XStreamOmitField
@@ -33,6 +35,14 @@ public class VoicePlan extends Item {
         this.phoneNumber = phoneNumber;
         this.totalPeriod = totalPeriod;
         this.periodCost = item.getBasePrice();
+    }
+
+    public VoicePlan(int id, String uniqueCode, String name, double periodPrice, String phoneNumber, double totalPeriod) {
+        super(uniqueCode, name);
+        this.id = id;
+        this.periodCost = periodPrice;
+        this.totalPeriod = totalPeriod;
+        this.phoneNumber = phoneNumber;
     }
 
     public double getTotalPeriod() {

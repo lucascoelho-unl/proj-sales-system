@@ -56,7 +56,7 @@ public class Store {
     }
 
     public List<Sale> getSales() {
-        return sales;
+        return new ArrayList<>(sales);
     }
 
     @Override
