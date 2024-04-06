@@ -15,6 +15,7 @@ import java.util.Objects;
  */
 @XStreamAlias("person")
 public class Person {
+    private int id;
     @Expose
     private String uuid;
     @Expose
@@ -25,7 +26,15 @@ public class Person {
     private Address address;
     @XStreamAlias("emails")
     private final List<String> emailList;
-    private List<Sale> purchasedItems;
+
+    public Person(int id, String uuid, String firstName, String lastName, Address address, List<String> emailList) {
+        this.id = id;
+        this.uuid = uuid;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = address;
+        this.emailList = emailList;
+    }
 
     public Person(String uuid, String firstName, String lastName, Address address, List<String> emailList) {
         this.uuid = uuid;
@@ -33,6 +42,10 @@ public class Person {
         this.lastName = lastName;
         this.address = address;
         this.emailList = emailList;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getUuid() {

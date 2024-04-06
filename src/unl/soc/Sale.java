@@ -12,6 +12,7 @@ import java.util.Objects;
  * It includes Getters, ToString, HashCode and Equals methods
  */
 public class Sale implements Priceable {
+    private int id;
     private final String uniqueCode;
     private final Store store;
     private final Person customer;
@@ -26,6 +27,20 @@ public class Sale implements Priceable {
         this.salesman = salesman;
         this.dateTime = LocalDate.parse(dateString);
         this.itemsList = new ArrayList<>();
+    }
+
+    public Sale(int id, String uniqueCode, Store store, Person customer, Person salesman, String dateString) {
+        this.id = id;
+        this.uniqueCode = uniqueCode;
+        this.store = store;
+        this.customer = customer;
+        this.salesman = salesman;
+        this.dateTime = LocalDate.parse(dateString);
+        this.itemsList = new ArrayList<>();
+    }
+
+    public int getId() {
+        return id;
     }
 
     /**

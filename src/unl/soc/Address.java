@@ -10,6 +10,7 @@ import java.util.Objects;
  * It includes Getters, ToString, HashCode and Equals methods
  */
 public class Address {
+    private int id;
     @Expose
     private String street;
     @Expose
@@ -24,6 +25,18 @@ public class Address {
         this.city = city;
         this.state = state;
         this.zipCode = zipCode;
+    }
+
+    public Address(int id, String street, String city, String state, int zipCode) {
+        this.id = id;
+        this.street = street;
+        this.city = city;
+        this.state = state;
+        this.zipCode = zipCode;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getStreet() {

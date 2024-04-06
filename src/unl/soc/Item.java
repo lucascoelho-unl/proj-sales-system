@@ -7,6 +7,7 @@ import com.google.gson.annotations.Expose;
  * It includes Getters, ToString, HashCode and Equals methods
  */
 public abstract class Item implements Priceable {
+    private int id;
     @Expose
     private String uniqueCode;
     @Expose
@@ -15,6 +16,16 @@ public abstract class Item implements Priceable {
     public Item(String uniqueCode, String name) {
         this.uniqueCode = uniqueCode;
         this.name = name;
+    }
+
+    public Item(int id, String uniqueCode, String name) {
+        this.id = id;
+        this.uniqueCode = uniqueCode;
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public abstract double getBasePrice();

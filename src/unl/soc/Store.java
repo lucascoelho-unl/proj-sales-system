@@ -15,6 +15,7 @@ import java.util.Objects;
  */
 @XStreamAlias("store")
 public class Store {
+    private int id;
     @Expose
     private String storeCode;
     @Expose
@@ -29,6 +30,18 @@ public class Store {
         this.manager = manager;
         this.address = address;
         this.sales = new ArrayList<>();
+    }
+
+    public Store(int id, String storeCode, Address address, Person manager) {
+        this.id = id;
+        this.storeCode = storeCode;
+        this.manager = manager;
+        this.address = address;
+        this.sales = new ArrayList<>();
+    }
+
+    public int getId() {
+        return id;
     }
 
     public void addSale(Sale sale) {
