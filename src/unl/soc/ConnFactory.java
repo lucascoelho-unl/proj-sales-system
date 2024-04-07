@@ -9,7 +9,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ConnFactory {
-    private Connection conn = null;
     public static Connection createConnection(String username, String password) {
         BasicDataSource dataSource = new BasicDataSource();
         Dotenv dotenv = Dotenv.configure().load();
