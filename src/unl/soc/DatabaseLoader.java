@@ -9,14 +9,14 @@ import java.util.Map;
 
 public class DatabaseLoader {
     public static void main(String[] args) {
-        Address test = loadAddress(100);
+        var test = loadAllAddress();
         System.out.println(test);
     }
 
     public static Address loadAddress(int addressId) {
         Connection conn = ConnFactory.createConnection();
-        PreparedStatement ps;
-        ResultSet rs;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         Address address = null;
 
         String query = """
@@ -40,15 +40,16 @@ public class DatabaseLoader {
         } catch (SQLException e) {
             System.out.println("Error in the connection: " + e);
             throw new RuntimeException(e);
+        } finally {
+            ConnFactory.closeConnection(rs, ps, conn);
         }
-        ConnFactory.closeConnection(rs, ps, conn);
          return address;
     }
 
     public static Map<Integer, Address> loadAllAddress(){
         Connection conn = ConnFactory.createConnection();
-        PreparedStatement ps;
-        ResultSet rs;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         Map<Integer, Address> addressMap = new HashMap<>();
 
         String query = """
@@ -65,9 +66,9 @@ public class DatabaseLoader {
         } catch (SQLException e) {
             System.out.println("Error in the connection: " + e);
             throw new RuntimeException(e);
+        } finally {
+            ConnFactory.closeConnection(rs, ps, conn);
         }
-
-        ConnFactory.closeConnection(rs, ps, conn);
         return addressMap;
     }
 
