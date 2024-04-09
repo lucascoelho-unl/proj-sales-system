@@ -17,17 +17,22 @@ public class DatabaseLoader {
 //            System.out.println(item + ": " + itemMap.get(item));
 //        }
 //        Item i = loadItem(2);
-        var it = loadItemSold(25);
-        System.out.println(it);
+//        var it = loadItemSold(25);
+//        System.out.println(it);
+//
+//        var itemMap = loadAllItemSold();
+//        for (var item : itemMap.keySet()) {
+//            System.out.println(item + ": " + itemMap.get(item));
+//        }
 
-        var itemMap = loadAllItemSold();
-        for (var item : itemMap.keySet()) {
-            System.out.println(item + ": " + itemMap.get(item));
-        }
+//        var personMap = loadAllPersons();
+//        for (var person : personMap.keySet()) {
+//            System.out.println(person + ": " + personMap.get(person));
+//        }
 
-        var personMap = loadAllPersons();
-        for (var person : personMap.keySet()) {
-            System.out.println(person + ": " + personMap.get(person));
+        var saleMap = loadAllSales();
+        for (var sale : saleMap.keySet()) {
+            System.out.println(sale + ": " + saleMap.get(sale));
         }
 
     }
@@ -113,9 +118,13 @@ public class DatabaseLoader {
                 Address address = loadAddress(rs.getInt("addressId"));
                 person = new Person(personId, uuid,firstName,lastName,address);
                 // Adding e-mails to the person list of e-mails
-                while (rs.next()) {
-                    String email = rs.getString("e.address");
+                String email;
+                if ((email = rs.getString("address")) != null){
                     person.addEmail(email);
+                    while (rs.next()) {
+                        email = rs.getString("address");
+                        person.addEmail(email);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -353,24 +362,66 @@ public class DatabaseLoader {
         return itemMap;
     }
 
-    private static Sale loadRawSale(int saleId) {
+    public static Sale loadSale(int saleId){
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
         Sale sale = null;
 
         String query = """
-                    select * from Sale s
-                    left join ItemSale its on s.saleId = ItemSale.saleId
-                    left join Item i on its.itemId = i.itemId
-                    where s.saleId = ?
-                    """;
+                        select uniqueCode, saleDate, customerId, salesmanId, storeId, itemSaleId from Sale
+                        left join ItemSale on ItemSale.saleId = Sale.saleId
+                        where Sale.saleId = ?;
+                        """;
+
         try{
             ps = conn.prepareStatement(query);
             ps.setInt(1, saleId);
             rs = ps.executeQuery();
-            while (rs.next()){
 
+            if (rs.next()){
+                String uniqueCode = rs.getString("uniqueCode");
+                String saleDate = rs.getString("saleDate");
+                Person customer = loadPerson(rs.getInt("customerId"));
+                Person salesman = loadPerson(rs.getInt("salesmanId"));
+                Store store = loadStore(rs.getInt("storeId"));
+                sale = new Sale(saleId, uniqueCode, store, customer, salesman, saleDate);
+
+                //Load items of the sale
+                Item item;
+                if ((item = loadItemSold(rs.getInt("itemSaleId"))) != null){
+                    sale.addItem(item);
+                    while(rs.next()){
+                        item = loadItemSold(rs.getInt("itemSaleId"));
+                        sale.addItem(item);
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error in the connection: " + e);
+            throw new RuntimeException(e);
+        } finally {
+            ConnFactory.closeConnection(rs, ps, conn);
+        }
+        return sale;
+    }
+
+    public static Map<Integer, Sale> loadAllSales(){
+        Connection conn = ConnFactory.createConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Map<Integer, Sale> saleMap = new HashMap<>();
+
+        String query = """
+                        select saleId from Sale;
+                        """;
+        try{
+            ps = conn.prepareStatement(query);
+            rs = ps.executeQuery();
+            while (rs.next()){
+                Sale sale = loadSale(rs.getInt("saleId"));
+                saleMap.put(rs.getInt("saleId"), sale);
             }
 
         } catch (SQLException e) {
@@ -380,7 +431,7 @@ public class DatabaseLoader {
             ConnFactory.closeConnection(rs, ps, conn);
         }
 
-        return sale;
+        return saleMap;
     }
     //TODO: Create the load person class.
 }
