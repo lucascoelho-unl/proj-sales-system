@@ -9,49 +9,49 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ConnFactory {
-    public static Connection createConnection(String username, String password) {
-        BasicDataSource dataSource = new BasicDataSource();
+    private static final BasicDataSource dataSource;
+
+    // Initialize the data source once
+    static {
         Dotenv dotenv = Dotenv.configure().load();
-
+        dataSource = new BasicDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://" + dotenv.get("SERVER_NAME") + ":"+ dotenv.get("PORT_NUMBER") + "/" + dotenv.get("DATABASE_NAME"));
-        dataSource.setUsername(username);
-        dataSource.setPassword(password);
+        dataSource.setUrl("jdbc:mysql://" + dotenv.get("SERVER_NAME") + ":" + dotenv.get("PORT_NUMBER") + "/" + dotenv.get("DATABASE_NAME"));
+        dataSource.setUsername(dotenv.get("USERNAME"));
+        dataSource.setPassword(dotenv.get("PASSWORD"));
+    }
 
-        Connection conn = null;
-
+    public static Connection createConnection() {
         try {
-            conn = dataSource.getConnection();
+            return dataSource.getConnection();
         } catch (SQLException e) {
             System.out.println("Error in the connection: " + e);
             throw new RuntimeException(e);
         }
-        return conn;
     }
 
-    public static Connection createConnection() {
-        Dotenv dotenv = Dotenv.configure().load();
-        return createConnection(dotenv.get("USERNAME"), dotenv.get("PASSWORD"));
-    }
-
-    public static void closeConnection(ResultSet rs, PreparedStatement ps, Connection conn){
+    public static void closeConnection(ResultSet rs, PreparedStatement ps, Connection conn) {
         try {
-            if (rs != null && !rs.isClosed())
+            if (rs != null) {
                 rs.close();
-            if (ps != null && !ps.isClosed())
+            }
+            if (ps != null) {
                 ps.close();
-            if (conn != null && !conn.isClosed())
+            }
+            if (conn != null) {
                 conn.close();
+            }
         } catch (SQLException e) {
             System.out.println("SQLException: " + e);
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
-    public static void closeConnection(PreparedStatement ps, Connection conn){
+
+    public static void closeConnection(PreparedStatement ps, Connection conn) {
         closeConnection(null, ps, conn);
     }
-    public static void closeConnection(Connection conn){
+
+    public static void closeConnection(Connection conn) {
         closeConnection(null, null, conn);
     }
 }

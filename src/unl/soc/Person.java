@@ -36,6 +36,15 @@ public class Person {
         this.emailList = emailList;
     }
 
+    public Person(int id, String uuid, String firstName, String lastName, Address address) {
+        this.id = id;
+        this.uuid = uuid;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = address;
+        this.emailList = new ArrayList<>();
+    }
+
     public Person(String uuid, String firstName, String lastName, Address address, List<String> emailList) {
         this.uuid = uuid;
         this.firstName = firstName;
@@ -66,6 +75,10 @@ public class Person {
 
     public List<String> getEmailList() {
         return new ArrayList<>(emailList);
+    }
+
+    public void addEmail(String emailAddress) {
+        this.emailList.add(emailAddress);
     }
 
     @Override
