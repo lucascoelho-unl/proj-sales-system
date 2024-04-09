@@ -30,8 +30,20 @@ public class VoicePlan extends Item {
         this.periodCost = periodPrice;
     }
 
+    public VoicePlan(int id, String uniqueCode, String name, double periodPrice) {
+        super(id, uniqueCode, name);
+        this.periodCost = periodPrice;
+    }
+
     public VoicePlan(Item item, String phoneNumber, double totalPeriod) {
         super(item.getUniqueCode(), item.getName());
+        this.phoneNumber = phoneNumber;
+        this.totalPeriod = totalPeriod;
+        this.periodCost = item.getBasePrice();
+    }
+
+    public VoicePlan(int id, Item item, String phoneNumber, double totalPeriod) {
+        super(id, item.getUniqueCode(), item.getName());
         this.phoneNumber = phoneNumber;
         this.totalPeriod = totalPeriod;
         this.periodCost = item.getBasePrice();

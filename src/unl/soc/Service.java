@@ -17,7 +17,7 @@ public class Service extends Item {
     @XStreamOmitField
     private static final double TAX_PERCENTAGE = 0.035;
     @XStreamOmitField
-    private Person employee;
+    private Person employee = null;
     @XStreamOmitField
     private double totalHours;
     @Expose
@@ -28,8 +28,20 @@ public class Service extends Item {
         this.costPerHours = hourlyRate;
     }
 
+    public Service(int id, String uniqueCode, String name, double hourlyRate) {
+        super(id, uniqueCode, name);
+        this.costPerHours = hourlyRate;
+    }
+
     public Service(Item item, double totalHours, Person employee) {
         super(item.getUniqueCode(), item.getName());
+        this.employee = employee;
+        this.totalHours = totalHours;
+        this.costPerHours = item.getBasePrice();
+    }
+
+    public Service(int id, Item item, double totalHours, Person employee) {
+        super(id, item.getUniqueCode(), item.getName());
         this.employee = employee;
         this.totalHours = totalHours;
         this.costPerHours = item.getBasePrice();
@@ -61,6 +73,9 @@ public class Service extends Item {
 
     @Override
     public String toString() {
+        if (employee == null){
+            return String.format("%s  \n %20.2f hours @ $%6.2f / hour  \n %60s %9.2f $%9.2f", getName() + " (" + getUniqueCode() + ")", getTotalHours(), costPerHours, "$", getTotalTax(), getGrossPrice());
+        }
         return String.format("%s - Served by %s  \n %20.2f hours @ $%6.2f / hour  \n %60s %9.2f $%9.2f", getName() + " (" + getUniqueCode() + ")", getEmployee().getLastName() + ", " + getEmployee().getFirstName(), getTotalHours(), costPerHours, "$", getTotalTax(), getGrossPrice());
     }
 

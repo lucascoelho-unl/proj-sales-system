@@ -25,8 +25,19 @@ public class DataPlan extends Item {
         this.costPerGB = pricePerGB;
     }
 
+    public DataPlan(int id, String uniqueCode, String name, double pricePerGB) {
+        super(id, uniqueCode, name);
+        this.costPerGB = pricePerGB;
+    }
+
     public DataPlan(Item item, double totalGB) {
         super(item.getUniqueCode(), item.getName());
+        this.totalGB = totalGB;
+        this.costPerGB = item.getBasePrice();
+    }
+
+    public DataPlan(int id, Item item, double totalGB) {
+        super(id, item.getUniqueCode(), item.getName());
         this.totalGB = totalGB;
         this.costPerGB = item.getBasePrice();
     }

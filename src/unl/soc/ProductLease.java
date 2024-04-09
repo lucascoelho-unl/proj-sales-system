@@ -28,8 +28,20 @@ public class ProductLease extends Item {
         this.price = basePrice;
     }
 
+    public ProductLease(int id, String uniqueCode, String name, double basePrice) {
+        super(id, uniqueCode, name);
+        this.price = basePrice;
+    }
+
     public ProductLease(Item productBeingLeased, String startDate, String endDate) {
         super(productBeingLeased.getUniqueCode(), productBeingLeased.getName());
+        this.startDate = LocalDate.parse(startDate);
+        this.endDate = LocalDate.parse(endDate);
+        this.price = productBeingLeased.getBasePrice();
+    }
+
+    public ProductLease(int id, Item productBeingLeased, String startDate, String endDate) {
+        super(id, productBeingLeased.getUniqueCode(), productBeingLeased.getName());
         this.startDate = LocalDate.parse(startDate);
         this.endDate = LocalDate.parse(endDate);
         this.price = productBeingLeased.getBasePrice();

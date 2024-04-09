@@ -54,4 +54,12 @@ public class ConnFactory {
     public static void closeConnection(Connection conn) {
         closeConnection(null, null, conn);
     }
+    public static void closeConnection() {
+        try{
+            dataSource.close();
+        } catch (SQLException e) {
+            System.out.println("SQLException: " + e);
+            throw new RuntimeException(e);
+        }
+    }
 }

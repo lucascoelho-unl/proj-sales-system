@@ -19,7 +19,11 @@ public class ProductPurchase extends Item {
     public ProductPurchase(String uniqueCode, String name, double basePrice) {
         super(uniqueCode, name);
         this.price = basePrice;
+    }
 
+    public ProductPurchase(int id, String uniqueCode, String name, double basePrice) {
+        super(id, uniqueCode, name);
+        this.price = basePrice;
     }
 
     public ProductPurchase(Item item) {
