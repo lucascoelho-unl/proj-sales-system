@@ -1,5 +1,6 @@
 package unl.soc;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -8,15 +9,70 @@ import java.util.Map;
  */
 public class DataReporter {
 
+    public static String reportTotalsBySalesFromCSV(String path) {
+        Map<String, Sale> salesMap = DataProcessor.processedSalesWithItemsMap(path);
+        List<Sale> salesList = DataProcessor.convertSalesMapToList(salesMap);
+
+        return reportTotalsBySales(salesList);
+    }
+
+    public static String reportTotalsBySalesFromCSV(){
+        return reportTotalsBySalesFromCSV("data/SaleItems.csv");
+    }
+
+    public static String reportTotalsBySalesFromDB() {
+        Map<Integer, Sale> salesMap = DatabaseLoader.loadAllSales();
+        List<Sale> salesList = new ArrayList<>(salesMap.values());
+
+        return reportTotalsBySales(salesList);
+    }
+
+    public static String reportTotalsByStoreFromCSV(String path){
+        Map<String, Sale> salesMap = DataProcessor.processedSalesWithItemsMap(path);
+        Map<String, Store> storeMap = DataProcessor.updateStoreMapFromSalesMap(salesMap);
+        List<Store> storesList = DataProcessor.convertStoreMapToList(storeMap);
+
+        return reportTotalsByStore(storesList);
+    }
+
+    public static String reportTotalsByStoreFromCSV(){
+        return reportTotalsByStoreFromCSV("data/SaleItems.csv");
+    }
+
+    public static String reportTotalsByStoreFromDB(){
+        Map<Integer, Sale> salesMap = DatabaseLoader.loadAllSales();
+        Map<Integer, Store> storesMap = DatabaseLoader.updateStoreMapFromSalesMap(salesMap, DatabaseLoader.loadAllStores());
+        List<Store> storesList = new ArrayList<>(storesMap.values());
+
+        return reportTotalsByStore(storesList);
+    }
+
+    public static String reportSalesFromCSV(String path){
+        Map<String, Sale> salesMap = DataProcessor.processedSalesWithItemsMap(path);
+        List<Sale> salesList = DataProcessor.convertSalesMapToList(salesMap);
+
+        return reportSales(salesList);
+    }
+
+    public static String reportSalesFromCSV(){
+        return reportSalesFromCSV("data/SaleItems.csv");
+    }
+
+    public static String reportSalesFromDB(){
+        Map<Integer, Sale> salesMap = DatabaseLoader.loadAllSales();
+        List<Sale> salesList = new ArrayList<>(salesMap.values());
+
+        return reportSales(salesList);
+    }
+
+
+
     /**
      * Generates a sales report organized by total sales.
      *
      * @return A string representing the sales report.
      */
-    public static String reportTotalsBySales() {
-        // Load sales, items, and persons maps from CSV files
-        Map<String, Sale> salesMap = DataProcessor.processedSalesWithItemsMap("data/SaleItems.csv");
-        List<Sale> salesList = DataProcessor.convertSalesMapToList(salesMap);
+    public static String reportTotalsBySales(List<Sale> salesList) {
 
         salesList.sort(Sale::compareSales);
 
@@ -61,11 +117,7 @@ public class DataReporter {
      *
      * @return A string representing the store sales report.
      */
-    public static String reportTotalsByStore() {
-        // Load sales, items, and persons maps from CSV files
-        Map<String, Sale> salesMap = DataProcessor.processedSalesWithItemsMap("data/SaleItems.csv");
-        Map<String, Store> storeMap = DataProcessor.updateStoreMapFromSalesMap(salesMap);
-        List<Store> storesList = DataProcessor.convertStoreMapToList(storeMap);
+    public static String reportTotalsByStore(List<Store> storesList) {
 
         storesList.sort(Store::compareStores);
 
@@ -94,12 +146,7 @@ public class DataReporter {
      *
      * @return A string representing the sales report.
      */
-    public static String reportSales() {
-        // Load sales, items, and persons maps from CSV files
-        Map<String, Sale> salesMap = DataProcessor.processedSalesWithItemsMap("data/SaleItems.csv");
-
-        List<Sale> salesList = DataProcessor.convertSalesMapToList(salesMap);
-
+    public static String reportSales(List<Sale> salesList) {
         salesList.sort(Sale::compareSales);
 
         StringBuilder sb = new StringBuilder();

@@ -433,5 +433,13 @@ public class DatabaseLoader {
 
         return saleMap;
     }
-    //TODO: Create the load person class.
+
+    public static Map<Integer, Store> updateStoreMapFromSalesMap(Map<Integer, Sale> salesMap, Map<Integer, Store> storesMap){
+        for (Sale sale : salesMap.values()) {
+            Store store = sale.getStore();
+            store.addSale(sale);
+            storesMap.put(store.getId(), store);
+        }
+        return storesMap;
+    }
 }
