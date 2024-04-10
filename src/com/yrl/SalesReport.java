@@ -1,6 +1,12 @@
 package com.yrl;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import unl.soc.DataReporter;
+import unl.soc.DatabaseLoader;
 
 /**
  * The SalesReport class generates a summary report of sales data.
@@ -9,6 +15,8 @@ import unl.soc.DataReporter;
  * total tax collected, and total sales revenue.
  */
 public class SalesReport {
+
+    //TODO add LOGGER reports for this class
 
     /**
      * The main method generates and prints the summary reports.

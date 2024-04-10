@@ -1,5 +1,11 @@
 package unl.soc;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,33 +14,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DatabaseLoader {
-    public static void main(String[] args) {
-//        Address test = loadAddress(1);
-//        System.out.println(test);
-//
-//        var itemMap = loadAllItem();
-//        for (var item : itemMap.keySet()) {
-//            System.out.println(item + ": " + itemMap.get(item));
-//        }
-//        Item i = loadItem(2);
-//        var it = loadItemSold(25);
-//        System.out.println(it);
-//
-//        var itemMap = loadAllItemSold();
-//        for (var item : itemMap.keySet()) {
-//            System.out.println(item + ": " + itemMap.get(item));
-//        }
 
-//        var personMap = loadAllPersons();
-//        for (var person : personMap.keySet()) {
-//            System.out.println(person + ": " + personMap.get(person));
-//        }
+    private static final Logger LOGGER = LogManager.getLogger(DatabaseLoader.class);
 
-        var saleMap = loadAllSales();
-        for (var sale : saleMap.keySet()) {
-            System.out.println(sale + ": " + saleMap.get(sale));
-        }
-
+    // Configure the Logger
+    static {
+        Configurator.initialize(new DefaultConfiguration());
+        Configurator.setRootLevel(Level.INFO);
+        LOGGER.info("Start importing from database");
     }
 
     public static Address loadAddress(int addressId) {
@@ -62,7 +49,7 @@ public class DatabaseLoader {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error in the connection: " + e);
+            LOGGER.error("Error parsing address {}: {}",addressId, e);
             throw new RuntimeException(e);
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
@@ -88,11 +75,12 @@ public class DatabaseLoader {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error in the connection: " + e);
+            LOGGER.error("Error parsing all addresses", e);
             throw new RuntimeException(e);
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
+        LOGGER.info("Loaded {} addresses", addressMap.size());
         return addressMap;
     }
 
@@ -128,7 +116,7 @@ public class DatabaseLoader {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Error parsing person " + personId + ": " + e);
+            LOGGER.error("Error parsing person {}: {}", personId, e);
             throw new RuntimeException(e);
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
@@ -153,11 +141,12 @@ public class DatabaseLoader {
                 personMap.put(rs.getInt("personId"), person);
             }
         } catch (SQLException e) {
-            System.out.println("Error loading persons: " + e);
+            LOGGER.error("Error loading all persons: ", e);
             throw new RuntimeException(e);
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
+        LOGGER.info("Loaded {} persons", personMap.size());
         return personMap;
     }
 
@@ -184,12 +173,11 @@ public class DatabaseLoader {
                 store = new Store(storeId, storeCode, address, manager);
             }
         } catch (SQLException e) {
-            System.out.println("Error in the connection: " + e);
+            LOGGER.error("Error loading store {}: ", storeId, e);
             throw new RuntimeException(e);
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-
         return store;
     }
 
@@ -211,12 +199,12 @@ public class DatabaseLoader {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error in the connection: " + e);
+            LOGGER.error("Error loading all stores: ", e);
             throw new RuntimeException(e);
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-
+        LOGGER.info("Loaded {} stores", storeMap.size());
         return storeMap;
     }
 
@@ -257,12 +245,11 @@ public class DatabaseLoader {
 
             }
         } catch (SQLException e) {
-            System.out.println("Error in the connection: " + e);
+            LOGGER.error("Error loading item {}: ",itemId, e);
             throw new RuntimeException(e);
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-
         return item;
     }
 
@@ -284,12 +271,12 @@ public class DatabaseLoader {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error in the connection: " + e);
+            LOGGER.error("Error loading all items: ", e);
             throw new RuntimeException(e);
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-
+        LOGGER.info("Loaded {} items", itemMap.size());
         return itemMap;
     }
 
@@ -326,12 +313,11 @@ public class DatabaseLoader {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error in the connection: " + e);
+            LOGGER.error("Error loading item sold {}: ", itemSaleId, e);
             throw new RuntimeException(e);
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-
         return item;
     }
 
@@ -353,12 +339,12 @@ public class DatabaseLoader {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error in the connection: " + e);
+            LOGGER.error("Error loading all item sold: ", e);
             throw new RuntimeException(e);
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-
+        LOGGER.info("Loaded {} item sold", itemMap.size());
         return itemMap;
     }
 
@@ -399,7 +385,7 @@ public class DatabaseLoader {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error in the connection: " + e);
+            LOGGER.error("Error loading sale {}: ", saleId, e);
             throw new RuntimeException(e);
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
@@ -425,12 +411,12 @@ public class DatabaseLoader {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error in the connection: " + e);
+            LOGGER.error("Error loading all sales: ", e);
             throw new RuntimeException(e);
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-
+        LOGGER.info("Loaded {} sales", saleMap.size());
         return saleMap;
     }
 
@@ -440,6 +426,7 @@ public class DatabaseLoader {
             store.addSale(sale);
             storesMap.put(store.getId(), store);
         }
+        LOGGER.info("Successfully parsed items sold into stores");
         return storesMap;
     }
 }
