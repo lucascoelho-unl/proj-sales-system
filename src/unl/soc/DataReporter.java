@@ -5,15 +5,20 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The DataReporter class generates various sales reports based on the data loaded from CSV files.
+ * The DataReporter class generates various sales reports based on the data loaded from CSV files or a database.
  */
 public class DataReporter {
 
+    // private variables instantiation to avoid duplicate calls and improve efficiency after data is loaded.
+    // loads the data ONLY ONCE instead of loading it multiple times when calling a function.
     private static List<Person> personsList;
     private static List<Item> itemsList;
     private static List<Store> storesList;
     private static List<Sale> salesList;
 
+    /**
+     * Loads data from CSV files into private variables.
+     */
     public static void loadDataFromCSV() {
         Map<String, Person> personMap = DataProcessor.readPersonCSVtoMap("data/Persons.csv");
         Map<String, Item> itemsMap = DataProcessor.readItemsCSVtoMap("data/Items.csv");
@@ -29,6 +34,9 @@ public class DataReporter {
         salesList = new ArrayList<>(salesMap.values());
     }
 
+    /**
+     * Loads data from a database into private variables.
+     */
     public static void loadDataFromDB() {
         Map<Integer, Person> personMap = DatabaseLoader.loadAllPersons();
         Map<Integer, Item> itemMap = DatabaseLoader.loadAllItems();

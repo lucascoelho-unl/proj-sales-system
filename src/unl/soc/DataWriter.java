@@ -14,7 +14,7 @@ import java.util.Map;
 public class DataWriter {
     /**
      * This method creates a JSON file from a list of objects using the Gson library.
-     * The JSON file is written with pretty formatting.
+     * The JSON file is written with appropriate formatting.
      *
      * @param listOfObject The list of objects to be converted to JSON format.
      * @param filePath     The file path where the JSON file will be created.

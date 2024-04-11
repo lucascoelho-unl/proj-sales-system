@@ -1,43 +1,28 @@
 package unl.soc;
 
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.commons.dbcp2.ConnectionFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import io.github.cdimascio.dotenv.Dotenv;
 
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.List;
 import java.util.Objects;
 
-
+/**
+ * CsvToSql class provides methods to handle data processing and insertion from CSV files to a SQL database.
+ */
 public class CsvToSql {
-    public static void main(String[] args) {
-        try (Connection conn = getDataSource().getConnection()) {
-//            tempFunction(conn);
-            cleanDB(conn);
-            createDB(conn);
-            fillDB(conn);
-        } catch (SQLException e){
-           System.err.println(e);
-        }
-    }
 
+    private static final Connection conn = ConnFactory.createConnection();
+    private static final DataSource dataSource = ConnFactory.getDataSource();
 
-    private static DataSource getDataSource() {
-        BasicDataSource dataSource = new BasicDataSource();
-        Dotenv dotenv = Dotenv.configure().load();
-
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://" + dotenv.get("SERVER_NAME") + ":"+ dotenv.get("PORT_NUMBER") + "/" + dotenv.get("DATABASE_NAME"));
-        dataSource.setUsername(dotenv.get("USERNAME"));
-        dataSource.setPassword(dotenv.get("PASSWORD"));
-        return dataSource;
-    }
-
-    public static void insertAddressToDB(Connection conn) throws SQLException {
-        String insertStatement = "insert into Address (street, city, state, zipCode) values (?,?,?,?)";
+    /**
+     * Inserts address data from a CSV file into the database.
+     *
+     * @throws SQLException if a SQL exception occurs.
+     */
+    public static void insertAddressToDB() throws SQLException {
+        String insertStatement = "insert into Address (street, city, zipcodeId) values (?,?,?,?)";
         PreparedStatement ps = conn.prepareStatement(insertStatement);
 
         List<Person> people = DataProcessor.readPersonCSVtoList("data/Persons.csv");
@@ -63,10 +48,15 @@ public class CsvToSql {
         ps.close();
     }
 
-    public static void insertPersonToDB(Connection conn) throws SQLException {
+    /**
+     * Inserts person data from a CSV file into the database.
+     *
+     * @throws SQLException if a SQL exception occurs.
+     */
+    public static void insertPersonToDB() throws SQLException {
         String statement = "insert into Person (uuid, firstName, lastName, addressId) values (?,?,?,?)";
         PreparedStatement ps = conn.prepareStatement(statement);
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource());
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 
         List<Person> people = DataProcessor.readPersonCSVtoList("data/Persons.csv");
         for (Person person : people) {
@@ -76,7 +66,7 @@ public class CsvToSql {
             ps.setString(2, person.getFirstName());
             ps.setString(3, person.getLastName());
             try {
-                String addressIdQuery = "select addressId from Address where zipCode=? and street=?";
+                String addressIdQuery = "select addressId from Address where zipcodeId=? and street=?";
                 Integer addressId = jdbcTemplate.queryForObject(addressIdQuery, Integer.class, address.getZipCode(), address.getStreet());
                 if (addressId == null) {
                     throw new NullPointerException();
@@ -91,10 +81,15 @@ public class CsvToSql {
         ps.close();
     }
 
-    public static void insertEmailToDB(Connection conn) throws SQLException {
+    /**
+     * Inserts email data from a CSV file into the database.
+     *
+     * @throws SQLException if a SQL exception occurs.
+     */
+    public static void insertEmailToDB() throws SQLException {
         String emailInsert = "insert into Email(address, personId) values (?,?)";
         PreparedStatement ps = conn.prepareStatement(emailInsert);
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource());
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 
         List<Person> people = DataProcessor.readPersonCSVtoList("data/Persons.csv");
 
@@ -118,10 +113,16 @@ public class CsvToSql {
         ps.close();
     }
 
-    public static void insertStoreDB(Connection conn) throws SQLException, DataAccessException {
+    /**
+     * Inserts store data from a CSV file into the database.
+     *
+     * @throws SQLException        if a SQL exception occurs.
+     * @throws DataAccessException if a data access exception occurs.
+     */
+    public static void insertStoreDB() throws SQLException, DataAccessException {
         String insertQuery = "insert into Store (storeCode, managerId, addressId) values (?,?,?)";
         PreparedStatement ps = conn.prepareStatement(insertQuery);
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource());
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         List<Store> stores = DataProcessor.readStoreCSVtoList("data/Stores.csv");
 
         for (Store store : stores) {
@@ -131,7 +132,7 @@ public class CsvToSql {
 
             //Get Manager and Address
             String managerQuery = "select personId from Person where uuid=?";
-            String addressQuery = "select addressId from Address where street=? and zipCode=?";
+            String addressQuery = "select addressId from Address where street=? and zipcodeId=?";
 
             Integer managerId = jdbcTemplate.queryForObject(managerQuery, Integer.class, manager.getUuid());
             Integer addressId = jdbcTemplate.queryForObject(addressQuery, Integer.class, address.getStreet(), address.getZipCode());
@@ -151,12 +152,15 @@ public class CsvToSql {
         ps.close();
     }
 
-    public static void itemToSql(Connection conn) {
+    /**
+     * Inserts item data from a CSV file into the database.
+     */
+    public static void itemToSql() {
         List<Item> itemList = DataProcessor.readItemsCSVtoList("data/Items.csv");
-        try{
+        try {
             String insertItem = "insert into Item(uniqueCode, name, basePrice) values (?,?,?)";
             PreparedStatement ps = conn.prepareStatement(insertItem);
-            for (Item item : itemList){
+            for (Item item : itemList) {
                 ps.setString(1, item.getUniqueCode());
                 ps.setString(2, item.getName());
                 ps.setDouble(3, item.getBasePrice());
@@ -164,14 +168,19 @@ public class CsvToSql {
             }
             ps.executeBatch();
             ps.close();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             System.err.println(e);
         }
     }
 
-    public static void saleSql(Connection conn) throws SQLException {
+    /**
+     * Inserts sale data from a CSV file into the database.
+     *
+     * @throws SQLException if a SQL exception occurs.
+     */
+    public static void saleSql() throws SQLException {
         PreparedStatement ps;
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource());
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         List<Sale> saleList = DataProcessor.rawSalesList("data/Sales.csv");
 
         for (Sale sale : saleList) {
@@ -210,9 +219,14 @@ public class CsvToSql {
         }
     }
 
-    public static void itemSaleSql(Connection conn) throws SQLException {
+    /**
+     * Inserts item sale data from a CSV file into the database.
+     *
+     * @throws SQLException if a SQL exception occurs.
+     */
+    public static void itemSaleSql() throws SQLException {
 
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource());
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 
         List<Sale> saleProcessedList = DataProcessor.processedSalesList("data/SaleItems.csv");
 
@@ -239,7 +253,7 @@ public class CsvToSql {
 
                         ps.setInt(1, itemId);
                         ps.setInt(2, saleId);
-                        ps.setString(3,itemType);
+                        ps.setString(3, itemType);
                         ps.setDouble(4, itemVoicePlan.getTotalPeriod());
                         ps.setString(5, itemVoicePlan.getPhoneNumber());
                         ps.executeUpdate();
@@ -253,7 +267,7 @@ public class CsvToSql {
 
                         ps.setInt(1, itemId);
                         ps.setInt(2, saleId);
-                        ps.setString(3,itemType);
+                        ps.setString(3, itemType);
                         ps.setString(4, itemLease.getStartDate().toString());
                         ps.setString(5, itemLease.getEndDate().toString());
                         ps.executeUpdate();
@@ -269,8 +283,8 @@ public class CsvToSql {
                         }
                         ps.setInt(1, itemId);
                         ps.setInt(2, saleId);
-                        ps.setString(3,itemType);
-                        ps.setDouble(4,itemData.getTotalGB());
+                        ps.setString(3, itemType);
+                        ps.setDouble(4, itemData.getTotalGB());
                         ps.executeUpdate();
                         ps.close();
                     }
@@ -287,7 +301,7 @@ public class CsvToSql {
                         }
                         ps.setInt(1, itemId);
                         ps.setInt(2, saleId);
-                        ps.setString(3,itemType);
+                        ps.setString(3, itemType);
                         ps.setDouble(4, itemService.getTotalHours());
                         ps.setInt(5, employeeId);
                         ps.executeUpdate();
@@ -299,29 +313,42 @@ public class CsvToSql {
                         ps = conn.prepareStatement(insertSQL);
                         ps.setInt(1, itemId);
                         ps.setInt(2, saleId);
-                        ps.setString(3,itemType);
+                        ps.setString(3, itemType);
                         ps.executeUpdate();
                         ps.close();
                     }
                 }
-
             }
         }
-
     }
 
-
-    public static void cleanDB(Connection conn) throws SQLException {
+    /**
+     * Drops all tables in the database.
+     *
+     * @throws SQLException if a SQL exception occurs.
+     */
+    public static void cleanDB() throws SQLException {
         String drop = "drop table if exists Email, ItemSale, Item, Sale, Store, Person, Address";
         PreparedStatement ps = conn.prepareStatement(drop);
         ps.execute();
         ps.close();
     }
 
-    public static void createDB(Connection conn) throws SQLException {
-//        PreparedStatement ps = conn.prepareStatement("create table if not exists Address(addressId int primary key not null auto_increment, street varchar(255) not null, city varchar(255) not null, state varchar(255) not null, zipCode int not null)");
+    /**
+     * Creates all necessary tables in the database if they do not exist.
+     *
+     * @throws SQLException if a SQL exception occurs.
+     */
+    public static void createDB() throws SQLException {
         Statement ps = conn.createStatement();
-        ps.addBatch("create table if not exists Address(addressId int primary key not null auto_increment, street varchar(255) not null, city varchar(255) not null, state varchar(255) not null, zipCode int not null)");
+        ps.addBatch(
+                "create table if not exists Address(" +
+                        "addressId int primary key not null auto_increment, " +
+                        "street varchar(255) not null, " +
+                        "city varchar(255) not null, " +
+                        "state varchar(255) not null, " +
+                        "zipcodeId int not null, " +
+                        "FOREIGN KEY (zipcodeId) references Zipcode(zipcodeId))");
         ps.addBatch(
                 "create table if not exists Person(" +
                         "personId int primary key not null auto_increment," +
@@ -387,15 +414,18 @@ public class CsvToSql {
         ps.close();
     }
 
-    public static void fillDB(Connection conn) throws SQLException {
-        insertAddressToDB(conn);
-        insertPersonToDB(conn);
-        insertEmailToDB(conn);
-        insertStoreDB(conn);
-        itemToSql(conn);
-        saleSql(conn);
-        itemSaleSql(conn);
+    /**
+     * Fills the database with data from CSV files.
+     *
+     * @throws SQLException if a SQL exception occurs.
+     */
+    public static void fillDB() throws SQLException {
+        insertAddressToDB();
+        insertPersonToDB();
+        insertEmailToDB();
+        insertStoreDB();
+        itemToSql();
+        saleSql();
+        itemSaleSql();
     }
-
 }
-

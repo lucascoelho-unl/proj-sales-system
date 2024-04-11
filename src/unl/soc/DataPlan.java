@@ -44,7 +44,7 @@ public class DataPlan extends Item {
 
     @Override
     public double getBasePrice() {
-        return Math.round(costPerGB * 100)/100.0;
+        return Math.round(costPerGB * 100) / 100.0;
     }
 
     public double getTotalGB() {
@@ -53,18 +53,18 @@ public class DataPlan extends Item {
 
     @Override
     public double getGrossPrice() {
-        return Math.round(costPerGB * totalGB * 100)/100.0;
+        return Math.round(costPerGB * totalGB * 100) / 100.0;
     }
 
     @Override
     public double getTotalTax() {
-        return Math.round(getGrossPrice() * TAX_PERCENTAGE * 100)/100.0;
+        return Math.round(getGrossPrice() * TAX_PERCENTAGE * 100) / 100.0;
     }
 
     @Override
     public String toString() {
         return String.format("%s - %s \n %20.2f GB @ $%5.2f / GB \n %60s %9.2f $%9.2f",
-                             getName() + " (" + getUniqueCode() + ")", "Data", getTotalGB(), costPerGB, "$", getTotalTax(), getGrossPrice());
+                getName() + " (" + getUniqueCode() + ")", "Data", getTotalGB(), costPerGB, "$", getTotalTax(), getGrossPrice());
     }
 
     @Override

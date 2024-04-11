@@ -17,7 +17,6 @@ public class DatabaseInfo {
 
     /**
      * Connection parameters that may be necessary for server configuration
-     *
      */
     public static final String PARAMETERS = "";
 
@@ -27,8 +26,12 @@ public class DatabaseInfo {
     public static final String SERVER = "cse-linux-01.unl.edu";
 
     /**
+     * Port number for database connection
+     */
+    public static final String PORT = "3306";
+
+    /**
      * Fully formatted URL for a JDBC connection
      */
     public static final String URL = String.format("jdbc:mysql://%s/%s?%s", SERVER, USERNAME, PARAMETERS);
-
 }

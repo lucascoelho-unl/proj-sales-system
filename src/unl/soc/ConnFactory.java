@@ -7,22 +7,25 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * A factory class responsible for managing database connections.
+ */
 public class ConnFactory {
 
     private static final Logger LOGGER = LogManager.getLogger(ConnFactory.class);
+    private static final BasicDataSource dataSource;
 
     // Configure the Logger
     static {
         Configurator.initialize(new DefaultConfiguration());
         Configurator.setRootLevel(Level.INFO);
     }
-
-    private static final BasicDataSource dataSource;
 
     // Initialize the data source once
     static {
@@ -34,6 +37,12 @@ public class ConnFactory {
         LOGGER.info("Connected to database {} at {}", DatabaseInfo.USERNAME, DatabaseInfo.SERVER);
     }
 
+    /**
+     * Creates and returns a database connection.
+     *
+     * @return A Connection object representing the database connection.
+     * @throws RuntimeException if an error occurs while establishing the connection.
+     */
     public static Connection createConnection() {
         try {
             return dataSource.getConnection();
@@ -43,6 +52,14 @@ public class ConnFactory {
         }
     }
 
+    /**
+     * Closes the given ResultSet, PreparedStatement, and Connection objects.
+     *
+     * @param rs   The ResultSet object to close.
+     * @param ps   The PreparedStatement object to close.
+     * @param conn The Connection object to close.
+     * @throws RuntimeException if an error occurs while closing the resources.
+     */
     public static void closeConnection(ResultSet rs, PreparedStatement ps, Connection conn) {
         try {
             if (rs != null) {
@@ -60,14 +77,30 @@ public class ConnFactory {
         }
     }
 
+    /**
+     * Overloaded method to close the PreparedStatement and Connection objects.
+     *
+     * @param ps   The PreparedStatement object to close.
+     * @param conn The Connection object to close.
+     */
     public static void closeConnection(PreparedStatement ps, Connection conn) {
         closeConnection(null, ps, conn);
     }
 
+    /**
+     * Overloaded method to close the Connection object.
+     *
+     * @param conn The Connection object to close.
+     */
     public static void closeConnection(Connection conn) {
         closeConnection(null, null, conn);
     }
 
+    /**
+     * Closes the data source, releasing all pooled connections.
+     *
+     * @throws RuntimeException if an error occurs while closing the data source.
+     */
     public static void closeConnection() {
         try {
             dataSource.close();
@@ -75,5 +108,14 @@ public class ConnFactory {
             LOGGER.error("Connection error", e);
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Method to get the generated datasource
+     *
+     * @return the DataSource instance from the private variable.
+     */
+    public static DataSource getDataSource() {
+        return dataSource;
     }
 }

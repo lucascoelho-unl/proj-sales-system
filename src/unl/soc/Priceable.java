@@ -1,7 +1,7 @@
 package unl.soc;
 
 /**
- * Interface for objects that have price-related information.
+ * Interface for objects that are price-related.
  */
 public interface Priceable {
     /**

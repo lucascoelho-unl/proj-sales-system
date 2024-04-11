@@ -13,7 +13,11 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class provides methods to load data from the database into memory objects.
+ */
 public class DatabaseLoader {
+
 
     private static final Logger LOGGER = LogManager.getLogger(DatabaseLoader.class);
 
@@ -23,6 +27,12 @@ public class DatabaseLoader {
         Configurator.setRootLevel(Level.INFO);
     }
 
+    /**
+     * Loads an Address object from the database based on the given address ID.
+     *
+     * @param addressId The ID of the address to load.
+     * @return The Address object loaded from the database.
+     */
     public static Address loadAddress(int addressId) {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -55,6 +65,11 @@ public class DatabaseLoader {
         return address;
     }
 
+    /**
+     * Loads all Address objects from the database.
+     *
+     * @return A map of address IDs to Address objects.
+     */
     public static Map<Integer, Address> loadAllAddress() {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -82,6 +97,12 @@ public class DatabaseLoader {
         return addressMap;
     }
 
+    /**
+     * Loads a Person object from the database based on the given person ID.
+     *
+     * @param personId The ID of the person to load.
+     * @return The Person object loaded from the database.
+     */
     public static Person loadPerson(int personId) {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -122,6 +143,11 @@ public class DatabaseLoader {
         return person;
     }
 
+    /**
+     * Loads all Person objects from the database.
+     *
+     * @return A map of person IDs to Person objects.
+     */
     public static Map<Integer, Person> loadAllPersons() {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -148,6 +174,12 @@ public class DatabaseLoader {
         return personMap;
     }
 
+    /**
+     * Loads a Store object from the database based on the given store ID.
+     *
+     * @param storeId The ID of the store to load.
+     * @return The Store object loaded from the database.
+     */
     public static Store loadStore(int storeId) {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -179,6 +211,11 @@ public class DatabaseLoader {
         return store;
     }
 
+    /**
+     * Loads all Store objects from the database.
+     *
+     * @return A map of store IDs to Store objects.
+     */
     public static Map<Integer, Store> loadAllStores() {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -206,6 +243,12 @@ public class DatabaseLoader {
         return storeMap;
     }
 
+    /**
+     * Loads an Item object from the database based on the given item ID.
+     *
+     * @param itemId The ID of the item to load.
+     * @return The Item object loaded from the database.
+     */
     public static Item loadItem(int itemId) {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -228,6 +271,7 @@ public class DatabaseLoader {
                 String name = rs.getString("name");
                 String type = rs.getString("type");
 
+                // Switch case to determine the type of item sale
                 item = switch (type) {
                     case "S" -> new Service(itemId, uniqueCode, name, basePrice);
                     case "D" -> new DataPlan(itemId, uniqueCode, name, basePrice);
@@ -251,6 +295,11 @@ public class DatabaseLoader {
         return item;
     }
 
+    /**
+     * Loads all Item objects from the database.
+     *
+     * @return A map of item IDs to Item objects.
+     */
     public static Map<Integer, Item> loadAllItems() {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -278,6 +327,12 @@ public class DatabaseLoader {
         return itemMap;
     }
 
+    /**
+     * Loads an Item object sold from the database based on the given item sale ID.
+     *
+     * @param itemSaleId The ID of the item sale to load.
+     * @return The Item object sold loaded from the database.
+     */
     public static Item loadItemSold(int itemSaleId) {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -297,6 +352,8 @@ public class DatabaseLoader {
             if (rs.next()) {
                 String type = rs.getString("type");
                 item = loadItem(rs.getInt("itemId"));
+
+                // Switch case to determine the type of item sale to correctly instantiate the item instance.
                 item = switch (type) {
                     case "L" -> new ProductLease(itemSaleId, item, rs.getString("startDate"), rs.getString("endDate"));
                     case "V" ->
@@ -317,6 +374,11 @@ public class DatabaseLoader {
         return item;
     }
 
+    /**
+     * Loads all Item objects sold from the database.
+     *
+     * @return A map of item sale IDs to Item objects sold.
+     */
     public static Map<Integer, Item> loadAllItemSold() {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -344,6 +406,12 @@ public class DatabaseLoader {
         return itemMap;
     }
 
+    /**
+     * Loads a Sale object from the database based on the given sale ID.
+     *
+     * @param saleId The ID of the sale to load.
+     * @return The Sale object loaded from the database.
+     */
     public static Sale loadSale(int saleId) {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -389,6 +457,11 @@ public class DatabaseLoader {
         return sale;
     }
 
+    /**
+     * Loads all Sale objects from the database.
+     *
+     * @return A map of sale IDs to Sale objects.
+     */
     public static Map<Integer, Sale> loadAllSales() {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -416,6 +489,13 @@ public class DatabaseLoader {
         return saleMap;
     }
 
+    /**
+     * Updates the store map from the sales map.
+     *
+     * @param storesMap The map of store IDs to Store objects.
+     * @param salesMap  The map of sale IDs to Sale objects.
+     * @return The updated map of store IDs to Store objects.
+     */
     public static Map<Integer, Store> updateStoreMapFromSalesMap(Map<Integer, Store> storesMap, Map<Integer, Sale> salesMap) {
         for (Sale sale : salesMap.values()) {
             Store store = sale.getStore();

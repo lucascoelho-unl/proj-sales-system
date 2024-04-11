@@ -5,10 +5,9 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 /**
- * The Utils class provides utility methods for reading data from CSV files, parsing it into objects,
- * and converting objects to JSON or XML formats.
- * Additionally, it includes methods for creating JSON files from lists or maps of objects using the Gson library,
- * and for creating XML files from lists of objects using the XStream library.
+ * The DataProcessor class provides methods for processing data from CSV files,
+ * including reading sales, items, persons, and stores data,
+ * and converting it into maps or lists of objects.
  */
 public class DataProcessor {
 

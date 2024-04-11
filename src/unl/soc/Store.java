@@ -40,6 +40,20 @@ public class Store {
         this.sales = new ArrayList<>();
     }
 
+    public static int compareStores(Store store1, Store store2) {
+        // Compare by manager's last name and first name before comparing by total sale value
+        int lastNameComparison = store1.getManager().getLastName().compareTo(store2.getManager().getLastName());
+        if (lastNameComparison != 0) {
+            return lastNameComparison;
+        }
+        int firstNameComparison = store1.getManager().getFirstName().compareTo(store2.getManager().getFirstName());
+        if (firstNameComparison != 0) {
+            return firstNameComparison;
+        }
+        // If last names and first names are equal, compare by total sale value
+        return Double.compare(store2.getTotalSalePrice(), store1.getTotalSalePrice());
+    }
+
     public int getId() {
         return id;
     }
@@ -91,19 +105,5 @@ public class Store {
     @Override
     public int hashCode() {
         return Objects.hash(storeCode, manager, address, sales);
-    }
-
-    public static int compareStores(Store store1, Store store2) {
-        // Compare by manager's last name and first name before comparing by total sale value
-        int lastNameComparison = store1.getManager().getLastName().compareTo(store2.getManager().getLastName());
-        if (lastNameComparison != 0) {
-            return lastNameComparison;
-        }
-        int firstNameComparison = store1.getManager().getFirstName().compareTo(store2.getManager().getFirstName());
-        if (firstNameComparison != 0) {
-            return firstNameComparison;
-        }
-        // If last names and first names are equal, compare by total sale value
-        return Double.compare(store2.getTotalSalePrice(), store1.getTotalSalePrice());
     }
 }

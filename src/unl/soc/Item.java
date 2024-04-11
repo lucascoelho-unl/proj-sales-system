@@ -1,6 +1,7 @@
 package unl.soc;
 
 import com.google.gson.annotations.Expose;
+
 /**
  * The Item class is an abstract class representing an item.
  * It includes fields for unique code, name, tax, total price, and stores available.

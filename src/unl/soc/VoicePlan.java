@@ -67,17 +67,17 @@ public class VoicePlan extends Item {
 
     @Override
     public double getGrossPrice() {
-        return Math.round(100 * periodCost * (totalPeriod / 30))/100.0;
+        return Math.round(100 * periodCost * (totalPeriod / 30)) / 100.0;
     }
 
     @Override
     public double getTotalTax() {
-        return Math.round(100 * getGrossPrice() * TAX_PERCENTAGE)/100.0;
+        return Math.round(100 * getGrossPrice() * TAX_PERCENTAGE) / 100.0;
     }
 
     @Override
     public double getBasePrice() {
-        return Math.round(100 * periodCost)/100.0;
+        return Math.round(100 * periodCost) / 100.0;
     }
 
     @Override

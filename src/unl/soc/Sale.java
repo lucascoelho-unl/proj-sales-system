@@ -12,13 +12,13 @@ import java.util.Objects;
  * It includes Getters, ToString, HashCode and Equals methods
  */
 public class Sale implements Priceable {
-    private int id;
     private final String uniqueCode;
     private final Store store;
     private final Person customer;
     private final Person salesman;
     private final LocalDate dateTime;
-    private List<Item> itemsList;
+    private int id;
+    private final List<Item> itemsList;
 
     public Sale(String uniqueCode, Store store, Person customer, Person salesman, String dateString) {
         this.uniqueCode = uniqueCode;
@@ -39,6 +39,10 @@ public class Sale implements Priceable {
         this.itemsList = new ArrayList<>();
     }
 
+    public static int compareSales(Sale sale1, Sale sale2) {
+        return Double.compare(sale2.getNetPrice(), sale1.getNetPrice());
+    }
+
     public int getId() {
         return id;
     }
@@ -54,7 +58,7 @@ public class Sale implements Priceable {
         for (Item item : this.itemsList) {
             total += item.getGrossPrice();
         }
-        return Math.round(100 * total)/100.0;
+        return Math.round(100 * total) / 100.0;
     }
 
     /**
@@ -68,7 +72,7 @@ public class Sale implements Priceable {
         for (Item item : this.itemsList) {
             total += item.getTotalTax();
         }
-        return Math.round(100 * total)/100.0;
+        return Math.round(100 * total) / 100.0;
     }
 
     public void addItem(Item item) {
@@ -134,9 +138,5 @@ public class Sale implements Priceable {
     @Override
     public int hashCode() {
         return Objects.hash(uniqueCode, store, customer, salesman, dateTime, itemsList);
-    }
-
-    public static int compareSales(Sale sale1, Sale sale2) {
-        return Double.compare(sale2.getNetPrice(), sale1.getNetPrice());
     }
 }

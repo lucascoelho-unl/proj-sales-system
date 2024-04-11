@@ -15,6 +15,8 @@ import java.util.Objects;
  */
 @XStreamAlias("person")
 public class Person {
+    @XStreamAlias("emails")
+    private final List<String> emailList;
     private int id;
     @Expose
     private String uuid;
@@ -24,8 +26,6 @@ public class Person {
     private String lastName;
     @Expose
     private Address address;
-    @XStreamAlias("emails")
-    private final List<String> emailList;
 
     public Person(int id, String uuid, String firstName, String lastName, Address address, List<String> emailList) {
         this.id = id;

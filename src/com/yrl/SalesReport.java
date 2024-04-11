@@ -14,6 +14,9 @@ public class SalesReport {
      * The main method generates and prints the summary reports.
      */
     public static void main(String[] args) {
+
+        // Loads data from the Database, and parse into private variables
+        // in DataReporter class for further usage and less redundant calls.
         DataReporter.loadDataFromDB();
 
         String totalsReport = DataReporter.reportTotalsBySales();

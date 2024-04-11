@@ -2,16 +2,20 @@ package unl.soc;
 
 import java.sql.*;
 
+/**
+ * This class provides methods to interact with the database for data persistence operations.
+ * It is still under implementation.
+ */
 public class DataPersist {
 
-    public static void main(String[] args) {
-        System.out.println(selectOrInsertState("Florida"));
-        Address p = new Address("8 Eliot Circle","Huntsville", "Alabama", 35815);
-        System.out.println(selectOrInsertAddress(p));
-    }
-
-    private static int selectOrInsertState(String state){
-        if (state.isEmpty()){
+    /**
+     * Selects or inserts a state into the database.
+     *
+     * @param state The state to select or insert.
+     * @return The ID of the state in the database.
+     */
+    private static int selectOrInsertState(String state) {
+        if (state.isEmpty()) {
             throw new RuntimeException("Invalid state");
         }
 
@@ -20,16 +24,16 @@ public class DataPersist {
         ResultSet rs = null;
 
         String query = """
-                        select stateId from State
-                        where state = ?
-                        """;
+                select stateId from State
+                where state = ?
+                """;
 
-        try{
+        try {
             //Return id if already exist
             ps = conn.prepareStatement(query);
             ps.setString(1, state);
             rs = ps.executeQuery();
-            if(rs.next()){
+            if (rs.next()) {
                 return rs.getInt("stateId");
             }
 
@@ -41,7 +45,7 @@ public class DataPersist {
             ps.setString(1, state);
             ps.executeUpdate();
             rs = ps.getGeneratedKeys();
-            if(rs.next()){
+            if (rs.next()) {
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
@@ -54,8 +58,15 @@ public class DataPersist {
         return -1;
     }
 
-    private static int selectOrInsertZipcode(int zipcode, int stateId){
-        if (zipcode % 10000 < 0){
+    /**
+     * Selects or inserts a zipcode into the database.
+     *
+     * @param zipcode The zipcode to select or insert.
+     * @param stateId The ID of the state associated with the zipcode.
+     * @return The ID of the zipcode in the database.
+     */
+    private static int selectOrInsertZipcode(int zipcode, int stateId) {
+        if (zipcode % 10000 < 0) {
             throw new RuntimeException("Invalid zipcode");
         }
 
@@ -64,17 +75,17 @@ public class DataPersist {
         ResultSet rs = null;
 
         String query = """
-                        select zipcodeId from Zipcode
-                        where zipcode = ? and stateId = ?;
-                        """;
+                select zipcodeId from Zipcode
+                where zipcode = ? and stateId = ?;
+                """;
 
-        try{
+        try {
             //Return id if already exist
             ps = conn.prepareStatement(query);
             ps.setInt(1, zipcode);
             ps.setInt(2, stateId);
             rs = ps.executeQuery();
-            if(rs.next()){
+            if (rs.next()) {
                 return rs.getInt("zipcodeId");
             }
 
@@ -88,7 +99,7 @@ public class DataPersist {
             ps.setInt(2, stateId);
             ps.executeUpdate();
             rs = ps.getGeneratedKeys();
-            if(rs.next()){
+            if (rs.next()) {
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
@@ -101,6 +112,12 @@ public class DataPersist {
         return -1;
     }
 
+    /**
+     * Selects or inserts an address into the database.
+     *
+     * @param address The address to select or insert.
+     * @return The ID of the address in the database.
+     */
     public static int selectOrInsertAddress(Address address) {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -108,11 +125,11 @@ public class DataPersist {
 
         //Query for existence address
         String query = """
-                        select addressId from Address
-                        where street = ? and zipcodeId = ? and city = ?;
-                        """;
+                select addressId from Address
+                where street = ? and zipcodeId = ? and city = ?;
+                """;
 
-        try{
+        try {
             //Return id if already exist
             ps = conn.prepareStatement(query);
             ps.setString(1, address.getStreet());
@@ -122,7 +139,7 @@ public class DataPersist {
             ps.setString(3, address.getCity());
 
             rs = ps.executeQuery();
-            if(rs.next()){
+            if (rs.next()) {
                 return rs.getInt("addressId");
             }
 
@@ -138,7 +155,7 @@ public class DataPersist {
             ps.executeUpdate();
 
             rs = ps.getGeneratedKeys();
-            if(rs.next()){
+            if (rs.next()) {
                 return rs.getInt(1);
             }
         } catch (SQLException e) {

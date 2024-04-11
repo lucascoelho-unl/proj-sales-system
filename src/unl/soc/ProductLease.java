@@ -53,7 +53,7 @@ public class ProductLease extends Item {
     }
 
     public double getMarkupPrice() {
-        return Math.round(100 * (getBasePrice() / 2))/100.0;
+        return Math.round(100 * (getBasePrice() / 2)) / 100.0;
     }
 
     public double getTotalLeasePrice() {
@@ -61,7 +61,7 @@ public class ProductLease extends Item {
     }
 
     public double getFirstMonthPrice() {
-        return Math.round(100 * (getTotalLeasePrice() / getPeriodInMonths()))/100.0;
+        return Math.round(100 * (getTotalLeasePrice() / getPeriodInMonths())) / 100.0;
     }
 
     @Override
