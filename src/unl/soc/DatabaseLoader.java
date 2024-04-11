@@ -18,7 +18,6 @@ import java.util.Map;
  */
 public class DatabaseLoader {
 
-
     private static final Logger LOGGER = LogManager.getLogger(DatabaseLoader.class);
 
     // Configure the Logger
