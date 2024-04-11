@@ -16,17 +16,16 @@ public class DataProcessor {
      * Fills the provided sales map with items from a CSV file located at the given path.
      * Uses pre-existing maps of items and persons to retrieve additional information.
      *
-     * @param salesMap The map of sales where items will be added.
-     * @param itemsMap The map containing item codes mapped to their respective items.
+     * @param salesMap   The map of sales where items will be added.
+     * @param itemsMap   The map containing item codes mapped to their respective items.
      * @param personsMap The map containing person IDs mapped to their respective person objects.
-     * @param path The path to the CSV file containing sale information.
+     * @param path       The path to the CSV file containing sale information.
      * @return The updated sales map after adding items from the CSV file, or null if the file is not found.
      */
     public static Map<String, Sale> fillSalesWithItemsMap(Map<String, Sale> salesMap,
                                                           Map<String, Item> itemsMap,
                                                           Map<String, Person> personsMap,
                                                           String path) {
-
 
 
         try (Scanner scanner = new Scanner(new File(path))) {
@@ -78,25 +77,24 @@ public class DataProcessor {
      * Reads items and persons data from separate CSV files to create a comprehensive map of items and persons.
      *
      * @param salesMap The map of sales where items will be added.
-     * @param path The path to the CSV file containing sale information.
+     * @param path     The path to the CSV file containing sale information.
      * @return The updated sales map after adding items from the CSV file, or null if the file is not found.
      */
-    public static Map<String, Sale> fillSalesWithItemsMap(Map<String, Sale> salesMap, String path){
+    public static Map<String, Sale> fillSalesWithItemsMap(Map<String, Sale> salesMap, String path) {
 
         Map<String, Item> itemsMap = DataProcessor.readItemsCSVtoMap("data/Items.csv");
         Map<String, Person> personsMap = DataProcessor.readPersonCSVtoMap("data/Persons.csv");
-        return fillSalesWithItemsMap(salesMap,itemsMap, personsMap, path);
+        return fillSalesWithItemsMap(salesMap, itemsMap, personsMap, path);
     }
 
     /**
      * Returns sales map with purchase items from a CSV file located at the given path.
      * Reads items and persons data from separate CSV files to create a comprehensive map of items and persons.
      *
-     *
      * @param path The path to the CSV file containing sale information.
      * @return The updated sales map after adding items from the CSV file, or null if the file is not found.
      */
-    public static Map<String, Sale> processedSalesWithItemsMap(String path){
+    public static Map<String, Sale> processedSalesWithItemsMap(String path) {
 
         Map<String, Sale> salesMap = DataProcessor.readSaleCSVToMap("data/Sales.csv");
         return fillSalesWithItemsMap(salesMap, path);
@@ -109,7 +107,7 @@ public class DataProcessor {
      * @param path The path to the CSV file containing sale information.
      * @return A map of sales with purchased items, or null if the file is not found.
      */
-    public static Map<String, Sale> purchasedItemsSalesMap(String path){
+    public static Map<String, Sale> purchasedItemsSalesMap(String path) {
 
         Map<String, Sale> salesMap = DataProcessor.readSaleCSVToMap("data/Sales.csv");
         Map<String, Item> itemsMap = DataProcessor.readItemsCSVtoMap("data/Items.csv");
@@ -436,8 +434,7 @@ public class DataProcessor {
      * @param salesMap
      * @return storesMap
      */
-    public static Map<String, Store> updateStoreMapFromSalesMap(Map<String, Sale> salesMap){
-        Map<String, Store> storesMap = readStoreCSVtoMap("data/Stores.csv");
+    public static Map<String, Store> updateStoreMapFromSalesMap(Map<String, Store> storesMap, Map<String, Sale> salesMap) {
         for (Sale sale : salesMap.values()) {
             storesMap.put(sale.getStore().getStoreCode(), sale.getStore());
         }

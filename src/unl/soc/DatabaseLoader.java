@@ -21,7 +21,6 @@ public class DatabaseLoader {
     static {
         Configurator.initialize(new DefaultConfiguration());
         Configurator.setRootLevel(Level.INFO);
-        LOGGER.info("Start importing from database");
     }
 
     public static Address loadAddress(int addressId) {
@@ -31,45 +30,44 @@ public class DatabaseLoader {
         Address address = null;
 
         String query = """
-                        select zipcode, state, city, street from Address a
-                        left join Zipcode z on a.zipcodeId = z.zipcodeId
-                        left join State S on z.stateId = S.stateId
-                        where addressId = ?;
-                        """;
-        try{
+                select zipcode, state, city, street from Address a
+                left join Zipcode z on a.zipcodeId = z.zipcodeId
+                left join State S on z.stateId = S.stateId
+                where addressId = ?;
+                """;
+        try {
             ps = conn.prepareStatement(query);
             ps.setInt(1, addressId);
             rs = ps.executeQuery();
-            if (rs.next()){
+            if (rs.next()) {
                 int zipcode = rs.getInt("zipcode");
                 String state = rs.getString("state");
                 String city = rs.getString("city");
                 String street = rs.getString("street");
                 address = new Address(addressId, street, city, state, zipcode);
             }
-
         } catch (SQLException e) {
-            LOGGER.error("Error parsing address {}: {}",addressId, e);
+            LOGGER.error("Error parsing address {}: {}", addressId, e);
             throw new RuntimeException(e);
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-         return address;
+        return address;
     }
 
-    public static Map<Integer, Address> loadAllAddress(){
+    public static Map<Integer, Address> loadAllAddress() {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
         Map<Integer, Address> addressMap = new HashMap<>();
 
         String query = """
-                        select addressId from Address;
-                        """;
-        try{
+                select addressId from Address;
+                """;
+        try {
             ps = conn.prepareStatement(query);
             rs = ps.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 Address address = loadAddress(rs.getInt("addressId"));
                 addressMap.put(rs.getInt("addressId"), address);
             }
@@ -91,23 +89,23 @@ public class DatabaseLoader {
         Person person = null;
 
         String query = """
-                        select uuid, firstName, lastName, addressId, e.address from Person p
-                        left join Email e on p.personId = e.personId
-                        where p.personId = ?;
-                        """;
-        try{
+                select uuid, firstName, lastName, addressId, e.address from Person p
+                left join Email e on p.personId = e.personId
+                where p.personId = ?;
+                """;
+        try {
             ps = conn.prepareStatement(query);
             ps.setInt(1, personId);
             rs = ps.executeQuery();
-            if (rs.next()){
+            if (rs.next()) {
                 String uuid = rs.getString("uuid");
                 String firstName = rs.getString("firstName");
                 String lastName = rs.getString("lastName");
                 Address address = loadAddress(rs.getInt("addressId"));
-                person = new Person(personId, uuid,firstName,lastName,address);
+                person = new Person(personId, uuid, firstName, lastName, address);
                 // Adding e-mails to the person list of e-mails
                 String email;
-                if ((email = rs.getString("address")) != null){
+                if ((email = rs.getString("address")) != null) {
                     person.addEmail(email);
                     while (rs.next()) {
                         email = rs.getString("address");
@@ -124,19 +122,19 @@ public class DatabaseLoader {
         return person;
     }
 
-    public static Map<Integer, Person> loadAllPersons(){
+    public static Map<Integer, Person> loadAllPersons() {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
         Map<Integer, Person> personMap = new HashMap<>();
 
         String query = """
-                        select personId from Person;
-                        """;
+                select personId from Person;
+                """;
         try {
             ps = conn.prepareStatement(query);
             rs = ps.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 Person person = loadPerson(rs.getInt("personId"));
                 personMap.put(rs.getInt("personId"), person);
             }
@@ -146,7 +144,7 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-        LOGGER.info("Loaded {} persons", personMap.size());
+        LOGGER.info("Successfully loaded {} persons", personMap.size());
         return personMap;
     }
 
@@ -157,14 +155,14 @@ public class DatabaseLoader {
         Store store = null;
 
         String query = """
-                        select s.storeCode, s.managerId, s.addressId from Store s
-                        where storeId = ?
-                        """;
-        try{
+                select s.storeCode, s.managerId, s.addressId from Store s
+                where storeId = ?
+                """;
+        try {
             ps = conn.prepareStatement(query);
             ps.setInt(1, storeId);
             rs = ps.executeQuery();
-            if (rs.next()){
+            if (rs.next()) {
                 String storeCode = rs.getString("storeCode");
                 int managerId = rs.getInt("managerId");
                 int addressId = rs.getInt("addressId");
@@ -181,19 +179,19 @@ public class DatabaseLoader {
         return store;
     }
 
-    public static Map<Integer, Store> loadAllStores(){
+    public static Map<Integer, Store> loadAllStores() {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
         Map<Integer, Store> storeMap = new HashMap<>();
 
         String query = """
-                        select storeId from Store;
-                        """;
-        try{
+                select storeId from Store;
+                """;
+        try {
             ps = conn.prepareStatement(query);
             rs = ps.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 Store store = loadStore(rs.getInt("storeId"));
                 storeMap.put(rs.getInt("storeId"), store);
             }
@@ -204,7 +202,7 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-        LOGGER.info("Loaded {} stores", storeMap.size());
+        LOGGER.info("Successfully loaded {} stores", storeMap.size());
         return storeMap;
     }
 
@@ -215,16 +213,16 @@ public class DatabaseLoader {
         Item item = null;
 
         String query = """
-                        select Item.itemId, uniqueCode, basePrice, name, type, startDate from Item
-                        left join ItemSale on Item.itemId = ItemSale.itemId
-                        where Item.itemId = ?;
-                        """;
+                select Item.itemId, uniqueCode, basePrice, name, type, startDate from Item
+                left join ItemSale on Item.itemId = ItemSale.itemId
+                where Item.itemId = ?;
+                """;
 
-        try{
+        try {
             ps = conn.prepareStatement(query);
             ps.setInt(1, itemId);
             rs = ps.executeQuery();
-            if (rs.next()){
+            if (rs.next()) {
                 String uniqueCode = rs.getString("uniqueCode");
                 float basePrice = rs.getFloat("basePrice");
                 String name = rs.getString("name");
@@ -237,7 +235,7 @@ public class DatabaseLoader {
                     default -> null;
                 };
 
-                if (rs.getString("startDate") != null && type.equals("L")){
+                if (rs.getString("startDate") != null && type.equals("L")) {
                     item = new ProductLease(itemId, uniqueCode, name, basePrice);
                 } else if (type.equals("P")) {
                     item = new ProductPurchase(itemId, uniqueCode, name, basePrice);
@@ -245,7 +243,7 @@ public class DatabaseLoader {
 
             }
         } catch (SQLException e) {
-            LOGGER.error("Error loading item {}: ",itemId, e);
+            LOGGER.error("Error loading item {}: ", itemId, e);
             throw new RuntimeException(e);
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
@@ -253,19 +251,19 @@ public class DatabaseLoader {
         return item;
     }
 
-    public static Map<Integer, Item> loadAllItems(){
+    public static Map<Integer, Item> loadAllItems() {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
         Map<Integer, Item> itemMap = new HashMap<>();
 
         String query = """
-                        select itemId from Item;
-                        """;
-        try{
+                select itemId from Item;
+                """;
+        try {
             ps = conn.prepareStatement(query);
             rs = ps.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 Item item = loadItem(rs.getInt("itemId"));
                 itemMap.put(rs.getInt("itemId"), item);
             }
@@ -276,38 +274,36 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-        LOGGER.info("Loaded {} items", itemMap.size());
+        LOGGER.info("Successfully loaded {} items", itemMap.size());
         return itemMap;
     }
 
-    public static Item loadItemSold(int itemSaleId){
+    public static Item loadItemSold(int itemSaleId) {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
         Item item = null;
 
         String query = """
-                       select i.itemId, type, startDate, endDate, totalGb, totalHours, employeeId, totalPeriod, phoneNumber from Item i
-                       left join ItemSale its on its.itemId = i.itemId
-                       where its.itemSaleId = ?;
-                       """;
+                select i.itemId, type, startDate, endDate, totalGb, totalHours, employeeId, totalPeriod, phoneNumber from Item i
+                left join ItemSale its on its.itemId = i.itemId
+                where its.itemSaleId = ?;
+                """;
 
-        try{
+        try {
             ps = conn.prepareStatement(query);
             ps.setInt(1, itemSaleId);
             rs = ps.executeQuery();
-            if (rs.next()){
+            if (rs.next()) {
                 String type = rs.getString("type");
                 item = loadItem(rs.getInt("itemId"));
                 item = switch (type) {
-                    case "L" ->
-                            new ProductLease(itemSaleId, item, rs.getString("startDate"), rs.getString("endDate"));
+                    case "L" -> new ProductLease(itemSaleId, item, rs.getString("startDate"), rs.getString("endDate"));
                     case "V" ->
                             new VoicePlan(itemSaleId, item, rs.getString("phoneNumber"), rs.getDouble("totalPeriod"));
                     case "S" ->
                             new Service(itemSaleId, item, rs.getDouble("totalHours"), loadPerson(rs.getInt("employeeId")));
-                    case "D" ->
-                            new DataPlan(itemSaleId, item, rs.getDouble("totalGb"));
+                    case "D" -> new DataPlan(itemSaleId, item, rs.getDouble("totalGb"));
                     default -> item;
                 };
             }
@@ -321,19 +317,19 @@ public class DatabaseLoader {
         return item;
     }
 
-    public static Map<Integer, Item> loadAllItemSold(){
+    public static Map<Integer, Item> loadAllItemSold() {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
         Map<Integer, Item> itemMap = new HashMap<>();
 
         String query = """
-                        select itemSaleId from ItemSale;
-                        """;
-        try{
+                select itemSaleId from ItemSale;
+                """;
+        try {
             ps = conn.prepareStatement(query);
             rs = ps.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 Item itemSold = loadItemSold(rs.getInt("itemSaleId"));
                 itemMap.put(rs.getInt("itemSaleId"), itemSold);
             }
@@ -348,24 +344,24 @@ public class DatabaseLoader {
         return itemMap;
     }
 
-    public static Sale loadSale(int saleId){
+    public static Sale loadSale(int saleId) {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
         Sale sale = null;
 
         String query = """
-                        select uniqueCode, saleDate, customerId, salesmanId, storeId, itemSaleId from Sale
-                        left join ItemSale on ItemSale.saleId = Sale.saleId
-                        where Sale.saleId = ?;
-                        """;
+                select uniqueCode, saleDate, customerId, salesmanId, storeId, itemSaleId from Sale
+                left join ItemSale on ItemSale.saleId = Sale.saleId
+                where Sale.saleId = ?;
+                """;
 
-        try{
+        try {
             ps = conn.prepareStatement(query);
             ps.setInt(1, saleId);
             rs = ps.executeQuery();
 
-            if (rs.next()){
+            if (rs.next()) {
                 String uniqueCode = rs.getString("uniqueCode");
                 String saleDate = rs.getString("saleDate");
                 Person customer = loadPerson(rs.getInt("customerId"));
@@ -375,9 +371,9 @@ public class DatabaseLoader {
 
                 //Load items of the sale
                 Item item;
-                if ((item = loadItemSold(rs.getInt("itemSaleId"))) != null){
+                if ((item = loadItemSold(rs.getInt("itemSaleId"))) != null) {
                     sale.addItem(item);
-                    while(rs.next()){
+                    while (rs.next()) {
                         item = loadItemSold(rs.getInt("itemSaleId"));
                         sale.addItem(item);
                     }
@@ -393,19 +389,19 @@ public class DatabaseLoader {
         return sale;
     }
 
-    public static Map<Integer, Sale> loadAllSales(){
+    public static Map<Integer, Sale> loadAllSales() {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
         Map<Integer, Sale> saleMap = new HashMap<>();
 
         String query = """
-                        select saleId from Sale;
-                        """;
-        try{
+                select saleId from Sale;
+                """;
+        try {
             ps = conn.prepareStatement(query);
             rs = ps.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 Sale sale = loadSale(rs.getInt("saleId"));
                 saleMap.put(rs.getInt("saleId"), sale);
             }
@@ -416,11 +412,11 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-        LOGGER.info("Loaded {} sales", saleMap.size());
+        LOGGER.info("Successfully loaded {} sales", saleMap.size());
         return saleMap;
     }
 
-    public static Map<Integer, Store> updateStoreMapFromSalesMap(Map<Integer, Sale> salesMap, Map<Integer, Store> storesMap){
+    public static Map<Integer, Store> updateStoreMapFromSalesMap(Map<Integer, Store> storesMap, Map<Integer, Sale> salesMap) {
         for (Sale sale : salesMap.values()) {
             Store store = sale.getStore();
             store.addSale(sale);

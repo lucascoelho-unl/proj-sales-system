@@ -1,6 +1,5 @@
 package unl.soc;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -27,13 +26,12 @@ public class ConnFactory {
 
     // Initialize the data source once
     static {
-        Dotenv dotenv = Dotenv.configure().load();
         dataSource = new BasicDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://" + dotenv.get("SERVER_NAME") + ":" + dotenv.get("PORT_NUMBER") + "/" + dotenv.get("DATABASE_NAME"));
-        dataSource.setUsername(dotenv.get("USERNAME"));
-        dataSource.setPassword(dotenv.get("PASSWORD"));
-        LOGGER.info("Connected to database {} at {}:{}", dotenv.get("DATABASE_NAME"), dotenv.get("SERVER_NAME"), dotenv.get("PORT_NUMBER"));
+        dataSource.setUrl(DatabaseInfo.URL);
+        dataSource.setUsername(DatabaseInfo.USERNAME);
+        dataSource.setPassword(DatabaseInfo.PASSWORD);
+        LOGGER.info("Connected to database {} at {}", DatabaseInfo.USERNAME, DatabaseInfo.SERVER);
     }
 
     public static Connection createConnection() {
@@ -71,7 +69,7 @@ public class ConnFactory {
     }
 
     public static void closeConnection() {
-        try{
+        try {
             dataSource.close();
         } catch (SQLException e) {
             LOGGER.error("Connection error", e);

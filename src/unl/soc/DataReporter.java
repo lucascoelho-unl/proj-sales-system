@@ -9,70 +9,45 @@ import java.util.Map;
  */
 public class DataReporter {
 
-    public static String reportTotalsBySalesFromCSV(String path) {
-        Map<String, Sale> salesMap = DataProcessor.processedSalesWithItemsMap(path);
-        List<Sale> salesList = DataProcessor.convertSalesMapToList(salesMap);
+    private static List<Person> personsList;
+    private static List<Item> itemsList;
+    private static List<Store> storesList;
+    private static List<Sale> salesList;
 
-        return reportTotalsBySales(salesList);
+    public static void loadDataFromCSV() {
+        Map<String, Person> personMap = DataProcessor.readPersonCSVtoMap("data/Persons.csv");
+        Map<String, Item> itemsMap = DataProcessor.readItemsCSVtoMap("data/Items.csv");
+        Map<String, Store> storeMap = DataProcessor.readStoreCSVtoMap("data/Stores.csv");
+        Map<String, Sale> salesMap = DataProcessor.readSaleCSVToMap("data/Sales.csv");
+
+        salesMap = DataProcessor.fillSalesWithItemsMap(salesMap, itemsMap, personMap, "data/SaleItems.csv");
+        storeMap = DataProcessor.updateStoreMapFromSalesMap(storeMap, salesMap);
+
+        personsList = new ArrayList<>(personMap.values());
+        itemsList = new ArrayList<>(itemsMap.values());
+        storesList = new ArrayList<>(storeMap.values());
+        salesList = new ArrayList<>(salesMap.values());
     }
 
-    public static String reportTotalsBySalesFromCSV(){
-        return reportTotalsBySalesFromCSV("data/SaleItems.csv");
-    }
-
-    public static String reportTotalsBySalesFromDB() {
+    public static void loadDataFromDB() {
+        Map<Integer, Person> personMap = DatabaseLoader.loadAllPersons();
+        Map<Integer, Item> itemMap = DatabaseLoader.loadAllItems();
+        Map<Integer, Store> storeMap = DatabaseLoader.loadAllStores();
         Map<Integer, Sale> salesMap = DatabaseLoader.loadAllSales();
-        List<Sale> salesList = new ArrayList<>(salesMap.values());
+        storeMap = DatabaseLoader.updateStoreMapFromSalesMap(storeMap, salesMap);
 
-        return reportTotalsBySales(salesList);
+        personsList = new ArrayList<>(personMap.values());
+        itemsList = new ArrayList<>(itemMap.values());
+        storesList = new ArrayList<>(storeMap.values());
+        salesList = new ArrayList<>(salesMap.values());
     }
-
-    public static String reportTotalsByStoreFromCSV(String path){
-        Map<String, Sale> salesMap = DataProcessor.processedSalesWithItemsMap(path);
-        Map<String, Store> storeMap = DataProcessor.updateStoreMapFromSalesMap(salesMap);
-        List<Store> storesList = DataProcessor.convertStoreMapToList(storeMap);
-
-        return reportTotalsByStore(storesList);
-    }
-
-    public static String reportTotalsByStoreFromCSV(){
-        return reportTotalsByStoreFromCSV("data/SaleItems.csv");
-    }
-
-    public static String reportTotalsByStoreFromDB(){
-        Map<Integer, Sale> salesMap = DatabaseLoader.loadAllSales();
-        Map<Integer, Store> storesMap = DatabaseLoader.updateStoreMapFromSalesMap(salesMap, DatabaseLoader.loadAllStores());
-        List<Store> storesList = new ArrayList<>(storesMap.values());
-
-        return reportTotalsByStore(storesList);
-    }
-
-    public static String reportSalesFromCSV(String path){
-        Map<String, Sale> salesMap = DataProcessor.processedSalesWithItemsMap(path);
-        List<Sale> salesList = DataProcessor.convertSalesMapToList(salesMap);
-
-        return reportSales(salesList);
-    }
-
-    public static String reportSalesFromCSV(){
-        return reportSalesFromCSV("data/SaleItems.csv");
-    }
-
-    public static String reportSalesFromDB(){
-        Map<Integer, Sale> salesMap = DatabaseLoader.loadAllSales();
-        List<Sale> salesList = new ArrayList<>(salesMap.values());
-
-        return reportSales(salesList);
-    }
-
-
 
     /**
      * Generates a sales report organized by total sales.
      *
      * @return A string representing the sales report.
      */
-    public static String reportTotalsBySales(List<Sale> salesList) {
+    public static String reportTotalsBySales() {
 
         salesList.sort(Sale::compareSales);
 
@@ -117,7 +92,7 @@ public class DataReporter {
      *
      * @return A string representing the store sales report.
      */
-    public static String reportTotalsByStore(List<Store> storesList) {
+    public static String reportTotalsByStore() {
 
         storesList.sort(Store::compareStores);
 
@@ -146,7 +121,8 @@ public class DataReporter {
      *
      * @return A string representing the sales report.
      */
-    public static String reportSales(List<Sale> salesList) {
+    public static String reportSales() {
+
         salesList.sort(Sale::compareSales);
 
         StringBuilder sb = new StringBuilder();
