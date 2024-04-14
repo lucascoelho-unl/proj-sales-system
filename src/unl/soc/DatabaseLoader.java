@@ -177,9 +177,9 @@ public class DatabaseLoader {
      * Loads a Store object from the database based on the given store ID.
      *
      * @param storeId The ID of the store to load.
-     * @return The Store object loaded from the database.
+     * @return The Store object loaded from the database without its sales.
      */
-    public static Store loadStore(int storeId) {
+    private static Store loadRawStore(int storeId) {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -211,6 +211,19 @@ public class DatabaseLoader {
     }
 
     /**
+     * Loads a Store object from the database based on the given store ID.
+     *
+     * @param storeId The ID of the store to load.
+     * @return The Store object loaded from the database with its sales.
+     */
+
+    public static Store loadStore(int storeId) {
+        Store store = loadRawStore(storeId);
+        updateSingleStoreWithSales(store);
+        return store;
+    }
+
+    /**
      * Loads all Store objects from the database.
      *
      * @return A map of store IDs to Store objects.
@@ -228,7 +241,7 @@ public class DatabaseLoader {
             ps = conn.prepareStatement(query);
             rs = ps.executeQuery();
             while (rs.next()) {
-                Store store = loadStore(rs.getInt("storeId"));
+                Store store = loadRawStore(rs.getInt("storeId"));
                 storeMap.put(rs.getInt("storeId"), store);
             }
 
@@ -239,6 +252,7 @@ public class DatabaseLoader {
             ConnFactory.closeConnection(rs, ps, conn);
         }
         LOGGER.info("Successfully loaded {} stores", storeMap.size());
+        updateStoreMapFromSalesMap(storeMap);
         return storeMap;
     }
 
@@ -433,7 +447,7 @@ public class DatabaseLoader {
                 String saleDate = rs.getString("saleDate");
                 Person customer = loadPerson(rs.getInt("customerId"));
                 Person salesman = loadPerson(rs.getInt("salesmanId"));
-                Store store = loadStore(rs.getInt("storeId"));
+                Store store = loadRawStore(rs.getInt("storeId"));
                 sale = new Sale(saleId, uniqueCode, store, customer, salesman, saleDate);
 
                 //Load items of the sale
@@ -492,16 +506,41 @@ public class DatabaseLoader {
      * Updates the store map from the sales map.
      *
      * @param storesMap The map of store IDs to Store objects.
-     * @param salesMap  The map of sale IDs to Sale objects.
-     * @return The updated map of store IDs to Store objects.
      */
-    public static Map<Integer, Store> updateStoreMapFromSalesMap(Map<Integer, Store> storesMap, Map<Integer, Sale> salesMap) {
+    private static void updateStoreMapFromSalesMap(Map<Integer, Store> storesMap) {
+        Map<Integer, Sale> salesMap = loadAllSales();
         for (Sale sale : salesMap.values()) {
             Store store = sale.getStore();
-            store.addSale(sale);
-            storesMap.put(store.getId(), store);
+            storesMap.get(store.getId()).addSale(sale);
         }
-        LOGGER.info("Successfully parsed items sold into stores");
-        return storesMap;
+        LOGGER.info("Successfully parsed sales into stores");
+    }
+
+    private static void updateSingleStoreWithSales(Store store) {
+        Connection conn = ConnFactory.createConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String query = """
+                    select saleId from Sale
+                    where storeId = ?;
+                    """;
+
+        try{
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, store.getId());
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Sale sale = loadSale(rs.getInt("saleId"));
+                store.addSale(sale);
+            }
+
+        } catch (SQLException e) {
+            LOGGER.error("Error loading store: id {} - storeCode {}", store.getId(), store.getStoreCode());
+            throw new RuntimeException(e);
+        } finally {
+            ConnFactory.closeConnection(rs, ps, conn);
+        }
+        LOGGER.info("Successfully filled store {} - storeCode {} with sales", store.getId(), store.getStoreCode());
     }
 }

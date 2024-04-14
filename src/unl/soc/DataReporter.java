@@ -42,7 +42,6 @@ public class DataReporter {
         Map<Integer, Item> itemMap = DatabaseLoader.loadAllItems();
         Map<Integer, Store> storeMap = DatabaseLoader.loadAllStores();
         Map<Integer, Sale> salesMap = DatabaseLoader.loadAllSales();
-        storeMap = DatabaseLoader.updateStoreMapFromSalesMap(storeMap, salesMap);
 
         personsList = new ArrayList<>(personMap.values());
         itemsList = new ArrayList<>(itemMap.values());
