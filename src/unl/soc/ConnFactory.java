@@ -29,12 +29,13 @@ public class ConnFactory {
 
     // Initialize the data source once
     static {
+        long begin = System.currentTimeMillis();
         dataSource = new BasicDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
         dataSource.setUrl(DatabaseInfo.URL);
         dataSource.setUsername(DatabaseInfo.USERNAME);
         dataSource.setPassword(DatabaseInfo.PASSWORD);
-        LOGGER.info("Connected to database {} at {}", DatabaseInfo.USERNAME, DatabaseInfo.SERVER);
+        LOGGER.info("Connected to database {} at {} in {} ms", DatabaseInfo.USERNAME, DatabaseInfo.SERVER, (System.currentTimeMillis() - begin));
     }
 
     /**

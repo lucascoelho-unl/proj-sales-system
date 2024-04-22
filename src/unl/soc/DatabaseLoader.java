@@ -17,8 +17,13 @@ import java.util.Map;
  * This class provides methods to load data from the database into memory objects.
  */
 public class DatabaseLoader {
-
     private static final Logger LOGGER = LogManager.getLogger(DatabaseLoader.class);
+    private static final Map<Integer, Address> addressMap = new HashMap<>();
+    private static final Map<Integer, Person> personMap = new HashMap<>();
+    private static final Map<Integer, Store> storeMap = new HashMap<>();
+    private static final Map<Integer, Sale> saleMap = new HashMap<>();
+    private static final Map<Integer, Item> itemMap = new HashMap<>();
+    private static final Map<Integer, Item> itemSoldMap = new HashMap<>();
 
     // Configure the Logger
     static {
@@ -33,6 +38,9 @@ public class DatabaseLoader {
      * @return The Address object loaded from the database.
      */
     public static Address loadAddress(int addressId) {
+        if (!addressMap.isEmpty()) {
+            return addressMap.getOrDefault(addressId, null);
+        }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -70,10 +78,13 @@ public class DatabaseLoader {
      * @return A map of address IDs to Address objects.
      */
     public static Map<Integer, Address> loadAllAddress() {
+        if (!addressMap.isEmpty()) {
+            return new HashMap<>(addressMap);
+        }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
-        Map<Integer, Address> addressMap = new HashMap<>();
+        Map <Integer, Address> addressMapResult = new HashMap<>();
 
         String query = """
                 select addressId from Address;
@@ -83,7 +94,7 @@ public class DatabaseLoader {
             rs = ps.executeQuery();
             while (rs.next()) {
                 Address address = loadAddress(rs.getInt("addressId"));
-                addressMap.put(rs.getInt("addressId"), address);
+                addressMapResult.put(rs.getInt("addressId"), address);
             }
 
         } catch (SQLException e) {
@@ -92,8 +103,9 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
+        addressMap.putAll(addressMapResult);
         LOGGER.info("Loaded {} addresses", addressMap.size());
-        return addressMap;
+        return addressMapResult;
     }
 
     /**
@@ -103,6 +115,10 @@ public class DatabaseLoader {
      * @return The Person object loaded from the database.
      */
     public static Person loadPerson(int personId) {
+        if (!personMap.isEmpty()) {
+            return personMap.getOrDefault(personId, null);
+        }
+
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -148,10 +164,13 @@ public class DatabaseLoader {
      * @return A map of person IDs to Person objects.
      */
     public static Map<Integer, Person> loadAllPersons() {
+        if (!personMap.isEmpty()) {
+            return new HashMap<>(personMap);
+        }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
-        Map<Integer, Person> personMap = new HashMap<>();
+        Map <Integer, Person> personMapResult = new HashMap<>();
 
         String query = """
                 select personId from Person;
@@ -161,7 +180,7 @@ public class DatabaseLoader {
             rs = ps.executeQuery();
             while (rs.next()) {
                 Person person = loadPerson(rs.getInt("personId"));
-                personMap.put(rs.getInt("personId"), person);
+                personMapResult.put(rs.getInt("personId"), person);
             }
         } catch (SQLException e) {
             LOGGER.error("Error loading all persons: ", e);
@@ -169,8 +188,9 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
+        personMap.putAll(personMapResult);
         LOGGER.info("Successfully loaded {} persons", personMap.size());
-        return personMap;
+        return personMapResult;
     }
 
     /**
@@ -180,6 +200,9 @@ public class DatabaseLoader {
      * @return The Store object loaded from the database without its sales.
      */
     private static Store loadRawStore(int storeId) {
+        if (!storeMap.isEmpty()) {
+            return storeMap.getOrDefault(storeId, null);
+        }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -219,7 +242,9 @@ public class DatabaseLoader {
 
     public static Store loadStore(int storeId) {
         Store store = loadRawStore(storeId);
-        updateSingleStoreWithSales(store);
+        if (store != null) {
+            updateSingleStoreWithSales(store);
+        }
         return store;
     }
 
@@ -229,10 +254,13 @@ public class DatabaseLoader {
      * @return A map of store IDs to Store objects.
      */
     public static Map<Integer, Store> loadAllStores() {
+        if (!storeMap.isEmpty()) {
+            return new HashMap<>(storeMap);
+        }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
-        Map<Integer, Store> storeMap = new HashMap<>();
+        Map <Integer, Store> storeMapResult = new HashMap<>();
 
         String query = """
                 select storeId from Store;
@@ -242,7 +270,7 @@ public class DatabaseLoader {
             rs = ps.executeQuery();
             while (rs.next()) {
                 Store store = loadRawStore(rs.getInt("storeId"));
-                storeMap.put(rs.getInt("storeId"), store);
+                storeMapResult.put(rs.getInt("storeId"), store);
             }
 
         } catch (SQLException e) {
@@ -251,9 +279,10 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
+        updateStoreMapFromSalesMap(storeMapResult);
+        storeMap.putAll(storeMapResult);
         LOGGER.info("Successfully loaded {} stores", storeMap.size());
-        updateStoreMapFromSalesMap(storeMap);
-        return storeMap;
+        return storeMapResult;
     }
 
     /**
@@ -263,6 +292,9 @@ public class DatabaseLoader {
      * @return The Item object loaded from the database.
      */
     public static Item loadItem(int itemId) {
+        if (!itemMap.isEmpty()) {
+            return itemMap.getOrDefault(itemId, null);
+        }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -314,10 +346,13 @@ public class DatabaseLoader {
      * @return A map of item IDs to Item objects.
      */
     public static Map<Integer, Item> loadAllItems() {
+        if (!itemMap.isEmpty()) {
+            return new HashMap<>(itemMap);
+        }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
-        Map<Integer, Item> itemMap = new HashMap<>();
+        Map<Integer, Item> itemMapResult = new HashMap<>();
 
         String query = """
                 select itemId from Item;
@@ -327,7 +362,7 @@ public class DatabaseLoader {
             rs = ps.executeQuery();
             while (rs.next()) {
                 Item item = loadItem(rs.getInt("itemId"));
-                itemMap.put(rs.getInt("itemId"), item);
+                itemMapResult.put(rs.getInt("itemId"), item);
             }
 
         } catch (SQLException e) {
@@ -336,8 +371,9 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
+        itemMap.putAll(itemMapResult);
         LOGGER.info("Successfully loaded {} items", itemMap.size());
-        return itemMap;
+        return itemMapResult;
     }
 
     /**
@@ -347,6 +383,9 @@ public class DatabaseLoader {
      * @return The Item object sold loaded from the database.
      */
     public static Item loadItemSold(int itemSaleId) {
+        if (!itemSoldMap.isEmpty()) {
+            return itemSoldMap.getOrDefault(itemSaleId, null);
+        }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -393,10 +432,13 @@ public class DatabaseLoader {
      * @return A map of item sale IDs to Item objects sold.
      */
     public static Map<Integer, Item> loadAllItemSold() {
+        if (!itemSoldMap.isEmpty()) {
+            return new HashMap<>(itemSoldMap);
+        }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
-        Map<Integer, Item> itemMap = new HashMap<>();
+        Map<Integer, Item> itemMapResult = new HashMap<>();
 
         String query = """
                 select itemSaleId from ItemSale;
@@ -406,7 +448,7 @@ public class DatabaseLoader {
             rs = ps.executeQuery();
             while (rs.next()) {
                 Item itemSold = loadItemSold(rs.getInt("itemSaleId"));
-                itemMap.put(rs.getInt("itemSaleId"), itemSold);
+                itemMapResult.put(rs.getInt("itemSaleId"), itemSold);
             }
 
         } catch (SQLException e) {
@@ -415,8 +457,9 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
+        itemMap.putAll(itemMapResult);
         LOGGER.info("Loaded {} item sold", itemMap.size());
-        return itemMap;
+        return itemMapResult;
     }
 
     /**
@@ -426,6 +469,9 @@ public class DatabaseLoader {
      * @return The Sale object loaded from the database.
      */
     public static Sale loadSale(int saleId) {
+        if (!saleMap.isEmpty()) {
+            return saleMap.getOrDefault(saleId, null);
+        }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -476,10 +522,13 @@ public class DatabaseLoader {
      * @return A map of sale IDs to Sale objects.
      */
     public static Map<Integer, Sale> loadAllSales() {
+        if (!saleMap.isEmpty()) {
+            return new HashMap<>(saleMap);
+        }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
-        Map<Integer, Sale> saleMap = new HashMap<>();
+        Map<Integer, Sale> saleMapResult = new HashMap<>();
 
         String query = """
                 select saleId from Sale;
@@ -489,7 +538,7 @@ public class DatabaseLoader {
             rs = ps.executeQuery();
             while (rs.next()) {
                 Sale sale = loadSale(rs.getInt("saleId"));
-                saleMap.put(rs.getInt("saleId"), sale);
+                saleMapResult.put(rs.getInt("saleId"), sale);
             }
 
         } catch (SQLException e) {
@@ -498,8 +547,9 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
+        saleMap.putAll(saleMapResult);
         LOGGER.info("Successfully loaded {} sales", saleMap.size());
-        return saleMap;
+        return saleMapResult;
     }
 
     /**
