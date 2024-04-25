@@ -124,9 +124,8 @@ public class DatabaseLoader {
         Person person = null;
 
         String query = """
-                select uuid, firstName, lastName, addressId, e.address from Person p
-                left join Email e on p.personId = e.personId
-                where p.personId = ?;
+                select uuid, firstName, lastName, addressId from Person
+                where personId = ?;
                 """;
         try {
             ps = conn.prepareStatement(query);
@@ -149,7 +148,45 @@ public class DatabaseLoader {
         return person;
     }
 
-    public static List<String> loadEmails(int personId){
+    /**
+     * Loads a Person object from the database based on the given person uuid.
+     *
+     * @param uuid The unique code of the person to load.
+     * @return The Person object loaded from the database.
+     */
+    public static Person loadPerson(String uuid) {
+
+        Connection conn = ConnFactory.createConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Person person = null;
+
+        String query = """
+                select personId, firstName, lastName, addressId from Person
+                where uuid = ?;
+                """;
+        try {
+            ps = conn.prepareStatement(query);
+            ps.setString(1, uuid);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                int personId = rs.getInt("personId");
+                String firstName = rs.getString("firstName");
+                String lastName = rs.getString("lastName");
+                Address address = loadAddress(rs.getInt("addressId"));
+                List<String> emails = loadEmails(personId);
+                person = new Person(personId, uuid, firstName, lastName, address, emails);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Error parsing person {}: {}", uuid, e);
+            throw new RuntimeException(e);
+        } finally {
+            ConnFactory.closeConnection(rs, ps, conn);
+        }
+        return person;
+    }
+
+    private static List<String> loadEmails(int personId){
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -253,6 +290,44 @@ public class DatabaseLoader {
     }
 
     /**
+     * Loads a Store object from the database based on the given store code.
+     *
+     * @param storeCode The store code of the store to load.
+     * @return The Store object loaded from the database without its sales.
+     */
+    private static Store loadRawStore(String storeCode) {
+
+        Connection conn = ConnFactory.createConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Store store = null;
+
+        String query = """
+                select storeId, managerId, addressId from Store
+                where storeCode = ?
+                """;
+        try {
+            ps = conn.prepareStatement(query);
+            ps.setString(1, storeCode);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                int storeId = rs.getInt("storeId");
+                int managerId = rs.getInt("managerId");
+                int addressId = rs.getInt("addressId");
+                Address address = loadAddress(addressId);
+                Person manager = loadPerson(managerId);
+                store = new Store(storeId, storeCode, address, manager);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Error loading store {}: ", storeCode, e);
+            throw new RuntimeException(e);
+        } finally {
+            ConnFactory.closeConnection(rs, ps, conn);
+        }
+        return store;
+    }
+
+    /**
      * Loads a Store object from the database based on the given store ID.
      *
      * @param storeId The ID of the store to load.
@@ -261,6 +336,21 @@ public class DatabaseLoader {
 
     public static Store loadStore(int storeId) {
         Store store = loadRawStore(storeId);
+        if (store != null) {
+            updateSingleStoreWithSales(store);
+        }
+        return store;
+    }
+
+    /**
+     * Loads a Store object from the database based on the given store ID.
+     *
+     * @param storeId The ID of the store to load.
+     * @return The Store object loaded from the database with its sales.
+     */
+
+    public static Store loadStore(String storeCode) {
+        Store store = loadRawStore(storeCode);
         if (store != null) {
             updateSingleStoreWithSales(store);
         }
@@ -497,8 +587,7 @@ public class DatabaseLoader {
         Sale sale = null;
 
         String query = """
-                select uniqueCode, saleDate, customerId, salesmanId, storeId, itemSaleId from Sale
-                left join ItemSale on ItemSale.saleId = Sale.saleId
+                select uniqueCode, saleDate, customerId, salesmanId, storeId from Sale
                 where Sale.saleId = ?;
                 """;
 
@@ -515,15 +604,7 @@ public class DatabaseLoader {
                 Store store = loadRawStore(rs.getInt("storeId"));
                 sale = new Sale(saleId, uniqueCode, store, customer, salesman, saleDate);
 
-                //Load items of the sale
-                Item item;
-                if ((item = loadItemSold(rs.getInt("itemSaleId"))) != null) {
-                    sale.addItem(item);
-                    while (rs.next()) {
-                        item = loadItemSold(rs.getInt("itemSaleId"));
-                        sale.addItem(item);
-                    }
-                }
+                loadItemSale(sale);
             }
 
         } catch (SQLException e) {
@@ -535,6 +616,70 @@ public class DatabaseLoader {
         return sale;
     }
 
+    /**
+     * Loads a Sale object from the database based on the given sale ID.
+     *
+     * @param saleId The ID of the sale to load.
+     * @return The Sale object loaded from the database.
+     */
+    public static Sale loadSale(String uniqueCode) {
+
+        Connection conn = ConnFactory.createConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Sale sale = null;
+
+        String query = """
+                select saleId, saleDate, customerId, salesmanId, storeId from Sale
+                where uniqueCode = ?;
+                """;
+
+        try {
+            ps = conn.prepareStatement(query);
+            ps.setString(1, uniqueCode);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                int saleId = rs.getInt("saleId");
+                String saleDate = rs.getString("saleDate");
+                Person customer = loadPerson(rs.getInt("customerId"));
+                Person salesman = loadPerson(rs.getInt("salesmanId"));
+                Store store = loadRawStore(rs.getInt("storeId"));
+                sale = new Sale(saleId, uniqueCode, store, customer, salesman, saleDate);
+
+                loadItemSale(sale);
+            }
+
+        } catch (SQLException e) {
+            LOGGER.error("Error loading sale {}: ", e.getMessage());
+            throw new RuntimeException(e);
+        } finally {
+            ConnFactory.closeConnection(rs, ps, conn);
+        }
+        return sale;
+    }
+
+    private static void loadItemSale(Sale sale){
+        Connection conn = ConnFactory.createConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String query = "select itemSaleId from ItemSale where saleId = ?";
+        try {
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, sale.getId());
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Item item = loadItemSold(rs.getInt("itemSaleId"));
+                sale.addItem(item);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Error loading item to sale {}: ", e.getMessage());
+            throw new RuntimeException(e);
+        } finally {
+            ConnFactory.closeConnection(rs, ps, conn);
+        }
+    }
     /**
      * Loads all Sale objects from the database.
      *

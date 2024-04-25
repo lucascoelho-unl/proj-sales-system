@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class DataOasis {
 
-    private static DataOasis INSTANCE = new DataOasis();
+    private static final DataOasis INSTANCE = new DataOasis();
 
     private static List<Person> personsList;
     private static List<Item> itemsList;
