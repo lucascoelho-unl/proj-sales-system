@@ -8,53 +8,15 @@ import java.util.Map;
  * The DataReporter class generates various sales reports based on the data loaded from CSV files or a database.
  */
 public class DataReporter {
-
-    // private variables instantiation to avoid duplicate calls and improve efficiency after data is loaded.
-    // loads the data ONLY ONCE instead of loading it multiple times when calling a function.
-    private static List<Person> personsList;
-    private static List<Item> itemsList;
-    private static List<Store> storesList;
-    private static List<Sale> salesList;
-
-    /**
-     * Loads data from CSV files into private variables.
-     */
-    public static void loadDataFromCSV() {
-        Map<String, Person> personMap = DataProcessor.readPersonCSVtoMap("data/Persons.csv");
-        Map<String, Item> itemsMap = DataProcessor.readItemsCSVtoMap("data/Items.csv");
-        Map<String, Store> storeMap = DataProcessor.readStoreCSVtoMap("data/Stores.csv");
-        Map<String, Sale> salesMap = DataProcessor.readSaleCSVToMap("data/Sales.csv");
-
-        salesMap = DataProcessor.fillSalesWithItemsMap(salesMap, itemsMap, personMap, "data/SaleItems.csv");
-        storeMap = DataProcessor.updateStoreMapFromSalesMap(storeMap, salesMap);
-
-        personsList = new ArrayList<>(personMap.values());
-        itemsList = new ArrayList<>(itemsMap.values());
-        storesList = new ArrayList<>(storeMap.values());
-        salesList = new ArrayList<>(salesMap.values());
-    }
-
-    /**
-     * Loads data from a database into private variables.
-     */
-    public static void loadDataFromDB() {
-        Map<Integer, Person> personMap = DatabaseLoader.loadAllPersons();
-        Map<Integer, Item> itemMap = DatabaseLoader.loadAllItems();
-        Map<Integer, Store> storeMap = DatabaseLoader.loadAllStores();
-        Map<Integer, Sale> salesMap = DatabaseLoader.loadAllSales();
-
-        personsList = new ArrayList<>(personMap.values());
-        itemsList = new ArrayList<>(itemMap.values());
-        storesList = new ArrayList<>(storeMap.values());
-        salesList = new ArrayList<>(salesMap.values());
-    }
-
     /**
      * Generates a sales report organized by total sales.
      *
      * @return A string representing the sales report.
      */
     public static String reportTotalsBySales() {
+
+        DataOasis data = DataOasis.getInstance();
+        List<Sale> salesList = data.getSalesList();
 
         salesList.sort(Sale::compareSales);
 
@@ -101,6 +63,9 @@ public class DataReporter {
      */
     public static String reportTotalsByStore() {
 
+        DataOasis data = DataOasis.getInstance();
+        List<Store> storesList = data.getStoresList();
+
         storesList.sort(Store::compareStores);
 
         StringBuilder sb = new StringBuilder();
@@ -129,6 +94,9 @@ public class DataReporter {
      * @return A string representing the sales report.
      */
     public static String reportSales() {
+
+        DataOasis data = DataOasis.getInstance();
+        List<Sale> salesList = data.getSalesList();
 
         salesList.sort(Sale::compareSales);
 

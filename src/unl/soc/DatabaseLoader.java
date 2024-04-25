@@ -10,8 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class provides methods to load data from the database into memory objects.
@@ -122,16 +121,8 @@ public class DatabaseLoader {
                 String firstName = rs.getString("firstName");
                 String lastName = rs.getString("lastName");
                 Address address = loadAddress(rs.getInt("addressId"));
-                person = new Person(personId, uuid, firstName, lastName, address);
-                // Adding e-mails to the person list of e-mails
-                String email;
-                if ((email = rs.getString("address")) != null) {
-                    person.addEmail(email);
-                    while (rs.next()) {
-                        email = rs.getString("address");
-                        person.addEmail(email);
-                    }
-                }
+                List<String> emails = loadEmails(personId);
+                person = new Person(personId, uuid, firstName, lastName, address, emails);
             }
         } catch (SQLException e) {
             LOGGER.error("Error parsing person {}: {}", personId, e);
@@ -140,6 +131,34 @@ public class DatabaseLoader {
             ConnFactory.closeConnection(rs, ps, conn);
         }
         return person;
+    }
+
+    public static List<String> loadEmails(int personId){
+        Connection conn = ConnFactory.createConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        List<String> emailMap = new ArrayList<>();
+
+        String query = "select emailId, address from Email where personId = ?;";
+
+        try {
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, personId);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                int emailId = rs.getInt("emailId");
+                String address = rs.getString("address");
+                emailMap.add(address);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Error parsing person {}: {}", personId, e);
+            throw new RuntimeException(e);
+        } finally {
+            ConnFactory.closeConnection(rs, ps, conn);
+        }
+        return emailMap;
+
     }
 
     /**
@@ -280,7 +299,7 @@ public class DatabaseLoader {
             rs = ps.executeQuery();
             if (rs.next()) {
                 String uniqueCode = rs.getString("uniqueCode");
-                float basePrice = rs.getFloat("basePrice");
+                double basePrice = rs.getDouble("basePrice");
                 String name = rs.getString("name");
                 String type = rs.getString("type");
 
@@ -508,8 +527,10 @@ public class DatabaseLoader {
      * @param storesMap The map of store IDs to Store objects.
      */
     private static void updateStoreMapFromSalesMap(Map<Integer, Store> storesMap) {
-        Map<Integer, Sale> salesMap = loadAllSales();
-        for (Sale sale : salesMap.values()) {
+        DataOasis data = DataOasis.getInstance();
+        List<Sale> salesList = data.getSalesList();
+
+        for (Sale sale : salesList) {
             Store store = sale.getStore();
             storesMap.get(store.getId()).addSale(sale);
         }
