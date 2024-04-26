@@ -6,8 +6,7 @@ import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
 
 import java.sql.*;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 
 /**
  * This is a collection of utility methods that define a general API for
@@ -45,7 +44,6 @@ public class SalesData {
         }
     }
 
-
     /**
      * Method to add a person record to the database with the provided data.
      *
@@ -57,8 +55,7 @@ public class SalesData {
      * @param state
      * @param zip
      */
-    public static void addPerson(String personUuid, String firstName, String lastName, String street, String city,
-                                 String state, String zip) {
+    public static void addPerson(String personUuid, String firstName, String lastName, String street, String city, String state, String zip) {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -124,8 +121,7 @@ public class SalesData {
      * @param state
      * @param zip
      */
-    public static void addStore(String storeCode, String managerCode, String street, String city, String state,
-                                String zip) {
+    public static void addStore(String storeCode, String managerCode, String street, String city, String state, String zip) {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -163,8 +159,26 @@ public class SalesData {
      * @param type
      * @param basePrice
      */
-    public static void addItem(String code, String name, String type, double basePrice) {
-        //TODO: implement
+    public static void addItem(String itemCode, String name, String type, double basePrice) {
+        Connection conn = ConnFactory.createConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String insert = "insert into Item (uniqueCode, name, type, basePrice) values (?, ?, ?, ?);";
+
+        try {
+            ps = conn.prepareStatement(insert);
+            ps.setString(1, itemCode);
+            ps.setString(2, name);
+            ps.setString(3, type);
+            ps.setDouble(4, basePrice);
+            ps.executeUpdate();
+            LOGGER.info("Added Item : {}", itemCode);
+        } catch (SQLException e) {
+            LOGGER.error("Error Adding Item: {}", e.getMessage());
+        } finally {
+            ConnFactory.closeConnection(ps, conn);
+        }
     }
 
     /**
@@ -176,8 +190,7 @@ public class SalesData {
      * @param salesPersonUuid
      * @param saleDate
      */
-    public static void addSale(String saleCode, String storeCode, String customerPersonUuid, String salesPersonUuid,
-                               String saleDate) {
+    public static void addSale(String saleCode, String storeCode, String customerPersonUuid, String salesPersonUuid, String saleDate) {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
 
@@ -208,7 +221,7 @@ public class SalesData {
 
             LOGGER.info("Added Sale : {}", saleCode);
         } catch (SQLException e) {
-            LOGGER.error("Error Adding Store: {}", e.getMessage());
+            LOGGER.error("Error Adding Sale: {}", e.getMessage());
         } finally {
             ConnFactory.closeConnection(ps, conn);
         }
@@ -222,8 +235,36 @@ public class SalesData {
      * @param itemCode
      */
     public static void addProductToSale(String saleCode, String itemCode) {
-        //TODO: implement
+        Connection conn = ConnFactory.createConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
 
+        Map<String, Sale> saleMap = DatabaseLoader.saleMapWithSaleCodeKey();
+        Map<String, Item> itemMap = DatabaseLoader.itemMapWithItemCodeKey();
+
+        String insert = "insert into ItemSale (itemId, saleId) values (?, ?);";
+
+        try {
+            Item item = itemMap.get(itemCode);
+            if (item == null) {
+                throw new SQLException("Item not found");
+            }
+
+            Sale sale = saleMap.get(saleCode);
+            if(sale == null) {
+                throw new SQLException("Sale not found");
+            }
+
+            ps = conn.prepareStatement(insert);
+            ps.setInt(1, item.getId());
+            ps.setInt(2, sale.getId());
+            ps.executeUpdate();
+            LOGGER.info("Added Product Purchase to ItemSale: {}", itemCode);
+        } catch (SQLException e) {
+            LOGGER.error("Error Adding Product Purchase to ItemSale: {}", e.getMessage());
+        } finally {
+            ConnFactory.closeConnection(ps, conn);
+        }
     }
 
     /**
@@ -236,7 +277,46 @@ public class SalesData {
      * @param endDate
      */
     public static void addLeaseToSale(String saleCode, String itemCode, String startDate, String endDate) {
-        //TODO: implement
+        Connection conn = ConnFactory.createConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        Map<String, Sale> saleMap = DatabaseLoader.saleMapWithSaleCodeKey();
+        Map<String, Item> itemMap = DatabaseLoader.itemMapWithItemCodeKey();
+
+        String insert = "insert into ItemSale (itemId, saleId, startDate, endDate) values (?, ?, ?, ?);";
+
+        try {
+            Item item = itemMap.get(itemCode);
+            if (item == null) {
+                throw new SQLException("Item not found");
+            }
+
+            Sale sale = saleMap.get(saleCode);
+            if(sale == null) {
+                throw new SQLException("Sale not found");
+            }
+
+            if (startDate.length() != 10 || endDate.length() != 10) {
+                throw new SQLException("Start date and End date must be in ISO 8601 format");
+            }
+
+            if (startDate.compareTo(endDate) > 0) {
+                throw new SQLException("Start date cannot be after End date");
+            }
+
+            ps = conn.prepareStatement(insert);
+            ps.setInt(1, item.getId());
+            ps.setInt(2, sale.getId());
+            ps.setString(3, startDate);
+            ps.setString(4, endDate);
+            ps.executeUpdate();
+            LOGGER.info("Added Product Lease to ItemSale: {}", itemCode);
+        } catch (SQLException e) {
+            LOGGER.error("Error Adding Product Lease to Sale: {}", e.getMessage());
+        } finally {
+            ConnFactory.closeConnection(ps, conn);
+        }
     }
 
     /**
@@ -250,9 +330,49 @@ public class SalesData {
      * @param billedHours
      * @param servicePersonUuid
      */
-    public static void addServiceToSale(String saleCode, String itemCode, double billedHours,
-                                        String servicePersonUuid) {
-        //TODO: implement
+    public static void addServiceToSale(String saleCode, String itemCode, double billedHours, String servicePersonUuid) {
+        Connection conn = ConnFactory.createConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        Map<String, Person> personMap = DatabaseLoader.personMapWithUuidKey();
+        Map<String, Sale> saleMap = DatabaseLoader.saleMapWithSaleCodeKey();
+        Map<String, Item> itemMap = DatabaseLoader.itemMapWithItemCodeKey();
+
+        String insert = "insert into ItemSale (itemId, saleId, totalHours, employeeId) values (?, ?, ?, ?);";
+
+        try {
+            Person employee = personMap.get(servicePersonUuid);
+            if(employee == null) {
+                throw new SQLException("Employee not found");
+            }
+
+            Item item = itemMap.get(itemCode);
+            if (item == null) {
+                throw new SQLException("Item not found");
+            }
+
+            Sale sale = saleMap.get(saleCode);
+            if(sale == null) {
+                throw new SQLException("Sale not found");
+            }
+
+            if (billedHours <= 0) {
+                throw new SQLException("Billed hours cannot be negative or 0");
+            }
+
+            ps = conn.prepareStatement(insert);
+            ps.setInt(1, item.getId());
+            ps.setInt(2, sale.getId());
+            ps.setDouble(3, billedHours);
+            ps.setInt(4, employee.getId());
+            ps.executeUpdate();
+            LOGGER.info("Added Service to ItemSale: {}", itemCode);
+        } catch (SQLException e) {
+            LOGGER.error("Error Adding Service to Sale: {}", e.getMessage());
+        } finally {
+            ConnFactory.closeConnection(ps, conn);
+        }
     }
 
     /**
@@ -265,8 +385,41 @@ public class SalesData {
      * @param gbs
      */
     public static void addDataPlanToSale(String saleCode, String itemCode, double gbs) {
-        //TODO: implement
+        Connection conn = ConnFactory.createConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
 
+        Map<String, Sale> saleMap = DatabaseLoader.saleMapWithSaleCodeKey();
+        Map<String, Item> itemMap = DatabaseLoader.itemMapWithItemCodeKey();
+
+        String insert = "insert into ItemSale (itemId, saleId, totalGb) values (?, ?, ?);";
+
+        try {
+            Item item = itemMap.get(itemCode);
+            if (item == null) {
+                throw new SQLException("Item not found");
+            }
+
+            Sale sale = saleMap.get(saleCode);
+            if(sale == null) {
+                throw new SQLException("Sale not found");
+            }
+
+            if (gbs <= 0) {
+                throw new SQLException("Gigabytes cannot be negative or 0");
+            }
+
+            ps = conn.prepareStatement(insert);
+            ps.setInt(1, item.getId());
+            ps.setInt(2, sale.getId());
+            ps.setDouble(3, gbs);
+            ps.executeUpdate();
+            LOGGER.info("Added DataPlan to ItemSale: {}", itemCode);
+        } catch (SQLException e) {
+            LOGGER.error("Error Adding DataPlan to Sale: {}", e.getMessage());
+        } finally {
+            ConnFactory.closeConnection(ps, conn);
+        }
     }
 
     /**
@@ -280,8 +433,42 @@ public class SalesData {
      * @param days
      */
     public static void addVoicePlanToSale(String saleCode, String itemCode, String phoneNumber, int days) {
-        //TODO: implement
+        Connection conn = ConnFactory.createConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
 
+        Map<String, Sale> saleMap = DatabaseLoader.saleMapWithSaleCodeKey();
+        Map<String, Item> itemMap = DatabaseLoader.itemMapWithItemCodeKey();
+
+        String insert = "insert into ItemSale (itemId, saleId, totalPeriod, phoneNumber) values (?, ?, ?, ?);";
+
+        try {
+            Item item = itemMap.get(itemCode);
+            if (item == null) {
+                throw new SQLException("Item not found");
+            }
+
+            Sale sale = saleMap.get(saleCode);
+            if(sale == null) {
+                throw new SQLException("Sale not found");
+            }
+
+            if (days <= 0) {
+                throw new SQLException("Days cannot be negative or 0");
+            }
+
+            ps = conn.prepareStatement(insert);
+            ps.setInt(1, item.getId());
+            ps.setInt(2, sale.getId());
+            ps.setInt(3, days);
+            ps.setString(4, phoneNumber);
+            ps.executeUpdate();
+            LOGGER.info("Added DataPlan to ItemSale: {}", itemCode);
+        } catch (SQLException e) {
+            LOGGER.error("Error Adding DataPlan to Sale: {}", e.getMessage());
+        } finally {
+            ConnFactory.closeConnection(ps, conn);
+        }
     }
 
     /**

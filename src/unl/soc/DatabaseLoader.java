@@ -410,9 +410,8 @@ public class DatabaseLoader {
         Item item = null;
 
         String query = """
-                select Item.itemId, uniqueCode, basePrice, name, type, startDate from Item
-                left join ItemSale on Item.itemId = ItemSale.itemId
-                where Item.itemId = ?;
+                select itemId, uniqueCode, basePrice, name, type from Item
+                where itemId = ?;
                 """;
 
         try {
@@ -430,15 +429,9 @@ public class DatabaseLoader {
                     case "S" -> new Service(itemId, uniqueCode, name, basePrice);
                     case "D" -> new DataPlan(itemId, uniqueCode, name, basePrice);
                     case "V" -> new VoicePlan(itemId, uniqueCode, name, basePrice);
+                    case "P" -> new ProductPurchase(itemId, uniqueCode, name, basePrice);
                     default -> null;
                 };
-
-                if (rs.getString("startDate") != null && type.equals("L")) {
-                    item = new ProductLease(itemId, uniqueCode, name, basePrice);
-                } else if (type.equals("P")) {
-                    item = new ProductPurchase(itemId, uniqueCode, name, basePrice);
-                }
-
             }
         } catch (SQLException e) {
             LOGGER.error("Error loading item {}: ", itemId, e);
@@ -501,11 +494,10 @@ public class DatabaseLoader {
         Item item = null;
 
         String query = """
-                select i.itemId, type, startDate, endDate, totalGb, totalHours, employeeId, totalPeriod, phoneNumber from Item i
+                select i.itemId, i.type, startDate, endDate, totalGb, totalHours, employeeId, totalPeriod, phoneNumber, isLease from Item i
                 left join ItemSale its on its.itemId = i.itemId
                 where its.itemSaleId = ?;
                 """;
-
         try {
             ps = conn.prepareStatement(query);
             ps.setInt(1, itemSaleId);
@@ -514,18 +506,18 @@ public class DatabaseLoader {
                 String type = rs.getString("type");
                 item = loadItem(rs.getInt("itemId"));
 
-                // Switch case to determine the type of item sale to correctly instantiate the item instance.
-                item = switch (type) {
-                    case "L" -> new ProductLease(itemSaleId, item, rs.getString("startDate"), rs.getString("endDate"));
-                    case "V" ->
-                            new VoicePlan(itemSaleId, item, rs.getString("phoneNumber"), rs.getDouble("totalPeriod"));
-                    case "S" ->
-                            new Service(itemSaleId, item, rs.getDouble("totalHours"), loadPerson(rs.getInt("employeeId")));
-                    case "D" -> new DataPlan(itemSaleId, item, rs.getDouble("totalGb"));
-                    default -> item;
-                };
+                if (type.equals("P") && rs.getBoolean("isLease")) {
+                    item = new ProductLease(itemSaleId, item, rs.getString("startDate"), rs.getString("endDate"));
+                } else {
+                    // Switch case to determine the type of item sale to correctly instantiate the item instance.
+                    item = switch (type) {
+                        case "V" -> new VoicePlan(itemSaleId, item, rs.getString("phoneNumber"), rs.getDouble("totalPeriod"));
+                        case "S" -> new Service(itemSaleId, item, rs.getDouble("totalHours"), loadPerson(rs.getInt("employeeId")));
+                        case "D" -> new DataPlan(itemSaleId, item, rs.getDouble("totalGb"));
+                        default -> item;
+                    };
+                }
             }
-
         } catch (SQLException e) {
             LOGGER.error("Error loading item sold {}: ", itemSaleId, e);
             throw new RuntimeException(e);
@@ -758,5 +750,44 @@ public class DatabaseLoader {
             ConnFactory.closeConnection(rs, ps, conn);
         }
         LOGGER.info("Successfully filled store {} - storeCode {} with sales", store.getId(), store.getStoreCode());
+    }
+
+    public static Map<String, Sale> saleMapWithSaleCodeKey(){
+        if (!saleMap.isEmpty()) {
+            new HashMap<>(saleMap);
+        }
+
+        Map<String, Sale> newSaleMap = new HashMap<>();
+
+        for (Sale sale : saleMap.values()){
+            newSaleMap.put(sale.getUniqueCode(), sale);
+        }
+        return newSaleMap;
+    }
+
+    public static Map<String, Item> itemMapWithItemCodeKey(){
+        if (!itemSoldMap.isEmpty()) {
+            new HashMap<>(itemSoldMap);
+        }
+
+        Map<String, Item> newItemMap = new HashMap<>();
+
+        for (Item item : itemSoldMap.values()){
+            newItemMap.put(item.getUniqueCode(), item);
+        }
+        return newItemMap;
+    }
+
+    public static Map<String, Person> personMapWithUuidKey(){
+        if (!personMap.isEmpty()) {
+            new HashMap<>(personMap);
+        }
+
+        Map<String, Person> newPersonMap = new HashMap<>();
+
+        for (Person person : personMap.values()){
+            newPersonMap.put(person.getUuid(), person);
+        }
+        return newPersonMap;
     }
 }
