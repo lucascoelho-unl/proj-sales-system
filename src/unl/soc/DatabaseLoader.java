@@ -38,7 +38,7 @@ public class DatabaseLoader {
      */
     public static Address loadAddress(int addressId) {
         if (!addressMap.isEmpty()) {
-            return addressMap.getOrDefault(addressId, null);
+            return addressMap.get(addressId);
         }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -115,7 +115,7 @@ public class DatabaseLoader {
      */
     public static Person loadPerson(int personId) {
         if (!personMap.isEmpty()) {
-            return personMap.getOrDefault(personId, null);
+            return personMap.get(personId);
         }
 
         Connection conn = ConnFactory.createConnection();
@@ -257,7 +257,7 @@ public class DatabaseLoader {
      */
     private static Store loadRawStore(int storeId) {
         if (!storeMap.isEmpty()) {
-            return storeMap.getOrDefault(storeId, null);
+            return storeMap.get(storeId);
         }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -402,7 +402,7 @@ public class DatabaseLoader {
      */
     public static Item loadItem(int itemId) {
         if (!itemMap.isEmpty()) {
-            return itemMap.getOrDefault(itemId, null);
+            return itemMap.get(itemId);
         }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -486,7 +486,7 @@ public class DatabaseLoader {
      */
     public static Item loadItemSold(int itemSaleId) {
         if (!itemSoldMap.isEmpty()) {
-            return itemSoldMap.getOrDefault(itemSaleId, null);
+            return itemSoldMap.get(itemSaleId);
         }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -571,7 +571,7 @@ public class DatabaseLoader {
      */
     public static Sale loadSale(int saleId) {
         if (!saleMap.isEmpty()) {
-            return saleMap.getOrDefault(saleId, null);
+            return saleMap.get(saleId);
         }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
