@@ -16,13 +16,16 @@ import java.util.*;
  * This class provides methods to load data from the database into memory objects.
  */
 public class DatabaseLoader {
+    public static void main(String[] args) {
+        loadAllItemSold();
+    }
     private static final Logger LOGGER = LogManager.getLogger(DatabaseLoader.class);
     private static final Map<Integer, Address> addressMap = new HashMap<>();
     private static final Map<Integer, Person> personMap = new HashMap<>();
     private static final Map<Integer, Store> storeMap = new HashMap<>();
     private static final Map<Integer, Sale> saleMap = new HashMap<>();
     private static final Map<Integer, Item> itemMap = new HashMap<>();
-    private static final Map<Integer, Item> itemSoldMap = new HashMap<>();
+
 
     // Configure the Logger
     static {
@@ -485,8 +488,9 @@ public class DatabaseLoader {
      * @return The Item object sold loaded from the database.
      */
     public static Item loadItemSold(int itemSaleId) {
-        if (!itemSoldMap.isEmpty()) {
-            return itemSoldMap.get(itemSaleId);
+        DataOasis instance = DataOasis.getInstance();
+        if (!instance.getItemSoldMap().isEmpty()) {
+            return instance.getItemSoldMap().get(itemSaleId);
         }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -533,8 +537,9 @@ public class DatabaseLoader {
      * @return A map of item sale IDs to Item objects sold.
      */
     public static Map<Integer, Item> loadAllItemSold() {
-        if (!itemSoldMap.isEmpty()) {
-            return new HashMap<>(itemSoldMap);
+        DataOasis instance = DataOasis.getInstance();
+        if (instance.getItemSoldMap() != null) {
+            return new HashMap<>(instance.getItemSoldMap());
         }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -558,8 +563,7 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-        itemMap.putAll(itemMapResult);
-        LOGGER.info("Loaded {} item sold", itemMap.size());
+        LOGGER.info("Loaded {} item sold", itemMapResult.size());
         return itemMapResult;
     }
 
@@ -766,13 +770,11 @@ public class DatabaseLoader {
     }
 
     public static Map<String, Item> itemMapWithItemCodeKey(){
-        if (!itemSoldMap.isEmpty()) {
-            new HashMap<>(itemSoldMap);
-        }
+        DataOasis instance = DataOasis.getInstance();
 
         Map<String, Item> newItemMap = new HashMap<>();
 
-        for (Item item : itemSoldMap.values()){
+        for (Item item : instance.getItemSoldMap().values()){
             newItemMap.put(item.getUniqueCode(), item);
         }
         return newItemMap;

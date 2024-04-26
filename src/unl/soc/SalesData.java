@@ -6,6 +6,8 @@ import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
 
 import java.sql.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,7 +18,8 @@ import java.util.Map;
 public class SalesData {
     public static void main(String[] args) {
 
-        addSale("#s006", "o768t8", "ry0-70yv-53rs-0o7641f4odi8", "ry0-70yv-53rs-0o7641f4odi8", "2004-12-26");
+        DataOasis instance = DataOasis.getInstance();
+        instance.getItemSoldMap();
     }
     private static final Logger LOGGER = LogManager.getLogger(SalesData.class);
 
@@ -32,16 +35,22 @@ public class SalesData {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
 
-        String drop = "drop table if exists Email, ItemSale, Item, Sale, Store, Person, Address, Zipcode, State";
-        try{
-            ps = conn.prepareStatement(drop);
-            ps.execute();
+        try {
+            // Truncate tables
+            List<String> tablesToTruncate = Arrays.asList("ItemSale", "Item", "Sale", "Store", "Email", "Person", "Address", "Zipcode", "State");
+            for (String table : tablesToTruncate) {
+                String truncate = "delete from " + table;
+                ps = conn.prepareStatement(truncate);
+                ps.execute();
+                LOGGER.debug("Table cleared: {}", table);
+            }
         } catch (SQLException e) {
-            LOGGER.error("Error Cleaning database: {} ", e.getMessage());
+            LOGGER.error("Error cleaning database: {}", e.getMessage());
             throw new RuntimeException(e);
         } finally {
             ConnFactory.closeConnection(ps, conn);
         }
+
     }
 
     /**
@@ -237,7 +246,6 @@ public class SalesData {
     public static void addProductToSale(String saleCode, String itemCode) {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
-        ResultSet rs = null;
 
         Map<String, Sale> saleMap = DatabaseLoader.saleMapWithSaleCodeKey();
         Map<String, Item> itemMap = DatabaseLoader.itemMapWithItemCodeKey();
