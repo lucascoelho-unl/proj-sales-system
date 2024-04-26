@@ -1,15 +1,14 @@
-package unl.soc;
+package com.yrl;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
+import unl.soc.*;
 
+import javax.xml.crypto.Data;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This is a collection of utility methods that define a general API for
@@ -17,11 +16,7 @@ import java.util.Map;
  *
  */
 public class SalesData {
-    public static void main(String[] args) {
 
-        List<Store> stores = new ArrayList<>(DatabaseLoader.loadAllStores().values());
-        System.out.println(stores.size());
-    }
     private static final Logger LOGGER = LogManager.getLogger(SalesData.class);
 
     static {
@@ -80,7 +75,7 @@ public class SalesData {
             ps.setString(3,lastName);
             ps.setInt(4, addressId);
             ps.executeUpdate();
-            LOGGER.info("Added Person : {}", personUuid);
+            LOGGER.debug("Added Person : {}", personUuid);
         } catch (SQLException e) {
             LOGGER.error("Error in the connection: {}. Could not add a personx", e.getMessage());
         } finally {
@@ -112,7 +107,7 @@ public class SalesData {
             ps.setString(1, email);
             ps.setInt(2, person.getId());
             ps.executeUpdate();
-            LOGGER.info("Added Email : {}", email);
+            LOGGER.debug("Added Email : {}", email);
         } catch (SQLException e) {
             LOGGER.error("Error Adding Email: {}", e.getMessage());
         } finally {
@@ -149,7 +144,7 @@ public class SalesData {
             ps.setInt(2, manager.getId());
             ps.setInt(3, addressId);
             ps.executeUpdate();
-            LOGGER.info("Added Store : {}", storeCode);
+            LOGGER.debug("Added Store : {}", storeCode);
         } catch (SQLException e) {
             LOGGER.error("Error Adding Store: {}", e.getMessage());
         } finally {
@@ -174,6 +169,14 @@ public class SalesData {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
+        Map<String, String> mapType = new HashMap<>();
+        mapType.put("Product", "P");
+        mapType.put("Service", "S");
+        mapType.put("Data", "D");
+        mapType.put("Voice", "V");
+
+        type = mapType.get(type);
+
         String insert = "insert into Item (uniqueCode, name, type, basePrice) values (?, ?, ?, ?);";
 
         try {
@@ -183,7 +186,7 @@ public class SalesData {
             ps.setString(3, type);
             ps.setDouble(4, basePrice);
             ps.executeUpdate();
-            LOGGER.info("Added Item : {}", itemCode);
+            LOGGER.debug("Added Item : {}", itemCode);
         } catch (SQLException e) {
             LOGGER.error("Error Adding Item: {}", e.getMessage());
         } finally {
@@ -229,7 +232,7 @@ public class SalesData {
             ps.setInt(5, store.getId());
             ps.executeUpdate();
 
-            LOGGER.info("Added Sale : {}", saleCode);
+            LOGGER.debug("Added Sale : {}", saleCode);
         } catch (SQLException e) {
             LOGGER.error("Error Adding Sale: {}", e.getMessage());
         } finally {
@@ -248,18 +251,15 @@ public class SalesData {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
 
-        Map<String, Sale> saleMap = DatabaseLoader.saleMapWithSaleCodeKey();
-        Map<String, Item> itemMap = DatabaseLoader.itemMapWithItemCodeKey();
-
-        String insert = "insert into ItemSale (itemId, saleId) values (?, ?);";
+        String insert = "insert into ItemSale (itemId, saleId, isLease) values (?, ?, false);";
 
         try {
-            Item item = itemMap.get(itemCode);
+            Item item = DatabaseLoader.loadItem(itemCode);
             if (item == null) {
                 throw new SQLException("Item not found");
             }
 
-            Sale sale = saleMap.get(saleCode);
+            Sale sale = DatabaseLoader.loadSale(saleCode);
             if(sale == null) {
                 throw new SQLException("Sale not found");
             }
@@ -268,7 +268,7 @@ public class SalesData {
             ps.setInt(1, item.getId());
             ps.setInt(2, sale.getId());
             ps.executeUpdate();
-            LOGGER.info("Added Product Purchase to ItemSale: {}", itemCode);
+            LOGGER.debug("Added Product Purchase to ItemSale: {}", itemCode);
         } catch (SQLException e) {
             LOGGER.error("Error Adding Product Purchase to ItemSale: {}", e.getMessage());
         } finally {
@@ -290,18 +290,15 @@ public class SalesData {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        Map<String, Sale> saleMap = DatabaseLoader.saleMapWithSaleCodeKey();
-        Map<String, Item> itemMap = DatabaseLoader.itemMapWithItemCodeKey();
-
-        String insert = "insert into ItemSale (itemId, saleId, startDate, endDate) values (?, ?, ?, ?);";
+        String insert = "insert into ItemSale (itemId, saleId, startDate, endDate, isLease) values (?, ?, ?, ?, true);";
 
         try {
-            Item item = itemMap.get(itemCode);
+            Item item = DatabaseLoader.loadItem(itemCode);
             if (item == null) {
                 throw new SQLException("Item not found");
             }
 
-            Sale sale = saleMap.get(saleCode);
+            Sale sale = DatabaseLoader.loadSale(saleCode);
             if(sale == null) {
                 throw new SQLException("Sale not found");
             }
@@ -320,7 +317,7 @@ public class SalesData {
             ps.setString(3, startDate);
             ps.setString(4, endDate);
             ps.executeUpdate();
-            LOGGER.info("Added Product Lease to ItemSale: {}", itemCode);
+            LOGGER.debug("Added Product Lease to ItemSale: {}", itemCode);
         } catch (SQLException e) {
             LOGGER.error("Error Adding Product Lease to Sale: {}", e.getMessage());
         } finally {
@@ -344,24 +341,20 @@ public class SalesData {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        Map<String, Person> personMap = DatabaseLoader.personMapWithUuidKey();
-        Map<String, Sale> saleMap = DatabaseLoader.saleMapWithSaleCodeKey();
-        Map<String, Item> itemMap = DatabaseLoader.itemMapWithItemCodeKey();
-
         String insert = "insert into ItemSale (itemId, saleId, totalHours, employeeId) values (?, ?, ?, ?);";
 
         try {
-            Person employee = personMap.get(servicePersonUuid);
+            Person employee = DatabaseLoader.loadPerson(servicePersonUuid);
             if(employee == null) {
                 throw new SQLException("Employee not found");
             }
 
-            Item item = itemMap.get(itemCode);
+            Item item = DatabaseLoader.loadItem(itemCode);
             if (item == null) {
                 throw new SQLException("Item not found");
             }
 
-            Sale sale = saleMap.get(saleCode);
+            Sale sale = DatabaseLoader.loadSale(saleCode);
             if(sale == null) {
                 throw new SQLException("Sale not found");
             }
@@ -376,7 +369,7 @@ public class SalesData {
             ps.setDouble(3, billedHours);
             ps.setInt(4, employee.getId());
             ps.executeUpdate();
-            LOGGER.info("Added Service to ItemSale: {}", itemCode);
+            LOGGER.debug("Added Service to ItemSale: {}", itemCode);
         } catch (SQLException e) {
             LOGGER.error("Error Adding Service to Sale: {}", e.getMessage());
         } finally {
@@ -398,18 +391,15 @@ public class SalesData {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        Map<String, Sale> saleMap = DatabaseLoader.saleMapWithSaleCodeKey();
-        Map<String, Item> itemMap = DatabaseLoader.itemMapWithItemCodeKey();
-
         String insert = "insert into ItemSale (itemId, saleId, totalGb) values (?, ?, ?);";
 
         try {
-            Item item = itemMap.get(itemCode);
+            Item item = DatabaseLoader.loadItem(itemCode);
             if (item == null) {
                 throw new SQLException("Item not found");
             }
 
-            Sale sale = saleMap.get(saleCode);
+            Sale sale = DatabaseLoader.loadSale(saleCode);
             if(sale == null) {
                 throw new SQLException("Sale not found");
             }
@@ -423,7 +413,7 @@ public class SalesData {
             ps.setInt(2, sale.getId());
             ps.setDouble(3, gbs);
             ps.executeUpdate();
-            LOGGER.info("Added DataPlan to ItemSale: {}", itemCode);
+            LOGGER.debug("Added DataPlan to ItemSale: {}", itemCode);
         } catch (SQLException e) {
             LOGGER.error("Error Adding DataPlan to Sale: {}", e.getMessage());
         } finally {
@@ -446,18 +436,15 @@ public class SalesData {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        Map<String, Sale> saleMap = DatabaseLoader.saleMapWithSaleCodeKey();
-        Map<String, Item> itemMap = DatabaseLoader.itemMapWithItemCodeKey();
-
         String insert = "insert into ItemSale (itemId, saleId, totalPeriod, phoneNumber) values (?, ?, ?, ?);";
 
         try {
-            Item item = itemMap.get(itemCode);
+            Item item = DatabaseLoader.loadItem(itemCode);
             if (item == null) {
                 throw new SQLException("Item not found");
             }
 
-            Sale sale = saleMap.get(saleCode);
+            Sale sale = DatabaseLoader.loadSale(saleCode);
             if(sale == null) {
                 throw new SQLException("Sale not found");
             }
@@ -472,7 +459,7 @@ public class SalesData {
             ps.setInt(3, days);
             ps.setString(4, phoneNumber);
             ps.executeUpdate();
-            LOGGER.info("Added DataPlan to ItemSale: {}", itemCode);
+            LOGGER.debug("Added DataPlan to ItemSale: {}", itemCode);
         } catch (SQLException e) {
             LOGGER.error("Error Adding DataPlan to Sale: {}", e.getMessage());
         } finally {

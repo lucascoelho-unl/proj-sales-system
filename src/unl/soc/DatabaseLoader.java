@@ -99,7 +99,7 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-        LOGGER.info("Loaded {} addresses", addressMapResult.size());
+        LOGGER.debug("Successfully Loaded {} addresses", addressMapResult.size());
         return addressMapResult;
     }
 
@@ -240,7 +240,7 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-        LOGGER.info("Successfully loaded {} persons", personMapResult.size());
+        LOGGER.debug("Successfully loaded {} persons", personMapResult.size());
         return personMapResult;
     }
 
@@ -387,8 +387,48 @@ public class DatabaseLoader {
             ConnFactory.closeConnection(rs, ps, conn);
         }
 
-        LOGGER.info("Successfully loaded {} stores", storeMapResult.size());
+        LOGGER.debug("Successfully loaded {} stores", storeMapResult.size());
         return storeMapResult;
+    }
+
+    public static Item loadItem(String itemCode) {
+
+        Connection conn = ConnFactory.createConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Item item = null;
+
+        String query = """
+                select itemId, uniqueCode, basePrice, name, type from Item
+                where uniqueCode = ?;
+                """;
+
+        try {
+            ps = conn.prepareStatement(query);
+            ps.setString(1, itemCode);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                int itemId = rs.getInt("itemId");
+                double basePrice = rs.getDouble("basePrice");
+                String name = rs.getString("name");
+                String type = rs.getString("type");
+
+                // Switch case to determine the type of item sale
+                item = switch (type) {
+                    case "S" -> new Service(itemId, itemCode, name, basePrice);
+                    case "D" -> new DataPlan(itemId, itemCode, name, basePrice);
+                    case "V" -> new VoicePlan(itemId, itemCode, name, basePrice);
+                    case "P" -> new ProductPurchase(itemId, itemCode, name, basePrice);
+                    default -> null;
+                };
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Error loading item {}: ", itemCode, e);
+            throw new RuntimeException(e);
+        } finally {
+            ConnFactory.closeConnection(rs, ps, conn);
+        }
+        return item;
     }
 
     /**
@@ -470,7 +510,7 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-        LOGGER.info("Successfully loaded {} items", itemMapResult.size());
+        LOGGER.debug("Successfully loaded {} items", itemMapResult.size());
         return itemMapResult;
     }
 
@@ -554,7 +594,7 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-        LOGGER.info("Loaded {} item sold", itemMapResult.size());
+        LOGGER.debug("Successfully Loaded {} item sold", itemMapResult.size());
         return itemMapResult;
     }
 
@@ -698,7 +738,7 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-        LOGGER.info("Successfully loaded {} sales", saleMapResult.size());
+        LOGGER.debug("Successfully loaded {} sales", saleMapResult.size());
         return saleMapResult;
     }
 
@@ -718,7 +758,7 @@ public class DatabaseLoader {
             Store store = sale.getStore();
             storesMap.get(store.getId()).addSale(sale);
         }
-        LOGGER.info("Successfully parsed sales into stores");
+        LOGGER.debug("Successfully parsed sales into stores");
     }
 
     private static void updateSingleStoreWithSales(Store store) {
@@ -746,43 +786,6 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-        LOGGER.info("Successfully filled store {} - storeCode {} with sales", store.getId(), store.getStoreCode());
-    }
-
-    public static Map<String, Sale> saleMapWithSaleCodeKey(){
-//        if ((instance != null) && !instance.sak().isEmpty()) {
-//            new HashMap<>(saleMap);
-//        }
-
-        Map<String, Sale> newSaleMap = new HashMap<>();
-
-        for (Sale sale : instance.getSalesList()){
-            newSaleMap.put(sale.getUniqueCode(), sale);
-        }
-        return newSaleMap;
-    }
-
-    public static Map<String, Item> itemMapWithItemCodeKey(){
-        DataOasis instance = DataOasis.getInstance();
-
-        Map<String, Item> newItemMap = new HashMap<>();
-
-        for (Item item : instance.getItemSoldMap().values()){
-            newItemMap.put(item.getUniqueCode(), item);
-        }
-        return newItemMap;
-    }
-
-    public static Map<String, Person> personMapWithUuidKey(){
-//        if (!personMap.isEmpty()) {
-//            new HashMap<>(personMap);
-//        }
-
-        Map<String, Person> newPersonMap = new HashMap<>();
-
-        for (Person person : instance.getPersonsList()){
-            newPersonMap.put(person.getUuid(), person);
-        }
-        return newPersonMap;
+        LOGGER.debug("Successfully filled store {} - storeCode {} with sales", store.getId(), store.getStoreCode());
     }
 }
