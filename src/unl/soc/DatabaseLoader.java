@@ -16,21 +16,15 @@ import java.util.*;
  * This class provides methods to load data from the database into memory objects.
  */
 public class DatabaseLoader {
-    public static void main(String[] args) {
-        loadAllItemSold();
-    }
     private static final Logger LOGGER = LogManager.getLogger(DatabaseLoader.class);
-    private static final Map<Integer, Address> addressMap = new HashMap<>();
-    private static final Map<Integer, Person> personMap = new HashMap<>();
-    private static final Map<Integer, Store> storeMap = new HashMap<>();
-    private static final Map<Integer, Sale> saleMap = new HashMap<>();
-    private static final Map<Integer, Item> itemMap = new HashMap<>();
+    private static final DataOasis instance;
 
 
     // Configure the Logger
     static {
         Configurator.initialize(new DefaultConfiguration());
         Configurator.setRootLevel(Level.INFO);
+        instance = DataOasis.getInstance();
     }
 
     /**
@@ -40,8 +34,8 @@ public class DatabaseLoader {
      * @return The Address object loaded from the database.
      */
     public static Address loadAddress(int addressId) {
-        if (!addressMap.isEmpty()) {
-            return addressMap.get(addressId);
+        if ((instance != null) && !instance.getAddressMap().isEmpty()) {
+            return instance.getAddressMap().get(addressId);
         }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -80,8 +74,8 @@ public class DatabaseLoader {
      * @return A map of address IDs to Address objects.
      */
     public static Map<Integer, Address> loadAllAddress() {
-        if (!addressMap.isEmpty()) {
-            return new HashMap<>(addressMap);
+        if ((instance != null) && !instance.getAddressMap().isEmpty()) {
+            return instance.getAddressMap();
         }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -105,8 +99,7 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-        addressMap.putAll(addressMapResult);
-        LOGGER.info("Loaded {} addresses", addressMap.size());
+        LOGGER.info("Loaded {} addresses", addressMapResult.size());
         return addressMapResult;
     }
 
@@ -117,8 +110,8 @@ public class DatabaseLoader {
      * @return The Person object loaded from the database.
      */
     public static Person loadPerson(int personId) {
-        if (!personMap.isEmpty()) {
-            return personMap.get(personId);
+        if ((instance != null) && !instance.getPersonMap().isEmpty()) {
+            return instance.getPersonMap().get(personId);
         }
 
         Connection conn = ConnFactory.createConnection();
@@ -223,8 +216,8 @@ public class DatabaseLoader {
      * @return A map of person IDs to Person objects.
      */
     public static Map<Integer, Person> loadAllPersons() {
-        if (!personMap.isEmpty()) {
-            return new HashMap<>(personMap);
+        if ((instance != null) && !instance.getPersonMap().isEmpty()) {
+            return instance.getPersonMap();
         }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -247,8 +240,7 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-        personMap.putAll(personMapResult);
-        LOGGER.info("Successfully loaded {} persons", personMap.size());
+        LOGGER.info("Successfully loaded {} persons", personMapResult.size());
         return personMapResult;
     }
 
@@ -259,8 +251,8 @@ public class DatabaseLoader {
      * @return The Store object loaded from the database without its sales.
      */
     private static Store loadRawStore(int storeId) {
-        if (!storeMap.isEmpty()) {
-            return storeMap.get(storeId);
+        if ((instance != null) && !instance.getStoreMap().isEmpty()) {
+            return instance.getStoreMap().get(storeId);
         }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -366,8 +358,8 @@ public class DatabaseLoader {
      * @return A map of store IDs to Store objects.
      */
     public static Map<Integer, Store> loadAllStores() {
-        if (!storeMap.isEmpty()) {
-            return new HashMap<>(storeMap);
+        if ((instance != null) && !instance.getStoreMap().isEmpty()) {
+            return instance.getStoreMap();
         }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -392,8 +384,7 @@ public class DatabaseLoader {
             ConnFactory.closeConnection(rs, ps, conn);
         }
         updateStoreMapFromSalesMap(storeMapResult);
-        storeMap.putAll(storeMapResult);
-        LOGGER.info("Successfully loaded {} stores", storeMap.size());
+        LOGGER.info("Successfully loaded {} stores", storeMapResult.size());
         return storeMapResult;
     }
 
@@ -404,8 +395,8 @@ public class DatabaseLoader {
      * @return The Item object loaded from the database.
      */
     public static Item loadItem(int itemId) {
-        if (!itemMap.isEmpty()) {
-            return itemMap.get(itemId);
+        if ((instance != null) && !instance.getItemMap().isEmpty()) {
+            return instance.getItemMap().get(itemId);
         }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -451,8 +442,8 @@ public class DatabaseLoader {
      * @return A map of item IDs to Item objects.
      */
     public static Map<Integer, Item> loadAllItems() {
-        if (!itemMap.isEmpty()) {
-            return new HashMap<>(itemMap);
+        if ((instance != null) && !instance.getItemMap().isEmpty()) {
+            return instance.getItemMap();
         }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -476,8 +467,7 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-        itemMap.putAll(itemMapResult);
-        LOGGER.info("Successfully loaded {} items", itemMap.size());
+        LOGGER.info("Successfully loaded {} items", itemMapResult.size());
         return itemMapResult;
     }
 
@@ -488,8 +478,7 @@ public class DatabaseLoader {
      * @return The Item object sold loaded from the database.
      */
     public static Item loadItemSold(int itemSaleId) {
-        DataOasis instance = DataOasis.getInstance();
-        if (!instance.getItemSoldMap().isEmpty()) {
+        if ((instance != null) && !instance.getItemSoldMap().isEmpty()) {
             return instance.getItemSoldMap().get(itemSaleId);
         }
         Connection conn = ConnFactory.createConnection();
@@ -537,9 +526,8 @@ public class DatabaseLoader {
      * @return A map of item sale IDs to Item objects sold.
      */
     public static Map<Integer, Item> loadAllItemSold() {
-        DataOasis instance = DataOasis.getInstance();
-        if (instance.getItemSoldMap() != null) {
-            return new HashMap<>(instance.getItemSoldMap());
+        if ((instance != null) && !instance.getItemSoldMap().isEmpty()) {
+            return instance.getItemSoldMap();
         }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -574,8 +562,8 @@ public class DatabaseLoader {
      * @return The Sale object loaded from the database.
      */
     public static Sale loadSale(int saleId) {
-        if (!saleMap.isEmpty()) {
-            return saleMap.get(saleId);
+        if ((instance != null) && !instance.getSalesMap().isEmpty()) {
+            return instance.getSalesMap().get(saleId);
         }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -682,8 +670,8 @@ public class DatabaseLoader {
      * @return A map of sale IDs to Sale objects.
      */
     public static Map<Integer, Sale> loadAllSales() {
-        if (!saleMap.isEmpty()) {
-            return new HashMap<>(saleMap);
+        if ((instance != null) && !instance.getItemSoldMap().isEmpty()) {
+            return instance.getSalesMap();
         }
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -707,8 +695,7 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-        saleMap.putAll(saleMapResult);
-        LOGGER.info("Successfully loaded {} sales", saleMap.size());
+        LOGGER.info("Successfully loaded {} sales", saleMapResult.size());
         return saleMapResult;
     }
 
@@ -718,8 +705,7 @@ public class DatabaseLoader {
      * @param storesMap The map of store IDs to Store objects.
      */
     private static void updateStoreMapFromSalesMap(Map<Integer, Store> storesMap) {
-        DataOasis data = DataOasis.getInstance();
-        List<Sale> salesList = data.getSalesList();
+        List<Sale> salesList = instance.getSalesList();
 
         for (Sale sale : salesList) {
             Store store = sale.getStore();
@@ -757,13 +743,13 @@ public class DatabaseLoader {
     }
 
     public static Map<String, Sale> saleMapWithSaleCodeKey(){
-        if (!saleMap.isEmpty()) {
-            new HashMap<>(saleMap);
-        }
+//        if ((instance != null) && !instance.sak().isEmpty()) {
+//            new HashMap<>(saleMap);
+//        }
 
         Map<String, Sale> newSaleMap = new HashMap<>();
 
-        for (Sale sale : saleMap.values()){
+        for (Sale sale : instance.getSalesList()){
             newSaleMap.put(sale.getUniqueCode(), sale);
         }
         return newSaleMap;
@@ -781,13 +767,13 @@ public class DatabaseLoader {
     }
 
     public static Map<String, Person> personMapWithUuidKey(){
-        if (!personMap.isEmpty()) {
-            new HashMap<>(personMap);
-        }
+//        if (!personMap.isEmpty()) {
+//            new HashMap<>(personMap);
+//        }
 
         Map<String, Person> newPersonMap = new HashMap<>();
 
-        for (Person person : personMap.values()){
+        for (Person person : instance.getPersonsList()){
             newPersonMap.put(person.getUuid(), person);
         }
         return newPersonMap;

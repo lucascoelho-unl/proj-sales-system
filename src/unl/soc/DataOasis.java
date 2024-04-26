@@ -48,31 +48,31 @@ public class DataOasis {
 
             itemMap = DatabaseLoader.loadAllItems();
 
-            storeMap = DatabaseLoader.loadAllStores();
-
             salesMap = DatabaseLoader.loadAllSales();
+
+            storeMap = DatabaseLoader.loadAllStores();
 
 
         }
     }
 
-    public static Map<Integer, Address> getAddressMap() {
+    public Map<Integer, Address> getAddressMap() {
         return new HashMap<>(addressMap);
     }
 
-    public static Map<Integer, Person> getPersonMap() {
+    public Map<Integer, Person> getPersonMap() {
         return new HashMap<>(personMap);
     }
 
-    public static Map<Integer, Store> getStoreMap() {
+    public Map<Integer, Store> getStoreMap() {
         return new HashMap<>(storeMap);
     }
 
-    public static Map<Integer, Sale> getSalesMap() {
+    public Map<Integer, Sale> getSalesMap() {
         return new HashMap<>(salesMap);
     }
 
-    public static Map<Integer, Item> getItemMap() {
+    public Map<Integer, Item> getItemMap() {
         return new HashMap<>(itemMap);
     }
 
@@ -80,27 +80,27 @@ public class DataOasis {
         return new HashMap<>(itemSoldMap);
     }
 
-    public static List<Address> getAddressList() {
+    public List<Address> getAddressList() {
         return new ArrayList<>(addressMap.values());
     }
 
-    public static List<Item> getItemsSoldList() {
+    public List<Item> getItemsSoldList() {
         return new ArrayList<>(itemSoldMap.values());
     }
 
-    public static List<Item> getItemsList() {
+    public List<Item> getItemsList() {
         return new ArrayList<>(itemMap.values());
     }
 
-    public static List<Person> getPersonsList() {
+    public List<Person> getPersonsList() {
         return new ArrayList<>(personMap.values());
     }
 
-    public static List<Sale> getSalesList() {
+    public List<Sale> getSalesList() {
         return new ArrayList<>(salesMap.values());
     }
 
-    public static List<Store> getStoresList() {
+    public List<Store> getStoresList() {
         return new ArrayList<>(storeMap.values());
     }
 }

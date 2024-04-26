@@ -18,8 +18,7 @@ import java.util.Map;
 public class SalesData {
     public static void main(String[] args) {
 
-        DataOasis instance = DataOasis.getInstance();
-        instance.getItemSoldMap();
+        DatabaseLoader.loadAllItemSold();
     }
     private static final Logger LOGGER = LogManager.getLogger(SalesData.class);
 
