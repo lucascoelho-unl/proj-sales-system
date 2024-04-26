@@ -343,9 +343,9 @@ public class DatabaseLoader {
     }
 
     /**
-     * Loads a Store object from the database based on the given store ID.
+     * Loads a Store object from the database based on the given store code.
      *
-     * @param storeId The ID of the store to load.
+     * @param storeCode The store code of the store to load.
      * @return The Store object loaded from the database with its sales.
      */
 
@@ -617,9 +617,9 @@ public class DatabaseLoader {
     }
 
     /**
-     * Loads a Sale object from the database based on the given sale ID.
+     * Loads a Sale object from the database based on the given sale unique code.
      *
-     * @param saleId The ID of the sale to load.
+     * @param uniqueCode The unique Code of the sale to load.
      * @return The Sale object loaded from the database.
      */
     public static Sale loadSale(String uniqueCode) {
