@@ -359,8 +359,11 @@ public class DatabaseLoader {
      */
     public static Map<Integer, Store> loadAllStores() {
         if ((instance != null) && !instance.getStoreMap().isEmpty()) {
-            return instance.getStoreMap();
+            Map<Integer, Store> storeMap = instance.getStoreMap();
+            updateStoreMapFromSalesMap(storeMap);
+            return storeMap;
         }
+
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -383,7 +386,7 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-        updateStoreMapFromSalesMap(storeMapResult);
+
         LOGGER.info("Successfully loaded {} stores", storeMapResult.size());
         return storeMapResult;
     }
@@ -705,6 +708,10 @@ public class DatabaseLoader {
      * @param storesMap The map of store IDs to Store objects.
      */
     private static void updateStoreMapFromSalesMap(Map<Integer, Store> storesMap) {
+        if ((instance == null)) {
+            return;
+        }
+
         List<Sale> salesList = instance.getSalesList();
 
         for (Sale sale : salesList) {

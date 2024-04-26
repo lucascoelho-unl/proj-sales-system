@@ -15,8 +15,7 @@ public class DataReporter {
      */
     public static String reportTotalsBySales() {
 
-        DataOasis data = DataOasis.getInstance();
-        List<Sale> salesList = data.getSalesList();
+        List<Sale> salesList = new ArrayList<>(DatabaseLoader.loadAllSales().values());
 
         salesList.sort(Sale::compareSales);
 
@@ -63,8 +62,7 @@ public class DataReporter {
      */
     public static String reportTotalsByStore() {
 
-        DataOasis data = DataOasis.getInstance();
-        List<Store> storesList = data.getStoresList();
+        List<Store> storesList = new ArrayList<>(DatabaseLoader.loadAllStores().values());
 
         storesList.sort(Store::compareStores);
 
@@ -95,8 +93,7 @@ public class DataReporter {
      */
     public static String reportSales() {
 
-        DataOasis data = DataOasis.getInstance();
-        List<Sale> salesList = data.getSalesList();
+        List<Sale> salesList = new ArrayList<>(DatabaseLoader.loadAllSales().values());
 
         salesList.sort(Sale::compareSales);
 

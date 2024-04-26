@@ -6,6 +6,7 @@ import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +19,8 @@ import java.util.Map;
 public class SalesData {
     public static void main(String[] args) {
 
-        DatabaseLoader.loadAllItemSold();
+        List<Store> stores = new ArrayList<>(DatabaseLoader.loadAllStores().values());
+        System.out.println(stores.size());
     }
     private static final Logger LOGGER = LogManager.getLogger(SalesData.class);
 

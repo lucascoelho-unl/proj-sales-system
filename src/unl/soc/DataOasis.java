@@ -12,22 +12,21 @@ public class DataOasis {
 
     private static final DataOasis INSTANCE = new DataOasis();
 
-    private static Map<Integer, Address> addressMap;
-    private static Map<Integer, Person> personMap;
-    private static Map<Integer, Store> storeMap;
-    private static Map<Integer, Sale> salesMap;
-    private static Map<Integer, Item> itemMap;
-    private static Map<Integer, Item> itemSoldMap;
+    private Map<Integer, Address> addressMap;
+    private Map<Integer, Person> personMap;
+    private Map<Integer, Store> storeMap;
+    private Map<Integer, Sale> salesMap;
+    private Map<Integer, Item> itemMap;
+    private Map<Integer, Item> itemSoldMap;
 
     private DataOasis() {
-        if (addressMap == null || personMap == null || storeMap == null || salesMap == null || itemMap == null || itemSoldMap == null) {
-            addressMap = new HashMap<>();
-            personMap = new HashMap<>();
-            storeMap = new HashMap<>();
-            salesMap = new HashMap<>();
-            itemMap = new HashMap<>();
-            itemSoldMap = new HashMap<>();
-        }
+        this.addressMap = new HashMap<>();
+        this.personMap = new HashMap<>();
+        this.storeMap = new HashMap<>();
+        this.salesMap = new HashMap<>();
+        this.itemMap = new HashMap<>();
+        this.itemSoldMap = new HashMap<>();
+
         loadDataFromDB();
     }
 
@@ -38,69 +37,69 @@ public class DataOasis {
     /**
      * Loads data from a database into private variables.
      */
-    public static void loadDataFromDB() {
-        if (addressMap.isEmpty() || personMap.isEmpty() || storeMap.isEmpty() || salesMap.isEmpty() || itemMap.isEmpty() || itemSoldMap.isEmpty()) {
-            itemSoldMap = DatabaseLoader.loadAllItemSold();
+    public void loadDataFromDB() {
+        if (this.addressMap.isEmpty() || this.personMap.isEmpty() || this.storeMap.isEmpty() || this.salesMap.isEmpty() || this.itemMap.isEmpty() || this.itemSoldMap.isEmpty()) {
+            this.itemSoldMap = DatabaseLoader.loadAllItemSold();
 
-            addressMap = DatabaseLoader.loadAllAddress();
+            this.addressMap = DatabaseLoader.loadAllAddress();
 
-            personMap = DatabaseLoader.loadAllPersons();
+            this.personMap = DatabaseLoader.loadAllPersons();
 
-            itemMap = DatabaseLoader.loadAllItems();
+            this.itemMap = DatabaseLoader.loadAllItems();
 
-            salesMap = DatabaseLoader.loadAllSales();
+            this.salesMap = DatabaseLoader.loadAllSales();
 
-            storeMap = DatabaseLoader.loadAllStores();
+            this.storeMap = DatabaseLoader.loadAllStores();
 
 
         }
     }
 
     public Map<Integer, Address> getAddressMap() {
-        return new HashMap<>(addressMap);
+        return new HashMap<>(this.addressMap);
     }
 
     public Map<Integer, Person> getPersonMap() {
-        return new HashMap<>(personMap);
+        return new HashMap<>(this.personMap);
     }
 
     public Map<Integer, Store> getStoreMap() {
-        return new HashMap<>(storeMap);
+        return new HashMap<>(this.storeMap);
     }
 
     public Map<Integer, Sale> getSalesMap() {
-        return new HashMap<>(salesMap);
+        return new HashMap<>(this.salesMap);
     }
 
     public Map<Integer, Item> getItemMap() {
-        return new HashMap<>(itemMap);
+        return new HashMap<>(this.itemMap);
     }
 
     public Map<Integer, Item> getItemSoldMap() {
-        return new HashMap<>(itemSoldMap);
+        return new HashMap<>(this.itemSoldMap);
     }
 
     public List<Address> getAddressList() {
-        return new ArrayList<>(addressMap.values());
+        return new ArrayList<>(this.addressMap.values());
     }
 
     public List<Item> getItemsSoldList() {
-        return new ArrayList<>(itemSoldMap.values());
+        return new ArrayList<>(this.itemSoldMap.values());
     }
 
     public List<Item> getItemsList() {
-        return new ArrayList<>(itemMap.values());
+        return new ArrayList<>(this.itemMap.values());
     }
 
     public List<Person> getPersonsList() {
-        return new ArrayList<>(personMap.values());
+        return new ArrayList<>(this.personMap.values());
     }
 
     public List<Sale> getSalesList() {
-        return new ArrayList<>(salesMap.values());
+        return new ArrayList<>(this.salesMap.values());
     }
 
     public List<Store> getStoresList() {
-        return new ArrayList<>(storeMap.values());
+        return new ArrayList<>(this.storeMap.values());
     }
 }
