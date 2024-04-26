@@ -751,4 +751,43 @@ public class DatabaseLoader {
         }
         LOGGER.info("Successfully filled store {} - storeCode {} with sales", store.getId(), store.getStoreCode());
     }
+
+    public static Map<String, Sale> saleMapWithSaleCodeKey(){
+        if (!saleMap.isEmpty()) {
+            new HashMap<>(saleMap);
+        }
+
+        Map<String, Sale> newSaleMap = new HashMap<>();
+
+        for (Sale sale : saleMap.values()){
+            newSaleMap.put(sale.getUniqueCode(), sale);
+        }
+        return newSaleMap;
+    }
+
+    public static Map<String, Item> itemMapWithItemCodeKey(){
+        if (!itemSoldMap.isEmpty()) {
+            new HashMap<>(itemSoldMap);
+        }
+
+        Map<String, Item> newItemMap = new HashMap<>();
+
+        for (Item item : itemSoldMap.values()){
+            newItemMap.put(item.getUniqueCode(), item);
+        }
+        return newItemMap;
+    }
+
+    public static Map<String, Person> personMapWithUuidKey(){
+        if (!personMap.isEmpty()) {
+            new HashMap<>(personMap);
+        }
+
+        Map<String, Person> newPersonMap = new HashMap<>();
+
+        for (Person person : personMap.values()){
+            newPersonMap.put(person.getUuid(), person);
+        }
+        return newPersonMap;
+    }
 }
