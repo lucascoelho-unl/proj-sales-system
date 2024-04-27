@@ -8,6 +8,7 @@ import java.util.Map;
 /**
  * Data oasis is a singleton that is a helper class for the data loaders classes.
  * It stores the maps loaded from the database to use in the database loader and CSV classes.
+ * The class is using a busy loading property
  */
 public class DataOasis {
 
@@ -54,8 +55,6 @@ public class DataOasis {
             this.salesMap = DatabaseLoader.loadAllSales();
 
             this.storeMap = DatabaseLoader.loadAllStores();
-
-
         }
     }
 

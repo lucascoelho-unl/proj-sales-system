@@ -104,6 +104,15 @@ public class DatabaseLoader {
     }
 
     /**
+     * Loads all Address objects from the database.
+     *
+     * @return A list of Address objects.
+     */
+    public static List<Address> loadAddressList() {
+        return new ArrayList<>(loadAllAddress().values());
+    }
+
+    /**
      * Loads a Person object from the database based on the given person ID.
      *
      * @param personId The ID of the person to load.
@@ -248,6 +257,15 @@ public class DatabaseLoader {
         }
         LOGGER.debug("Successfully loaded {} persons", personMapResult.size());
         return personMapResult;
+    }
+
+    /**
+     * Loads all Person objects from the database.
+     *
+     * @return A list of Person objects.
+     */
+    public static List<Person> loadPersonList() {
+        return new ArrayList<>(loadAllPersons().values());
     }
 
     /**
@@ -398,6 +416,15 @@ public class DatabaseLoader {
     }
 
     /**
+     * Loads all <code>Store</code> objects from the database.
+     *
+     * @return A list of <code>Store</code> objects.
+     */
+    public static List<Store> loadStoreList() {
+        return new ArrayList<>(loadAllStores().values());
+    }
+
+    /**
      * Load a single item given its itemCode
      *
      * @param itemCode
@@ -527,6 +554,15 @@ public class DatabaseLoader {
     }
 
     /**
+     * Loads all Items objects from the database.
+     *
+     * @return A list of Item objects.
+     */
+    public static List<Item> loadItemList() {
+        return new ArrayList<>(loadAllItems().values());
+    }
+
+    /**
      * Loads an Item object sold from the database based on the given item sale ID.
      *
      * @param itemSaleId The ID of the item sale to load.
@@ -608,6 +644,15 @@ public class DatabaseLoader {
         }
         LOGGER.debug("Successfully Loaded {} item sold", itemMapResult.size());
         return itemMapResult;
+    }
+
+    /**
+     * Loads all Item Sold from the database.
+     *
+     * @return A list of Item objects.
+     */
+    public static List<Item> loadItemSoldList() {
+        return new ArrayList<>(loadAllItemSold().values());
     }
 
     /**
@@ -758,6 +803,15 @@ public class DatabaseLoader {
         }
         LOGGER.debug("Successfully loaded {} sales", saleMapResult.size());
         return saleMapResult;
+    }
+
+    /**
+     * Loads all Sale objects from the database.
+     *
+     * @return A list of Sale objects.
+     */
+    public static List<Sale> loadSaleList() {
+        return new ArrayList<>(loadAllSales().values());
     }
 
     /**
