@@ -117,3 +117,5 @@ fabric.properties
 /src/unl/soc/Teste.java
 outputTest/
 .idea/**/libraries
+testOutput/
+.env

@@ -1,9 +1,6 @@
 package unl.soc;
 
 import com.google.gson.annotations.Expose;
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
-
-import java.util.Objects;
 
 /**
  * The Item class is an abstract class representing an item.
@@ -11,6 +8,7 @@ import java.util.Objects;
  * It includes Getters, ToString, HashCode and Equals methods
  */
 public abstract class Item implements Priceable {
+    private int id;
     @Expose
     private String uniqueCode;
     @Expose
@@ -21,7 +19,18 @@ public abstract class Item implements Priceable {
         this.name = name;
     }
 
+    public Item(int id, String uniqueCode, String name) {
+        this.id = id;
+        this.uniqueCode = uniqueCode;
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
     public abstract double getBasePrice();
+
     public String getUniqueCode() {
         return uniqueCode;
     }
@@ -29,6 +38,7 @@ public abstract class Item implements Priceable {
     public String getName() {
         return name;
     }
+
     public final double getNetPrice() {
         return getGrossPrice() + getTotalTax();
     }
@@ -42,8 +52,8 @@ public abstract class Item implements Priceable {
         return item + "\n}";
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(uniqueCode, name, getTotalTax(), getNetPrice());
-    }
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(uniqueCode, name, getTotalTax(), getNetPrice());
+//    }
 }

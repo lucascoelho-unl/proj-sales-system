@@ -11,17 +11,17 @@ public class DataConverter {
     public static void main(String[] args) {
         List<Item> itemList = DataProcessor.readItemsCSVtoList("data/Items.csv");
 
-        DataWriter.createXMLFile(itemList, "testOutput/itemOutput.xml");
-        DataWriter.createJsonFile(itemList, "Items", "testOutput/ItemOutput.json");
+        DataWriter.createXMLFile(itemList, "data/ItemsOutput.xml");
+        DataWriter.createJsonFile(itemList, "Items", "data/ItemsOutput.json");
 
         List<Person> personList = DataProcessor.readPersonCSVtoList("data/Persons.csv");
 
-        DataWriter.createXMLFile(personList, "testOutput/PersonOutput.xml");
-        DataWriter.createJsonFile(personList, "Persons", "testOutput/PersonOutput.json");
+        DataWriter.createXMLFile(personList, "data/PersonsOutput.xml");
+        DataWriter.createJsonFile(personList, "Persons", "data/PersonsOutput.json");
 
         List<Store> storeList = DataProcessor.readStoreCSVtoList("data/Stores.csv");
 
-        DataWriter.createXMLFile(storeList, "testOutput/StoreOutput.xml");
-        DataWriter.createJsonFile(storeList, "Stores", "testOutput/StoreOutput.json");
+        DataWriter.createXMLFile(storeList, "data/StoresOutput.xml");
+        DataWriter.createJsonFile(storeList, "Stores", "data/StoresOutput.json");
     }
 }

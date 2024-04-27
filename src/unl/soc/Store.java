@@ -15,6 +15,7 @@ import java.util.Objects;
  */
 @XStreamAlias("store")
 public class Store {
+    private int id;
     @Expose
     private String storeCode;
     @Expose
@@ -31,8 +32,42 @@ public class Store {
         this.sales = new ArrayList<>();
     }
 
-    public void addSale(Sale sale){
+    public Store(int id, String storeCode, Address address, Person manager) {
+        this.id = id;
+        this.storeCode = storeCode;
+        this.manager = manager;
+        this.address = address;
+        this.sales = new ArrayList<>();
+    }
+
+    public static int compareStores(Store store1, Store store2) {
+        // Compare by manager's last name and first name before comparing by total sale value
+        int lastNameComparison = store1.getManager().getLastName().compareTo(store2.getManager().getLastName());
+        if (lastNameComparison != 0) {
+            return lastNameComparison;
+        }
+        int firstNameComparison = store1.getManager().getFirstName().compareTo(store2.getManager().getFirstName());
+        if (firstNameComparison != 0) {
+            return firstNameComparison;
+        }
+        // If last names and first names are equal, compare by total sale value
+        return Double.compare(store2.getTotalSalePrice(), store1.getTotalSalePrice());
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void addSale(Sale sale) {
         this.sales.add(sale);
+    }
+
+    public double getTotalSalePrice() {
+        double total = 0;
+        for (Sale sale : this.sales) {
+            total += sale.getNetPrice();
+        }
+        return total;
     }
 
     public String getStoreCode() {
@@ -48,7 +83,7 @@ public class Store {
     }
 
     public List<Sale> getSales() {
-        return sales;
+        return new ArrayList<>(sales);
     }
 
     @Override
@@ -62,12 +97,9 @@ public class Store {
         }
         List<Sale> saleList = getSales();
         int numSales = saleList.size();
-        double total = 0;
-        for (Sale sale : saleList) {
-            total += sale.getNetPrice();
-        }
+        double totalPrice = getTotalSalePrice();
         String formatString = "%-9s  %-20s  %5d  %3s  %8.2f";
-        return String.format(formatString, store, managerFullName, numSales, "$", total);
+        return String.format(formatString, store, managerFullName, numSales, "$", totalPrice);
     }
 
     @Override

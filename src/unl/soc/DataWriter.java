@@ -14,7 +14,7 @@ import java.util.Map;
 public class DataWriter {
     /**
      * This method creates a JSON file from a list of objects using the Gson library.
-     * The JSON file is written with pretty formatting.
+     * The JSON file is written with appropriate formatting.
      *
      * @param listOfObject The list of objects to be converted to JSON format.
      * @param filePath     The file path where the JSON file will be created.
@@ -23,10 +23,10 @@ public class DataWriter {
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-            // Add the header to the JSON string
+            // Add the header to the JSON string.
             StringBuilder jsonBuilder = new StringBuilder();
             jsonBuilder.append("{\n");
-            jsonBuilder.append("  \"" + header + "\": ");
+            jsonBuilder.append("  \"").append(header).append("\": ");
 
             // Convert the list of objects to JSON
             String jsonData = gson.toJson(listOfObject);
@@ -45,7 +45,7 @@ public class DataWriter {
      * The JSON file is written with pretty formatting.
      *
      * @param mapOfObject The map of objects to be converted to JSON format.
-     * @param filePath The file path where the JSON file will be created.
+     * @param filePath    The file path where the JSON file will be created.
      */
     public static void createJsonFile(Map<String, ?> mapOfObject, String header, String filePath) {
         Map<String, Object> dataWithHeader = new HashMap<>();
@@ -109,81 +109,6 @@ public class DataWriter {
         try {
             xstream.toXML(listOfObject, new FileWriter(filePath));
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void createSaleReport(String outputPath){
-
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(outputPath));
-            // Load sales, items, and persons maps from CSV files
-            Map<String, Item> itemsMap = DataProcessor.readItemsCSVtoMap("data/Items.csv");
-            Map<String, Person> personsMap = DataProcessor.readPersonCSVtoMap("data/Persons.csv");
-            Map<String, Store> storeMap = DataProcessor.readStoreCSVtoMap("data/Stores.csv");
-
-            // Read sales data, process purchased items, and create sales map
-            Map<String, Sale> salesMap = DataProcessor.readSalesToMap(personsMap, storeMap, "data/Sales.csv");
-            salesMap = DataProcessor.processPurchasedItemsIntoSalesMap(salesMap, itemsMap, personsMap, "data/SaleItems.csv");
-
-            // Print sales report header
-            writer.write("Sales Report:");
-            writer.newLine();
-            writer.write("+-----------------------------------------------------------------------------------+\n" +
-                    "|  Summary Report -- By Total                                                       |\n" +
-                    "+-----------------------------------------------------------------------------------+");
-            writer.newLine();
-            writer.write("Invoice #  Store     Customer                Num Items          Tax        Total");
-            writer.newLine();
-
-            // Initialize total sales variables
-            int totalItemSales = 0;
-            double totalTaxSales = 0;
-            double totalPriceSales = 0;
-
-            // Print individual sale details and update total sales variables
-            assert salesMap != null;
-            for (Sale sale : salesMap.values()) {
-                String saleNum = sale.getUniqueCode();
-                String storeCode = sale.getStore().getStoreCode();
-                String fullName = sale.getCustomer().getLastName() + ", " + sale.getCustomer().getFirstName();
-                int numItems = sale.getItemsList().size();
-                double tax = sale.getTotalTax();
-                double price = sale.getNetPrice();
-                writer.write(String.format("%-9s  %-9s  %-20s  %10d  $%10.2f  $%10.2f\n", saleNum, storeCode, fullName, numItems, tax, price));
-
-                totalItemSales += numItems;
-                totalTaxSales += tax;
-                totalPriceSales += price;
-            }
-
-            // Print total sales summary
-            writer.write("+-----------------------------------------------------------------------------------+");
-            writer.newLine();
-            writer.write(String.format("%54d  $%10.2f  $%10.2f\n\n", totalItemSales, totalTaxSales, totalPriceSales));
-
-            // Print store sales summary
-            writer.write("+--------------------------------------------------------+\n" +
-                    "| Store Sales Summary Report                             |\n" +
-                    "+--------------------------------------------------------+");
-            writer.newLine();
-            writer.write("Store      Manager              # Sales   Grand Total");
-            writer.newLine();
-            for (Store store : storeMap.values()) {
-                writer.write(store.toString());
-                writer.newLine();
-            }
-
-            // Print individual sale details
-            writer.newLine();
-            for (Sale sale : salesMap.values()){
-                writer.write(sale.toString());
-                writer.newLine();
-            }
-
-
-            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

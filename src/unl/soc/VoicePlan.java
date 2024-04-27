@@ -16,6 +16,8 @@ public class VoicePlan extends Item {
 
     @XStreamOmitField
     private static final double TAX_PERCENTAGE = 0.065;
+
+    private int id;
     @XStreamOmitField
     private double totalPeriod;
     @XStreamOmitField
@@ -23,8 +25,13 @@ public class VoicePlan extends Item {
     @Expose
     private double periodCost;
 
-    public VoicePlan(String uniqueCode ,String name, double periodPrice) {
+    public VoicePlan(String uniqueCode, String name, double periodPrice) {
         super(uniqueCode, name);
+        this.periodCost = periodPrice;
+    }
+
+    public VoicePlan(int id, String uniqueCode, String name, double periodPrice) {
+        super(id, uniqueCode, name);
         this.periodCost = periodPrice;
     }
 
@@ -35,21 +42,42 @@ public class VoicePlan extends Item {
         this.periodCost = item.getBasePrice();
     }
 
+    public VoicePlan(int id, Item item, String phoneNumber, double totalPeriod) {
+        super(id, item.getUniqueCode(), item.getName());
+        this.phoneNumber = phoneNumber;
+        this.totalPeriod = totalPeriod;
+        this.periodCost = item.getBasePrice();
+    }
+
+    public VoicePlan(int id, String uniqueCode, String name, double periodPrice, String phoneNumber, double totalPeriod) {
+        super(uniqueCode, name);
+        this.id = id;
+        this.periodCost = periodPrice;
+        this.totalPeriod = totalPeriod;
+        this.phoneNumber = phoneNumber;
+    }
+
     public double getTotalPeriod() {
         return totalPeriod;
     }
+
     public String getPhoneNumber() {
         return phoneNumber;
     }
-    @Override
-    public double getGrossPrice() { return periodCost * (totalPeriod / 30); }
 
     @Override
-    public double getTotalTax() { return getGrossPrice() * TAX_PERCENTAGE; }
+    public double getGrossPrice() {
+        return Math.round(100 * periodCost * (totalPeriod / 30)) / 100.0;
+    }
+
+    @Override
+    public double getTotalTax() {
+        return Math.round(100 * getGrossPrice() * TAX_PERCENTAGE) / 100.0;
+    }
 
     @Override
     public double getBasePrice() {
-        return periodCost;
+        return Math.round(100 * periodCost) / 100.0;
     }
 
     @Override

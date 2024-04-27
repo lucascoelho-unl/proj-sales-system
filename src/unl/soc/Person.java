@@ -3,6 +3,7 @@ package unl.soc;
 import com.google.gson.annotations.Expose;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,6 +15,9 @@ import java.util.Objects;
  */
 @XStreamAlias("person")
 public class Person {
+    @XStreamAlias("emails")
+    private final List<String> emailList;
+    private int id;
     @Expose
     private String uuid;
     @Expose
@@ -22,9 +26,24 @@ public class Person {
     private String lastName;
     @Expose
     private Address address;
-    @XStreamAlias("emails")
-    private final List<String> emailList;
-    private List<Sale> purchasedItems;
+
+    public Person(int id, String uuid, String firstName, String lastName, Address address, List<String> emailList) {
+        this.id = id;
+        this.uuid = uuid;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = address;
+        this.emailList = emailList;
+    }
+
+    public Person(int id, String uuid, String firstName, String lastName, Address address) {
+        this.id = id;
+        this.uuid = uuid;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = address;
+        this.emailList = new ArrayList<>();
+    }
 
     public Person(String uuid, String firstName, String lastName, Address address, List<String> emailList) {
         this.uuid = uuid;
@@ -32,6 +51,10 @@ public class Person {
         this.lastName = lastName;
         this.address = address;
         this.emailList = emailList;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getUuid() {
@@ -51,7 +74,11 @@ public class Person {
     }
 
     public List<String> getEmailList() {
-        return emailList;
+        return new ArrayList<>(emailList);
+    }
+
+    public void addEmail(String emailAddress) {
+        this.emailList.add(emailAddress);
     }
 
     @Override
@@ -61,6 +88,7 @@ public class Person {
                 "\t  " + getAddress() + "\n" +
                 "\t  " + getAddress().getCity() + " " + getAddress().getState() + " " + getAddress().getZipCode() + "\n";
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

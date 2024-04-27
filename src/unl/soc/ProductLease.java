@@ -28,8 +28,20 @@ public class ProductLease extends Item {
         this.price = basePrice;
     }
 
+    public ProductLease(int id, String uniqueCode, String name, double basePrice) {
+        super(id, uniqueCode, name);
+        this.price = basePrice;
+    }
+
     public ProductLease(Item productBeingLeased, String startDate, String endDate) {
         super(productBeingLeased.getUniqueCode(), productBeingLeased.getName());
+        this.startDate = LocalDate.parse(startDate);
+        this.endDate = LocalDate.parse(endDate);
+        this.price = productBeingLeased.getBasePrice();
+    }
+
+    public ProductLease(int id, Item productBeingLeased, String startDate, String endDate) {
+        super(id, productBeingLeased.getUniqueCode(), productBeingLeased.getName());
         this.startDate = LocalDate.parse(startDate);
         this.endDate = LocalDate.parse(endDate);
         this.price = productBeingLeased.getBasePrice();
@@ -41,7 +53,7 @@ public class ProductLease extends Item {
     }
 
     public double getMarkupPrice() {
-        return getBasePrice() / 2;
+        return Math.round(100 * (getBasePrice() / 2)) / 100.0;
     }
 
     public double getTotalLeasePrice() {
@@ -49,7 +61,7 @@ public class ProductLease extends Item {
     }
 
     public double getFirstMonthPrice() {
-        return getTotalLeasePrice() / getPeriodInMonths();
+        return Math.round(100 * (getTotalLeasePrice() / getPeriodInMonths())) / 100.0;
     }
 
     @Override
@@ -61,9 +73,18 @@ public class ProductLease extends Item {
     public double getTotalTax() {
         return 0;
     }
+
     @Override
     public double getBasePrice() {
-        return price;
+        return Math.round(100 * price) / 100.0;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
     }
 
     @Override

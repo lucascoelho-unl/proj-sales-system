@@ -12,7 +12,7 @@ import java.util.Objects;
  * It includes Getters, ToString, HashCode and Equals methods
  */
 @XStreamAlias("dataPlan")
-public class DataPlan extends Item{
+public class DataPlan extends Item {
     @XStreamOmitField
     private static final double TAX_PERCENTAGE = 0.055;
     @XStreamOmitField
@@ -21,7 +21,12 @@ public class DataPlan extends Item{
     private double costPerGB;
 
     public DataPlan(String uniqueCode, String name, double pricePerGB) {
-        super(uniqueCode ,name);
+        super(uniqueCode, name);
+        this.costPerGB = pricePerGB;
+    }
+
+    public DataPlan(int id, String uniqueCode, String name, double pricePerGB) {
+        super(id, uniqueCode, name);
         this.costPerGB = pricePerGB;
     }
 
@@ -31,9 +36,15 @@ public class DataPlan extends Item{
         this.costPerGB = item.getBasePrice();
     }
 
+    public DataPlan(int id, Item item, double totalGB) {
+        super(id, item.getUniqueCode(), item.getName());
+        this.totalGB = totalGB;
+        this.costPerGB = item.getBasePrice();
+    }
+
     @Override
     public double getBasePrice() {
-        return costPerGB;
+        return Math.round(costPerGB * 100) / 100.0;
     }
 
     public double getTotalGB() {
@@ -41,14 +52,19 @@ public class DataPlan extends Item{
     }
 
     @Override
-    public double getGrossPrice() { return costPerGB * totalGB; }
+    public double getGrossPrice() {
+        return Math.round(costPerGB * totalGB * 100) / 100.0;
+    }
 
     @Override
-    public double getTotalTax() { return getGrossPrice() * TAX_PERCENTAGE; }
+    public double getTotalTax() {
+        return Math.round(getGrossPrice() * TAX_PERCENTAGE * 100) / 100.0;
+    }
 
     @Override
     public String toString() {
-        return String.format("%s - %s \n %20.2f GB @ $%5.2f / GB \n %60s %9.2f $%9.2f", getName() + " (" + getUniqueCode() + ")", "Data", getTotalGB(), costPerGB, "$",getTotalTax(), getGrossPrice());
+        return String.format("%s - %s \n %20.2f GB @ $%5.2f / GB \n %60s %9.2f $%9.2f",
+                getName() + " (" + getUniqueCode() + ")", "Data", getTotalGB(), costPerGB, "$", getTotalTax(), getGrossPrice());
     }
 
     @Override
