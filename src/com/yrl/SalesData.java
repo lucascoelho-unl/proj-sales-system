@@ -32,11 +32,10 @@ public class SalesData {
         PreparedStatement ps = null;
 
         try {
-            // Truncate tables
             List<String> tablesToTruncate = Arrays.asList("ItemSale", "Item", "Sale", "Store", "Email", "Person", "Address", "Zipcode", "State");
             for (String table : tablesToTruncate) {
-                String truncate = "delete from " + table;
-                ps = conn.prepareStatement(truncate);
+                String delete = "delete from " + table;
+                ps = conn.prepareStatement(delete);
                 ps.execute();
                 LOGGER.debug("Table cleared: {}", table);
             }
@@ -46,7 +45,6 @@ public class SalesData {
         } finally {
             ConnFactory.closeConnection(ps, conn);
         }
-
     }
 
     /**

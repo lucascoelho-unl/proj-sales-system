@@ -1,15 +1,19 @@
 package unl.soc;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Data oasis is a singleton that is a helper class for the data loaders classes.
+ * It stores the maps loaded from the database to use in the database loader and CSV classes.
+ */
 public class DataOasis {
 
+    /**
+     * Static variable instance of DataOasis for DataLoading
+     */
     private static final DataOasis INSTANCE = new DataOasis();
 
     private Map<Integer, Address> addressMap;

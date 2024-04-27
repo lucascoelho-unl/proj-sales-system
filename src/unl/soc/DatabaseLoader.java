@@ -182,12 +182,18 @@ public class DatabaseLoader {
         return person;
     }
 
+    /**
+     * Loads an e-mail given a personId
+     *
+     * @param personId
+     * @return emailList
+     */
     private static List<String> loadEmails(int personId){
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        List<String> emailMap = new ArrayList<>();
+        List<String> emailList = new ArrayList<>();
 
         String query = "select emailId, address from Email where personId = ?;";
 
@@ -198,7 +204,7 @@ public class DatabaseLoader {
             if (rs.next()) {
                 int emailId = rs.getInt("emailId");
                 String address = rs.getString("address");
-                emailMap.add(address);
+                emailList.add(address);
             }
         } catch (SQLException e) {
             LOGGER.error("Error parsing person {}: {}", personId, e);
@@ -206,7 +212,7 @@ public class DatabaseLoader {
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
-        return emailMap;
+        return emailList;
 
     }
 
@@ -391,6 +397,12 @@ public class DatabaseLoader {
         return storeMapResult;
     }
 
+    /**
+     * Load a single item given its itemCode
+     *
+     * @param itemCode
+     * @return
+     */
     public static Item loadItem(String itemCode) {
 
         Connection conn = ConnFactory.createConnection();
@@ -686,6 +698,11 @@ public class DatabaseLoader {
         return sale;
     }
 
+    /**
+     * Loads an item that is being sold and ads it to the appropriate sale.
+     *
+     * @param sale
+     */
     private static void loadItemSale(Sale sale){
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
@@ -707,6 +724,7 @@ public class DatabaseLoader {
             ConnFactory.closeConnection(rs, ps, conn);
         }
     }
+
     /**
      * Loads all Sale objects from the database.
      *
@@ -761,6 +779,11 @@ public class DatabaseLoader {
         LOGGER.debug("Successfully parsed sales into stores");
     }
 
+    /**
+     * Updates a single store with its respective sales
+     *
+     * @param store
+     */
     private static void updateSingleStoreWithSales(Store store) {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
