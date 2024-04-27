@@ -20,7 +20,7 @@ public class DatabaseLoader {
     private static final DataOasis instance;
 
 
-    // Configure the Logger
+    // Configure the Logger and Instances
     static {
         Configurator.initialize(new DefaultConfiguration());
         Configurator.setRootLevel(Level.INFO);
@@ -672,7 +672,7 @@ public class DatabaseLoader {
 
         String query = """
                 select uniqueCode, saleDate, customerId, salesmanId, storeId from Sale
-                where Sale.saleId = ?;
+                where saleId = ?;
                 """;
 
         try {

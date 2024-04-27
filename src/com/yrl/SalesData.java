@@ -286,7 +286,6 @@ public class SalesData {
     public static void addLeaseToSale(String saleCode, String itemCode, String startDate, String endDate) {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
-        ResultSet rs = null;
 
         String insert = "insert into ItemSale (itemId, saleId, startDate, endDate, isLease) values (?, ?, ?, ?, true);";
 
@@ -337,7 +336,6 @@ public class SalesData {
     public static void addServiceToSale(String saleCode, String itemCode, double billedHours, String servicePersonUuid) {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
-        ResultSet rs = null;
 
         String insert = "insert into ItemSale (itemId, saleId, totalHours, employeeId) values (?, ?, ?, ?);";
 
@@ -387,7 +385,6 @@ public class SalesData {
     public static void addDataPlanToSale(String saleCode, String itemCode, double gbs) {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
-        ResultSet rs = null;
 
         String insert = "insert into ItemSale (itemId, saleId, totalGb) values (?, ?, ?);";
 
@@ -432,7 +429,6 @@ public class SalesData {
     public static void addVoicePlanToSale(String saleCode, String itemCode, String phoneNumber, int days) {
         Connection conn = ConnFactory.createConnection();
         PreparedStatement ps = null;
-        ResultSet rs = null;
 
         String insert = "insert into ItemSale (itemId, saleId, totalPeriod, phoneNumber) values (?, ?, ?, ?);";
 
@@ -506,7 +502,7 @@ public class SalesData {
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
-            LOGGER.error("Error in the connection: {}", e.toString());
+            LOGGER.error("Error in the connection: {}", e.getMessage());
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
@@ -559,7 +555,7 @@ public class SalesData {
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
-            LOGGER.error("Error in the connection: {}", e.toString());
+            LOGGER.error("Error in the connection: {}", e.getMessage());
         } finally {
             ConnFactory.closeConnection(rs, ps, conn);
         }
