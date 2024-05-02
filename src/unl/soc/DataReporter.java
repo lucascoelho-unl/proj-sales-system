@@ -15,9 +15,7 @@ public class DataReporter {
      */
     public static String reportTotalsBySales() {
 
-        List<Sale> salesList = DatabaseLoader.loadSaleList();
-
-        salesList.sort(Sale::compareSales);
+        SortedLinkedList<Sale> salesList = DatabaseLoader.loadSaleList();
 
         StringBuilder sb = new StringBuilder();
 
@@ -62,9 +60,7 @@ public class DataReporter {
      */
     public static String reportTotalsByStore() {
 
-        List<Store> storesList = DatabaseLoader.loadStoreList();
-
-        storesList.sort(Store::compareStores);
+        SortedLinkedList<Store> storesList = DatabaseLoader.loadStoreList();
 
         StringBuilder sb = new StringBuilder();
 
@@ -93,9 +89,7 @@ public class DataReporter {
      */
     public static String reportSales() {
 
-        List<Sale> salesList = new ArrayList<>(DatabaseLoader.loadAllSales().values());
-
-        salesList.sort(Sale::compareSales);
+        SortedLinkedList<Sale> salesList = DatabaseLoader.loadSaleList();
 
         StringBuilder sb = new StringBuilder();
 

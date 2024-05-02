@@ -420,8 +420,8 @@ public class DatabaseLoader {
      *
      * @return A list of <code>Store</code> objects.
      */
-    public static List<Store> loadStoreList() {
-        return new ArrayList<>(loadAllStores().values());
+    public static SortedLinkedList<Store> loadStoreList() {
+        return new SortedLinkedList<>(loadAllStores().values(), Store::compareStores);
     }
 
     /**
@@ -810,8 +810,8 @@ public class DatabaseLoader {
      *
      * @return A list of Sale objects.
      */
-    public static List<Sale> loadSaleList() {
-        return new ArrayList<>(loadAllSales().values());
+    public static SortedLinkedList<Sale> loadSaleList() {
+        return new SortedLinkedList<>(loadAllSales().values(), Sale::compareSales);
     }
 
     /**
