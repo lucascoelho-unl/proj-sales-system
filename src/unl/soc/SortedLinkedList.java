@@ -1,5 +1,6 @@
 package unl.soc;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -19,7 +20,19 @@ public class SortedLinkedList<T> implements Iterable<T> {
     }
 
     public SortedLinkedList(){
-        this(null);
+        this((Comparator<T>) null);
+    }
+
+    public SortedLinkedList(Collection<? extends T> c, Comparator<T> comparator) {
+        this(comparator);
+        T[] a = (T[]) c.toArray();
+        addFromArray(a);
+    }
+
+    public SortedLinkedList(Collection<? extends T> c) {
+        this(c, null);
+        T[] a = (T[]) c.toArray();
+        addFromArray(a);
     }
 
     public int size(){
@@ -220,7 +233,7 @@ public class SortedLinkedList<T> implements Iterable<T> {
 
         private Node<T> next = null;
         private Node<T> prev = null;
-        private final T item;
+        private T item;
 
         public Node(T item){
             this.item = item;
