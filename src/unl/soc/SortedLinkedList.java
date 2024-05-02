@@ -149,6 +149,18 @@ public class SortedLinkedList<T> implements Iterable<T> {
         return toDelete.getItem();
     }
 
+    public T poll(){
+        if (isEmpty()){
+            throw new IllegalStateException("Cannot poll an empty list");
+        }
+        Node<T> toDelete = getNode(0);
+
+        this.head = this.head.getNext();
+        this.head.setPrev(null);
+        size--;
+        return toDelete.getItem();
+    }
+
     public T get(int index){
         return this.getNode(index).item;
     }
@@ -157,10 +169,7 @@ public class SortedLinkedList<T> implements Iterable<T> {
         boundCheck(index);
 
         if(index == 0){
-            Node<T> toDelete = this.head;
-            this.head = this.head.getNext();
-            size--;
-            return toDelete.getItem();
+            return poll();
         }
         if (index == this.size - 1){
             return pop();

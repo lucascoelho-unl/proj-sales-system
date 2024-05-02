@@ -81,6 +81,14 @@ public class Person {
         this.emailList.add(emailAddress);
     }
 
+    public int compareTo(Person person) {
+        int comparison = this.lastName.compareTo(person.lastName);
+        if (comparison == 0) {
+            comparison = this.firstName.compareTo(person.firstName);
+        }
+        return comparison;
+    }
+
     @Override
     public String toString() {
         return getLastName() + ", " + getFirstName() + " (" + getUuid() + ")\n" +

@@ -13,17 +13,18 @@ public class DataReporter {
      *
      * @return A string representing the sales report.
      */
-    public static String reportTotalsBySales() {
-
-        SortedLinkedList<Sale> salesList = DatabaseLoader.loadSaleList();
+    public static String reportTotalsBySales(SortedLinkedList<Sale> salesList, String header) {
 
         StringBuilder sb = new StringBuilder();
 
         // Print sales report header
         sb.append("Sales Report:\n");
-        sb.append("+-----------------------------------------------------------------------------------+\n" +
-                "|  Summary Report -- By Total                                                       |\n" +
-                "+-----------------------------------------------------------------------------------+\n");
+        // Calculate the remaining spaces after inserting the header
+        int remainingSpaces = 81 - header.length();
+        String middleLine = String.format("|  %-1s%-" + remainingSpaces + "s|", header, "");
+        sb.append("+-----------------------------------------------------------------------------------+\n");
+        sb.append(middleLine + "\n");
+        sb.append("+-----------------------------------------------------------------------------------+\n");
         sb.append("Invoice #  Store     Customer                Num Items          Tax        Total\n");
 
         // Initialize total sales variables
@@ -89,7 +90,7 @@ public class DataReporter {
      */
     public static String reportSales() {
 
-        SortedLinkedList<Sale> salesList = DatabaseLoader.loadSaleList();
+        SortedLinkedList<Sale> salesList = DatabaseLoader.loadSaleListSorted();
 
         StringBuilder sb = new StringBuilder();
 

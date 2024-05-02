@@ -810,8 +810,46 @@ public class DatabaseLoader {
      *
      * @return A list of Sale objects.
      */
-    public static SortedLinkedList<Sale> loadSaleList() {
+    public static SortedLinkedList<Sale> loadSaleListSorted() {
         return new SortedLinkedList<>(loadAllSales().values(), Sale::compareSales);
+    }
+
+    public static SortedLinkedList<Sale> loadSaleListSortedByTotals(){
+        Comparator<Sale> comparator = new Comparator<Sale>() {
+            @Override
+            public int compare(Sale o1, Sale o2) {
+                return Double.compare(o2.getNetPrice(), o1.getNetPrice());
+            }
+        };
+        return new SortedLinkedList<>(loadAllSales().values(), comparator);
+    }
+
+    public static SortedLinkedList<Sale> loadSaleListSortedByCustomer() {
+        Comparator<Sale> comparator = new Comparator<Sale>() {
+            @Override
+            public int compare(Sale o1, Sale o2) {
+                int comparison = o1.getCustomer().compareTo(o2.getCustomer());
+                if (comparison == 0) {
+                    comparison = Double.compare(o2.getNetPrice(), o1.getNetPrice());
+                }
+                return comparison;
+            }
+        };
+        return new SortedLinkedList<>(loadAllSales().values(), comparator);
+    }
+
+    public static SortedLinkedList<Sale> loadSaleListSortedByStore() {
+        Comparator<Sale> comparator = new Comparator<Sale>() {
+            @Override
+            public int compare(Sale o1, Sale o2) {
+                int comparison = o1.getStore().getStoreCode().compareTo(o2.getStore().getStoreCode());
+                if (comparison == 0) {
+                    comparison = Double.compare(o2.getNetPrice(), o1.getNetPrice());
+                }
+                return comparison;
+            }
+        };
+        return new SortedLinkedList<>(loadAllSales().values(), comparator);
     }
 
     /**
