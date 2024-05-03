@@ -806,7 +806,7 @@ public class DatabaseLoader {
     }
 
     /**
-     * Loads all Sale objects from the database.
+     * Loads all Sale objects from the database into a sorted list.
      *
      * @return A list of Sale objects.
      */
@@ -814,6 +814,11 @@ public class DatabaseLoader {
         return new SortedLinkedList<>(loadAllSales().values(), Sale::compareSales);
     }
 
+    /**
+     * Loads list of sales sorted by totals.
+     *
+     * @return list sorted
+     */
     public static SortedLinkedList<Sale> loadSaleListSortedByTotals(){
         Comparator<Sale> comparator = new Comparator<Sale>() {
             @Override
@@ -824,6 +829,11 @@ public class DatabaseLoader {
         return new SortedLinkedList<>(loadAllSales().values(), comparator);
     }
 
+    /**
+     * Loads list of sales sorted by customer. Tiebreaker is net price.
+     *
+     * @return list sorted
+     */
     public static SortedLinkedList<Sale> loadSaleListSortedByCustomer() {
         Comparator<Sale> comparator = new Comparator<Sale>() {
             @Override
@@ -838,6 +848,11 @@ public class DatabaseLoader {
         return new SortedLinkedList<>(loadAllSales().values(), comparator);
     }
 
+    /**
+     * Loads list of sales sorted by Store. Tiebreaker is net price.
+     *
+     * @return list sorted
+     */
     public static SortedLinkedList<Sale> loadSaleListSortedByStore() {
         Comparator<Sale> comparator = new Comparator<Sale>() {
             @Override
