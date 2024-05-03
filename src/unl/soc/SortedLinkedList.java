@@ -5,6 +5,11 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+/**
+ * A sorted linked list implementation.
+ *
+ * @param <T> the type of elements stored in the list
+ */
 @SuppressWarnings("unchecked")
 public class SortedLinkedList<T> implements Iterable<T> {
     private int size;
@@ -12,6 +17,11 @@ public class SortedLinkedList<T> implements Iterable<T> {
     private Node<T> tail;
     private final Comparator<T> comparator;
 
+    /**
+     * Constructs a new sorted linked list with the specified comparator.
+     *
+     * @param comparator the comparator to use for sorting elements
+     */
     public SortedLinkedList(Comparator<T> comparator) {
         this.head = null;
         this.tail = null;
@@ -19,36 +29,71 @@ public class SortedLinkedList<T> implements Iterable<T> {
         this.comparator = comparator;
     }
 
+    /**
+     * Constructs a new sorted linked list with natural ordering.
+     */
     public SortedLinkedList(){
         this((Comparator<T>) null);
     }
 
+    /**
+     * Constructs a new sorted linked list containing the elements of the specified collection,
+     * sorted according to the specified comparator.
+     *
+     * @param c          the collection whose elements are to be placed into this list
+     * @param comparator the comparator to use for sorting elements
+     */
     public SortedLinkedList(Collection<? extends T> c, Comparator<T> comparator) {
         this(comparator);
         T[] a = (T[]) c.toArray();
         addFromArray(a);
     }
 
+    /**
+     * Constructs a new sorted linked list containing the elements of the specified collection,
+     * sorted according to their natural ordering.
+     *
+     * @param c the collection whose elements are to be placed into this list
+     */
     public SortedLinkedList(Collection<? extends T> c) {
         this(c, null);
         T[] a = (T[]) c.toArray();
         addFromArray(a);
     }
 
+    /**
+     * Returns the number of elements in this list.
+     *
+     * @return the number of elements in this list
+     */
     public int size(){
         return this.size;
     }
 
+    /**
+     * Removes all elements from this list.
+     */
     public void removeAll(){
         this.size = 0;
         this.head = null;
         this.tail = null;
     }
 
+    /**
+     * Returns true if this list contains no elements.
+     *
+     * @return true if this list contains no elements
+     */
     public boolean isEmpty(){
         return this.size == 0;
     }
 
+    /**
+     * Gets a node based on its index.
+     *
+     * @param index
+     * @return Tree node
+     */
     private Node<T> getNode(int index){
         boundCheck(index);
         Node<T> current;
@@ -67,6 +112,11 @@ public class SortedLinkedList<T> implements Iterable<T> {
         return current;
     }
 
+    /**
+     * Adds the specified element to this list.
+     *
+     * @param item the element to add
+     */
     public void add(T item){
         if (item == null){
             throw new IllegalArgumentException("Cannot add a null element");
@@ -91,6 +141,13 @@ public class SortedLinkedList<T> implements Iterable<T> {
         }
     }
 
+    /**
+     * If a comparator is used in the construction of the class instance, we call
+     * a different add method with logic to use a comparator.
+     *
+     * @param item
+     * @param comparator
+     */
     private void addWithComparator(T item, Comparator<T> comparator) {
         Node<T> newNode = new Node<>(item);
 
@@ -119,6 +176,12 @@ public class SortedLinkedList<T> implements Iterable<T> {
         insertBefore(current, newNode);
     }
 
+    /**
+     * Inserts given node before the current node that was passed as an argument
+     *
+     * @param current
+     * @param newNode
+     */
     private void insertBefore(Node<T> current, Node<T> newNode){
         Node<T> previous = current.getPrev();
         previous.setNext(newNode);
@@ -128,6 +191,12 @@ public class SortedLinkedList<T> implements Iterable<T> {
         this.size++;
     }
 
+    /**
+     * Checks weather the class of the item passed as an argument has a declared method. If not, return false.
+     *
+     * @param item
+     * @return {@code true} if has compareTo, {@code false} otherwise.
+     */
     private boolean hasComparable(T item) {
         try {
             item.getClass().getDeclaredMethod("compareTo", item.getClass());
@@ -137,6 +206,12 @@ public class SortedLinkedList<T> implements Iterable<T> {
         }
     }
 
+    /**
+     * Removes and returns the last element from this list.
+     *
+     * @return the last element from this list
+     * @throws IllegalStateException if this list is empty
+     */
     public T pop(){
         if (isEmpty()){
             throw new IllegalStateException("Cannot pop an empty list");
@@ -149,6 +224,12 @@ public class SortedLinkedList<T> implements Iterable<T> {
         return toDelete.getItem();
     }
 
+    /**
+     * Removes and returns the first element from this list.
+     *
+     * @return the first element from this list
+     * @throws IllegalStateException if this list is empty
+     */
     public T poll(){
         if (isEmpty()){
             throw new IllegalStateException("Cannot poll an empty list");
@@ -161,10 +242,22 @@ public class SortedLinkedList<T> implements Iterable<T> {
         return toDelete.getItem();
     }
 
+    /**
+     * Returns the element at the specified position in this list.
+     *
+     * @param index the index of the element to return
+     * @return the element at the specified position in this list
+     */
     public T get(int index){
         return this.getNode(index).item;
     }
 
+    /**
+     * Removes the element at the specified position in this list.
+     *
+     * @param index the index of the element to be removed
+     * @return the element previously at the specified position
+     */
     public T remove(int index){
         boundCheck(index);
 
@@ -185,13 +278,22 @@ public class SortedLinkedList<T> implements Iterable<T> {
         return toBeDeleted.getItem();
     }
 
-
+    /**
+     * Adds all elements from the array to this list.
+     *
+     * @param array the array containing elements to be added
+     */
     public void addFromArray(T [] array){
         for(T element : array){
             add(element);
         }
     }
 
+    /**
+     * Check if the index given is in bounds
+     *
+     * @param index {@code true} if it is between 0 and the size - 1, {@code false} otherwise.
+     */
     private void boundCheck (int index){
         if (index < 0){
             throw new IllegalArgumentException("Index less than 0");
@@ -201,6 +303,7 @@ public class SortedLinkedList<T> implements Iterable<T> {
         }
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
@@ -219,27 +322,34 @@ public class SortedLinkedList<T> implements Iterable<T> {
     @Override
     public Iterator<T> iterator() {
         return new Iterator<>() {
-            private Node<T> currentNode = head; // Start from the head
+            private Node<T> currentNode = head;
 
             @Override
             public boolean hasNext() {
-                return currentNode != null; // Check if there's a next node
+                return currentNode != null;
             }
 
             @Override
             public T next() {
                 if (!hasNext()) {
-                    throw new NoSuchElementException(); // Throw exception if no more elements
+                    throw new NoSuchElementException();
                 }
-                T item = currentNode.getItem(); // Get the item from the current node
-                currentNode = currentNode.getNext(); // Move to the next node
+                T item = currentNode.getItem();
+                currentNode = currentNode.getNext();
                 return item;
             }
         };
     }
 
-    private static class Node <T> {
 
+    /**
+     * Private static class that represents the Node. We chose to create this class
+     * as a private class inside the sortedLinkedList for better data protection and
+     * code organization
+     *
+     * @param <T>
+     */
+    private static class Node <T> {
         private Node<T> next = null;
         private Node<T> prev = null;
         private T item;
@@ -268,5 +378,4 @@ public class SortedLinkedList<T> implements Iterable<T> {
             this.prev = prev;
         }
     }
-
 }
