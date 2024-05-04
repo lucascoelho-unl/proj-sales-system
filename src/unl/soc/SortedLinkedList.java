@@ -92,7 +92,7 @@ public class SortedLinkedList<T> implements Iterable<T> {
      * Gets a node based on its index.
      *
      * @param index
-     * @return Tree node
+     * @return LinkedList node
      */
     private Node<T> getNode(int index){
         boundCheck(index);
